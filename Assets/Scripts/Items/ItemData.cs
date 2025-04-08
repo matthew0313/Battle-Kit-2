@@ -23,4 +23,6 @@ public abstract class Item
     public virtual void OnWield(Player wielder) { }
     public virtual void OnWieldUpdate(Player wielder) { }
     public virtual void OnUnwield(Player wielder) { }
+    public virtual void Delete() { }
+    public virtual Item Copy() => data.Create();
 }

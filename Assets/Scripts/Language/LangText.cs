@@ -5,13 +5,16 @@ using UnityEngine;
 public struct LangText
 {
     public string en, kr;
-    public static implicit operator string(LangText text)
+    public string text
     {
-        switch (Settings.language)
+        get
         {
-            case Language.English: return text.en;
-            case Language.Korean : return text.kr;
-            default: return text.en;
+            switch (Settings.language)
+            {
+                case Language.English: return en;
+                case Language.Korean: return kr;
+                default: return en;
+            }
         }
     }
 }
