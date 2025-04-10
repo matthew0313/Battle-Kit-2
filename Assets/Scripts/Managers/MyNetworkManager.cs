@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,10 +18,21 @@ public class MyNetworkManager : MonoBehaviour
     private void OnEnable()
     {
         networkManager.OnServerStarted += ServerStarted;
+        SessionManager.Instance.onSessionChange += OnSessionChange;
     }
     private void OnDisable()
     {
         networkManager.OnServerStarted -= ServerStarted;
+        SessionManager.Instance.onSessionChange -= OnSessionChange;
+    }
+    ISession currentSession;
+    void OnSessionChange(ISession session)
+    {
+        if (session != null)
+        {
+            if (session.IsHost) networkManager.StartHost();
+            else networkManager.StartClient();
+        }
     }
     void ServerStarted()
     {

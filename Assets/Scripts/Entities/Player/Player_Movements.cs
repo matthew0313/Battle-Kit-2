@@ -21,7 +21,11 @@ public class Player_Movements : NetworkBehaviour
     {
         origin = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
+    }
+    public void OnStart()
+    {
         if (!IsOwner) rb.bodyType = RigidbodyType2D.Kinematic;
+        else rb.bodyType = RigidbodyType2D.Dynamic;
     }
     Vector2 knockback = Vector2.zero;
     public void OnUpdate()
@@ -39,7 +43,7 @@ public class Player_Movements : NetworkBehaviour
     }
     void Move()
     {
-        rb.linearVelocity = moveInput.action.ReadValue<Vector2>() * moveSpeed * Time.deltaTime + knockback * Time.deltaTime;
+        rb.linearVelocity = moveInput.action.ReadValue<Vector2>() * moveSpeed + knockback;
     }
     void UpdateKnockback()
     {

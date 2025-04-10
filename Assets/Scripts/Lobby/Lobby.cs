@@ -15,7 +15,11 @@ public class Lobby : MonoBehaviour
     [SerializeField] Transform sessionListAnchor;
     [SerializeField] SessionListElement sessionListElement;
     List<SessionListElement> sessionListElements = new();
-    
+
+    private void Awake()
+    {
+        SessionManager.Instance.onSignIn += OnSignIn;
+    }
     private void Start()
     {
         sessionID.onEndEdit.AddListener(value =>
@@ -31,6 +35,13 @@ public class Lobby : MonoBehaviour
         startSessionButton.onClick.AddListener(StartSession);
 
         sessionListRefreshButton.onClick.AddListener(RefreshSessionList);
+    }
+    private void OnDestroy()
+    {
+        SessionManager.Instance.onSignIn -= OnSignIn;
+    }
+    void OnSignIn()
+    {
         RefreshSessionList();
     }
     void JoinOrStartSession()
@@ -45,13 +56,19 @@ public class Lobby : MonoBehaviour
     async void RefreshSessionList()
     {
         IList<ISessionInfo> infoList = await SessionManager.Instance.QuerySessions();
-        for(int i = 0; i < infoList.Count; i++)
+        int i;
+        for(i = 0; i < infoList.Count; i++)
         {
             if(sessionListElements.Count <= i)
             {
                 sessionListElements.Add(Instantiate(sessionListElement, sessionListAnchor));
             }
             sessionListElements[i].Set(infoList[i]);
+            sessionListElements[i].gameObject.SetActive(true);
+        }
+        for(; i < sessionListElements.Count; i++)
+        {
+            sessionListElements[i].gameObject.SetActive(false);
         }
     }
 }

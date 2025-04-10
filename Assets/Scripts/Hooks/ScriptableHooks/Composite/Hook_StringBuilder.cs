@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Text;
+using static Unity.Burst.Intrinsics.X86.Avx;
+using UnityEngine.UIElements;
+
 
 
 #if UNITY_EDITOR
@@ -125,55 +128,74 @@ public enum HookStringBuilderElementType
 [CustomPropertyDrawer(typeof(HookStringBuilderElement))]
 public class HookStringBuilderElement_Drawer : PropertyDrawer
 {
-    float height = 0.0f;
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        height = 0.0f;
-
         float tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("type")) + 2.0f;
-        position.y += tmp; height += tmp;
+        position.y += tmp;
 
         if (property.FindPropertyRelative("type").enumValueIndex == 0)
         {
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("text")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
         else if(property.FindPropertyRelative("type").enumValueIndex == 1)
         {
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("langText")) + 2.0f;
-            position.y += tmp; height += tmp;
-
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("langText").FindPropertyRelative("kr")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 2)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHookProvider")) + 2.0f;
-            position.y += tmp; height += tmp;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHookProvider").FindPropertyRelative("target")) + 2.0f;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerMultiplier")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 3)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatHookProvider")) + 2.0f;
-            position.y += tmp; height += tmp;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatHookProvider").FindPropertyRelative("target")) + 2.0f;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatMultiplier")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatRounding")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 4)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("stringHookProvider")) + 2.0f;
-            position.y += tmp; height += tmp;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("stringHookProvider").FindPropertyRelative("target")) + 2.0f;
+            position.y += tmp;
         }
     }
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return 80.0f;
+        float height = 0.0f;
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("type"), true) + 2;
+        if (property.FindPropertyRelative("type").enumValueIndex == 0)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("text"), true) + 2;
+        }
+        else if (property.FindPropertyRelative("type").enumValueIndex == 1)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("langText"), true) + 2;
+        }
+        else if (property.FindPropertyRelative("type").enumValueIndex == 2)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("integerHookProvider").FindPropertyRelative("target"), true) + 2;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("integerMultiplier")) + 2;
+        }
+        else if (property.FindPropertyRelative("type").enumValueIndex == 3)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("floatHookProvider").FindPropertyRelative("target"), true) + 2;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("floatMultiplier")) + 2;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("floatRounding")) + 2;
+        }
+        else if (property.FindPropertyRelative("type").enumValueIndex == 4)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("stringHookProvider").FindPropertyRelative("target")) + 2;
+        }
+        return height;
     }
 }
 #endif

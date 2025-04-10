@@ -4,22 +4,22 @@ using UnityEngine.UI;
 
 public class HookedVolumer : MonoBehaviour
 {
-    [SerializeField] FloatHook hook;
+    [SerializeField] IRef<IHookProvider<float>> hook;
     [SerializeField] float multiplier = 1.0f;
 
     [Header("Output")]
     [SerializeField] AudioSource source;
     private void OnEnable()
     {
-        hook.AssignCallback(OnValueChange);
+        hook.I.AssignCallback(OnValueChange);
         OnValueChange();
     }
     private void OnDisable()
     {
-        hook.RemoveCallback(OnValueChange);
+        hook.I.RemoveCallback(OnValueChange);
     }
     void OnValueChange()
     {
-        source.volume = hook.value * multiplier;
+        source.volume = hook.I.value * multiplier;
     }
 }

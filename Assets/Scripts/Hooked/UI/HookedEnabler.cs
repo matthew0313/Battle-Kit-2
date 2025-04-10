@@ -4,22 +4,22 @@ using UnityEngine.UI;
 
 public class HookedEnabler : MonoBehaviour
 {
-    [SerializeField] BoolHook hook;
+    [SerializeField] IRef<IHookProvider<bool>> hook;
     [SerializeField] bool invert = false;
 
     [Header("Display")]
     [SerializeField] GameObject target;
     private void OnEnable()
     {
-        hook.AssignCallback(OnValueChange);
+        hook.I.AssignCallback(OnValueChange);
         OnValueChange();
     }
     private void OnDisable()
     {
-        hook.RemoveCallback(OnValueChange);
+        hook.I.RemoveCallback(OnValueChange);
     }
     void OnValueChange()
     {
-        target.SetActive(invert ? !hook.value : hook.value);
+        target.SetActive(invert ? !hook.I.value : hook.I.value);
     }
 }

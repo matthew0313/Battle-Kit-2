@@ -10,8 +10,9 @@ using Unity.Services.Multiplayer;
 
 public class SessionListElement : MonoBehaviour
 {
-    [SerializeField] TMP_Text sessionID;
     [SerializeField] Button sessionJoinButton;
+    [SerializeField] IRef<IHookProvider<string>> sessionIDHook;
+    [SerializeField] IRef<IHookProvider<int>> playerCountHook;
     private void OnEnable()
     {
         sessionJoinButton.onClick.AddListener(JoinSession);
@@ -24,7 +25,8 @@ public class SessionListElement : MonoBehaviour
     public void Set(ISessionInfo info)
     {
         currentInfo = info;
-        sessionID.text = info.Id;
+        sessionIDHook.I.SetValue(info.Id);
+        playerCountHook.I.SetValue(info.MaxPlayers - info.AvailableSlots);
     }
     void JoinSession()
     {

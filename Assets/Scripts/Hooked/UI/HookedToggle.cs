@@ -4,23 +4,23 @@ using UnityEngine.UI;
 
 public class HookedToggle : MonoBehaviour
 {
-    [SerializeField] BoolHook hook;
+    [SerializeField] IRef<IHookProvider<bool>> hook;
 
     [Header("Display")]
     [SerializeField] Toggle toggle;
     private void OnEnable()
     {
-        hook.AssignCallback(OnValueChange);
-        toggle.onValueChanged.AddListener(hook.SetValue);
+        hook.I.AssignCallback(OnValueChange);
+        toggle.onValueChanged.AddListener(hook.I.SetValue);
         OnValueChange();
     }
     private void OnDisable()
     {
-        hook.RemoveCallback(OnValueChange);
-        toggle.onValueChanged.RemoveListener(hook.SetValue);
+        hook.I.RemoveCallback(OnValueChange);
+        toggle.onValueChanged.RemoveListener(hook.I.SetValue);
     }
     void OnValueChange()
     {
-        toggle.isOn = hook.value;
+        toggle.isOn = hook.I.value;
     }
 }

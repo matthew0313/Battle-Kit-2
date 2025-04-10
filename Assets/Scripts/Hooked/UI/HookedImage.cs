@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -55,11 +56,13 @@ public struct HookedImageSettings
     public HookedImageMode mode;
 
     //Bool Hook
-    public BoolHook boolHook;
+    [SerializeField] IRef<IHookProvider<bool>> boolHookProvider;
+    public IHookProvider<bool> boolHook => boolHookProvider.I;
     public Sprite trueSprite, falseSprite;
 
     //Int Hook
-    public IntegerHook integerHook;
+    [SerializeField] IRef<IHookProvider<int>> integerHookProvider;
+    public IHookProvider<int> integerHook => integerHookProvider.I;
     public Sprite[] integerSprites;
 }
 [System.Serializable]
@@ -72,36 +75,46 @@ public enum HookedImageMode
 [CustomPropertyDrawer(typeof(HookedImageSettings))]
 public class HookedImageSettings_Drawer : PropertyDrawer
 {
-    float height = 0.0f;
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        height = 0.0f;
-
         float tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("mode")) + 2.0f;
-        position.y += tmp; height += tmp;
+        position.y += tmp;
 
         if (property.FindPropertyRelative("mode").enumValueIndex == 0)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("boolHook")) + 2.0f;
-            position.y += tmp; height += tmp;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("boolHookProvider").FindPropertyRelative("target")) + 2.0f;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("trueSprite")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("falseSprite")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
         else if (property.FindPropertyRelative("mode").enumValueIndex == 1)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHook")) + 2.0f;
-            position.y += tmp; height += tmp;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHookProvider").FindPropertyRelative("target")) + 2.0f;
+            position.y += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerSprites")) + 2.0f;
-            position.y += tmp; height += tmp;
+            position.y += tmp;
         }
     }
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
+        float height = 0.0f;
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("mode")) + 2.0f;
+        if (property.FindPropertyRelative("mode").enumValueIndex == 0)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("boolHookProvider").FindPropertyRelative("target"), true) + 2.0f;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("trueSprite"), true) + 2.0f;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("falseSprite"), true) + 2.0f;
+        }
+        else if (property.FindPropertyRelative("mode").enumValueIndex == 1)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("integerHookProvider").FindPropertyRelative("target"), true) + 2.0f;
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("integerSprites"), true) + 2.0f;
+        }
         return height;
     }
 }

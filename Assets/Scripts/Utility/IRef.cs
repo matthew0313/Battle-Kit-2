@@ -6,6 +6,7 @@ using UnityEditor;
 [System.Serializable]
 public class IRef<T> : ISerializationCallbackReceiver where T : class
 {
+    UnityEngine.Object prevTarget;
     public UnityEngine.Object target;
     public T I => target as T;
     public void OnBeforeSerialize() => OnValidate();
@@ -16,7 +17,7 @@ public class IRef<T> : ISerializationCallbackReceiver where T : class
         {
             if (target is GameObject go)
             {
-                target = null;
+                target = prevTarget;
                 foreach (Component c in go.GetComponents<Component>())
                 {
                     if (c is T)
@@ -26,6 +27,8 @@ public class IRef<T> : ISerializationCallbackReceiver where T : class
                     }
                 }
             }
+            else target = prevTarget;
         }
+        prevTarget = target;
     }
 }

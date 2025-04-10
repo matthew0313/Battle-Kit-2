@@ -13,6 +13,7 @@ using UnityEngine.InputSystem;
 public class SessionManager : MonoBehaviour
 {
     public static SessionManager Instance { get; private set; }
+    public SessionManager() => Instance = this;
     ISession m_activeSession;
     public ISession activeSession
     {
@@ -27,9 +28,9 @@ public class SessionManager : MonoBehaviour
     public Action<ISession> onSessionChange;
     private void Awake()
     {
-        Instance = this;
         DontDestroyOnLoad(this);
     }
+    public Action onSignIn;
     async void Start()
     {
         try
@@ -37,6 +38,7 @@ public class SessionManager : MonoBehaviour
             await UnityServices.InitializeAsync();
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Debug.Log($"Player: {AuthenticationService.Instance.PlayerName}");
+            onSignIn?.Invoke();
         }
         catch(Exception e)
         {
@@ -54,35 +56,26 @@ public class SessionManager : MonoBehaviour
             { playerNamePropertyKey, playerNameProperty }
         };
     }
-    public async UniTaskVoid StartSessionAsHost()
+    public const int maxPlayers = 8;
+    private async UniTask<SessionOptions> GetSessionOptions()
     {
         Dictionary<string, PlayerProperty> playerProperties = await GetPlayerProperties();
 
-        SessionOptions options = new()
+        return new()
         {
-            MaxPlayers = 8,
+            MaxPlayers = maxPlayers,
             IsLocked = false,
             IsPrivate = false,
             PlayerProperties = playerProperties
         };
-        options.WithRelayNetwork();
-
-        activeSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+    }
+    public async UniTaskVoid StartSessionAsHost()
+    {
+        activeSession = await MultiplayerService.Instance.CreateSessionAsync(await GetSessionOptions());
     }
     public async UniTaskVoid JoinOrStartSessionAsHost(string sessionId)
     {
-        Dictionary<string, PlayerProperty> playerProperties = await GetPlayerProperties();
-
-        SessionOptions options = new()
-        {
-            MaxPlayers = 8,
-            IsLocked = false,
-            IsPrivate = false,
-            PlayerProperties = playerProperties
-        };
-        options.WithRelayNetwork();
-
-        activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options);
+        activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, await GetSessionOptions());
         Debug.Log($"Session {activeSession.Id} Joined");
     }
     public async UniTaskVoid JoinSessionById(string sessionId)
