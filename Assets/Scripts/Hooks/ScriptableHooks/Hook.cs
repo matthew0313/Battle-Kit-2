@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public abstract class Hook<T> : ResetScriptable
+public abstract class Hook<T> : ResetScriptable, IHookProvider<T>
 {
     public abstract T value { get; }
     public abstract void AssignCallback(Action callback);

@@ -98,16 +98,19 @@ public struct HookStringBuilderElement
     public LangText langText;
 
     //IntegerHook
-    public IntegerHook integerHook;
+    [SerializeField] IRef<IHookProvider<int>> integerHookProvider;
+    public IHookProvider<int> integerHook => integerHookProvider.I;
     public int integerMultiplier;
 
     //FloatHook
-    public FloatHook floatHook;
+    [SerializeField] IRef<IHookProvider<float>> floatHookProvider;
+    public IHookProvider<float> floatHook => floatHookProvider.I;
     public float floatMultiplier;
     public int floatRounding;
 
     //StringHook
-    public StringHook stringHook;
+    [SerializeField] IRef<IHookProvider<string>> stringHookProvider;
+    public IHookProvider<string> stringHook => stringHookProvider.I;
 }
 [System.Serializable]
 public enum HookStringBuilderElementType
@@ -137,7 +140,7 @@ public class HookStringBuilderElement_Drawer : PropertyDrawer
         }
         else if(property.FindPropertyRelative("type").enumValueIndex == 1)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("langText").FindPropertyRelative("en")) + 2.0f;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("langText")) + 2.0f;
             position.y += tmp; height += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("langText").FindPropertyRelative("kr")) + 2.0f;
@@ -145,7 +148,7 @@ public class HookStringBuilderElement_Drawer : PropertyDrawer
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 2)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHook")) + 2.0f;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerHookProvider")) + 2.0f;
             position.y += tmp; height += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("integerMultiplier")) + 2.0f;
@@ -153,7 +156,7 @@ public class HookStringBuilderElement_Drawer : PropertyDrawer
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 3)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatHook")) + 2.0f;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatHookProvider")) + 2.0f;
             position.y += tmp; height += tmp;
 
             tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("floatMultiplier")) + 2.0f;
@@ -164,7 +167,7 @@ public class HookStringBuilderElement_Drawer : PropertyDrawer
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 4)
         {
-            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("stringHook")) + 2.0f;
+            tmp = MyEditor.PropertyFieldAndHeight(position, property.FindPropertyRelative("stringHookProvider")) + 2.0f;
             position.y += tmp; height += tmp;
         }
     }
