@@ -8,7 +8,7 @@ public abstract class UnstackableItemData : ItemData
 public abstract class UnstackableItem : Item
 {
     new public readonly UnstackableItemData data;
-    public UnstackableItem(UnstackableItemData data) : base(data)
+    protected UnstackableItem(UnstackableItemData data) : base(data)
     {
         this.data = data;
     }

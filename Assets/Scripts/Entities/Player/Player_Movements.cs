@@ -12,11 +12,16 @@ public class Player_Movements : NetworkBehaviour
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float knockbackResistance = 10.0f;
 
+    [Header("Rotation")]
+    [SerializeField] Transform rotator;
+    [SerializeField] Transform flipped;
+
     [Header("Input")]
     [SerializeField] InputActionReference moveInput;
 
     Player origin;
     Rigidbody2D rb;
+    public bool mouseLocked = false;
     public void OnAwake()
     {
         origin = GetComponent<Player>();
@@ -33,6 +38,7 @@ public class Player_Movements : NetworkBehaviour
         if (IsOwner)
         {
             Move();
+            Rotate();
             UpdateKnockback();
         }
     }
@@ -41,9 +47,44 @@ public class Player_Movements : NetworkBehaviour
     {
         this.knockback += knockback;
     }
+    public Vector2 moveDir { get; private set; } = Vector2.zero;
     void Move()
     {
-        rb.linearVelocity = moveInput.action.ReadValue<Vector2>() * moveSpeed + knockback;
+        moveDir = moveInput.action.ReadValue<Vector2>();
+        rb.linearVelocity = moveDir * moveSpeed + knockback;
+        if (!mouseLocked)
+        {
+            if(moveDir.x > 0)
+            {
+                flipped.localScale = new Vector2(-1.0f, 1.0f);
+            }
+            else if(moveDir.x < 0)
+            {
+                flipped.localScale = new Vector2(1.0f, 1.0f);
+            }
+        }
+    }
+    void Rotate()
+    {
+        if(SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            Vector2 tmp = Camera.main.ScreenToWorldPoint(Input.mousePosition) - rotator.position;
+            float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
+            if (deg < 0.0f) deg += 360.0f;
+            if(deg > 90.0f && deg < 270.0f)
+            {
+                rotator.localScale = new Vector2(1.0f, -1.0f);
+            }
+            else
+            {
+                rotator.localScale = new Vector2(1.0f, 1.0f);
+            }
+            rotator.rotation = Quaternion.Euler(0, 0, deg);
+        }
+        else
+        {
+            
+        }
     }
     void UpdateKnockback()
     {
