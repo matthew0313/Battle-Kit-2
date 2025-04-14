@@ -1,20 +1,34 @@
-using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 
 public interface IDamagable
 {
-    public Alliance alliance { get; }
-    public void GetDamage(DamageInfo damage);
+    public ulong ownerID { get; }
+    public DamageReceivedInfo GetDamage(DamageInfo damage);
 }
 [System.Serializable]
-public struct DamageInfo
+public struct DamageInfo : INetworkSerializable
 {
     public float amount;
 
     public DamageSource damageSource;
     //source is player
     public ulong damageGiverClientID;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref amount);
+        serializer.SerializeValue(ref damageSource);
+        if (damageSource == DamageSource.Player) serializer.SerializeValue(ref damageGiverClientID);
+    }
+}
+public struct DamageReceivedInfo
+{
+    public bool ignored;
+
+    public DamageInfo damage;
+    public float receivedAmount;
+    public bool fatal;
 }
 
 [System.Serializable]

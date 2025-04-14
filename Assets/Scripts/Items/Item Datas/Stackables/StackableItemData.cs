@@ -1,19 +1,21 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public abstract class StackableItemData : ItemData
+[CreateAssetMenu(fileName = "Stackable Item Data", menuName = "Scriptables/Items/Stackables/Item")]
+public class StackableItemData : ItemData
 {
     [Header("Stackable")]
-    [SerializeField] int m_maxStack;
+    [SerializeField] int m_maxStack = 64;
     public override int maxStack => m_maxStack;
+    public override Item Create() => new StackableItem(this);
 }
-public abstract class StackableItem : Item
+public class StackableItem : Item
 {
     new public readonly StackableItemData data;
     public StackableItem(StackableItemData data) : base(data)
     {
         this.data = data;
     }
-    //Stacking
     public override bool IsStackable(Item other) => other.data == data;
 }

@@ -92,7 +92,9 @@ public class InventorySlot
     }
     public void ForcedSetItem(Item item)
     {
+        this.item.containedSlot = null;
         this.item = item;
+        this.item.containedSlot = this;
         onItemChange?.Invoke();
     }
 }
