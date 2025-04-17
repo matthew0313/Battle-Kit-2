@@ -31,6 +31,7 @@ public abstract class WeaponItem : UnstackableItem
         base.OnWieldUpdate(wielder);
         weapon.transform.position = wielder.inventory.weaponAnchor.position;
         weapon.transform.rotation = wielder.inventory.weaponAnchor.rotation;
+        weapon.transform.localScale = wielder.inventory.weaponAnchor.localScale;
     }
     public override void OnUnwield(Player wielder)
     {

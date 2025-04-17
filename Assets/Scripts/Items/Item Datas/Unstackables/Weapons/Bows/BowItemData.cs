@@ -79,26 +79,8 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
     {
         weapon.FireRpc();
         Bullet bul = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
-        bul.Set(wielder, OnHit, data.arrowSpeed, data.arrowRange);
+        bul.Set(wielder, data.damage, data.arrowSpeed, data.arrowRange);
         bul.NetworkObject.Spawn();
-    }
-    protected virtual void OnHit(Player wielder, Bullet bullet, GameObject hit)
-    {
-        if (hit.TryGetComponent(out IDamagable damagable))
-        {
-            if (wielder.IsEnemy(Player.GetPlayerWithID(damagable.ownerID)))
-            {
-                damagable.GetDamage(new()
-                {
-                    amount = data.damage,
-                    damageSource = DamageSource.Player,
-                    damageGiverClientID = wielder.OwnerClientId
-                });
-                bullet.NetworkObject.Despawn(); return;
-            }
-        }
-
-        if (hit.gameObject.layer == LayerMask.NameToLayer("Map")) bullet.NetworkObject.Despawn();
     }
     public override void OnUnwield(Player wielder)
     {

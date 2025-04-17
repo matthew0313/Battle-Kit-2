@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public abstract class GunItemData : WeaponItemData
 {
@@ -29,6 +30,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
     protected GunItem(GunItemData data) : base(data)
     {
         this.data = data;
+        this.mag = data.magSize;
     }
     protected virtual ItemData ammunition => data.ammunition;
 
@@ -58,7 +60,17 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
     }
 
     //Reloadable
-    protected int mag = 0;
+    int m_mag = 0;
+    protected int mag
+    {
+        get => m_mag;
+        set
+        {
+            if (m_mag == value) return;
+            m_mag = value;
+            onAmmoCountDisplayUpdate?.Invoke();
+        }
+    }
 
     protected bool reloading = false;
     protected float reloadCounter = 0.0f;
@@ -69,6 +81,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
         if (!canReload) return;
         reloadCounter = data.reloadTime;
         reloading = true;
+        weapon.ReloadRpc();
     }
 
     protected float counter = 0.0f;
@@ -101,6 +114,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
             reloadCounter = Mathf.Max(0.0f, reloadCounter - Time.deltaTime);
             if(reloadCounter <= 0.0f)
             {
+                reloading = false;
                 int amount = Mathf.Min(data.magSize - mag, GetAmmoCount());
                 mag += amount;
                 containedSlot.inventory.TakeOut(ammunition, amount);
@@ -110,30 +124,24 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
     protected virtual void Fire(Player wielder)
     {
         Bullet bul = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
-        bul.Set(wielder, OnHit, data.bulletSpeed, data.bulletRange);
+        bul.Set(wielder, data.damage, data.bulletSpeed, data.bulletRange);
         bul.NetworkObject.Spawn();
-    }
-    protected virtual void OnHit(Player wielder, Bullet bullet, GameObject hit)
-    {
-        if (hit.TryGetComponent(out IDamagable damagable))
-        {
-            if (wielder.IsEnemy(Player.GetPlayerWithID(damagable.ownerID)))
-            {
-                damagable.GetDamage(new()
-                {
-                    amount = data.damage,
-                    damageSource = DamageSource.Player,
-                    damageGiverClientID = wielder.OwnerClientId
-                });
-                bullet.NetworkObject.Despawn(); return;
-            }
-        }
-
-        if (hit.gameObject.layer == LayerMask.NameToLayer("Map")) bullet.NetworkObject.Despawn();
     }
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
         wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
+    }
+    public override Dictionary<string, string> Save()
+    {
+        var data = base.Save();
+        data.Add("Mag", mag.ToString());
+        return data;
+    }
+    public override void Load(Dictionary<string, string> data)
+    {
+        base.Load(data);
+        if (data == null) return;
+        if (data.TryGetValue("Mag", out string mag)) this.mag = int.Parse(mag);
     }
 }

@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "c197ad91-7fe0-455b-96af-1d2874944f72",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Item Grab",
                     "type": "Button",
                     "id": "cd69470b-02d7-4984-a284-660d9700e6ff",
@@ -230,6 +239,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Skill 2 Use",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "12c147ad-da22-4987-95a0-1c18166754e1",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reload",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

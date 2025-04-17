@@ -164,6 +164,8 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
     void Describe(Item item)
     {
         describing = item;
+        itemName.text = item.data.itemName.text;
+        itemDesc.text = item.data.description.text;
     }
     void DropItem(Item item, int count)
     {

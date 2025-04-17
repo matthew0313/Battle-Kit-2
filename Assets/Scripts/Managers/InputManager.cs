@@ -18,14 +18,12 @@ public class InputManager : MonoBehaviour
 
     [Header("Items")]
     [SerializeField] InputActionReference itemUseInput;
-    [SerializeField] InputActionReference itemUseHoldInput;
     [SerializeField] InputActionReference skill1UseInput, skill2UseInput;
     [SerializeField] InputActionReference reloadInput;
 
     [Header("Item Grab")]
     [SerializeField] InputActionReference itemGrabInput;
     [SerializeField] InputActionReference itemHalfGrabInput;
-
     public Vector2 MovementInput() => movementInput.action.ReadValue<Vector2>();
     public Vector2 MouseInput() => mouseInput.action.ReadValue<Vector2>();
     public bool BeltSelectionInput(out int beltIndex)
@@ -34,7 +32,7 @@ public class InputManager : MonoBehaviour
         return beltSelectionInput.action.triggered;
     }
     public bool ItemUseInput() => itemUseInput.action.triggered;
-    public bool ItemUseHoldInput() => itemUseHoldInput.action.ReadValue<bool>();
+    public bool ItemUseHoldInput() => itemUseInput.action.ReadValue<float>() > 0.0f;
     public bool Skill1UseInput() => skill1UseInput.action.triggered;
     public bool Skill2UseInput() => skill2UseInput.action.triggered;
     public bool ItemGrabInput() => itemGrabInput.action.triggered;

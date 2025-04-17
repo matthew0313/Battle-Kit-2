@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4397c03c87b8d3f4cae5002743b5d109, type: 3}
-  m_Name: Item Database
+  m_Name: Stackables
   m_EditorClassIdentifier: 
   items:
-  - {fileID: 11400000, guid: e65ef9764e24a794a911233d3b3be13d, type: 2}
-  - {fileID: 11400000, guid: adcb664144b651f4bac9122740459332, type: 2}
+  - type: 1
+    item: {fileID: 0}
+    itemDatabase: {fileID: 11400000, guid: 81e7faf3e3babbb48873ae0a18df2cbc, type: 2}

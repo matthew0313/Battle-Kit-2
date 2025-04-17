@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Arrow
   m_EditorClassIdentifier: 
   m_itemName:
-    en: 
-    kr: 
+    en: Arrow
+    kr: "\uD654\uC0B4"
   m_description:
-    en: 
-    kr: 
+    en: An arrow used in bows.
+    kr: "\uD65C\uC5D0 \uC4F0\uC774\uB294 \uD654\uC0B4\uC785\uB2C8\uB2E4."
   m_itemIcon: {fileID: 21300000, guid: a39d4af1cf5a11d42b640816e96d4cdf, type: 2}
   m_canDrop: 1
-  m_maxStack: 64
+  m_maxStack: 999

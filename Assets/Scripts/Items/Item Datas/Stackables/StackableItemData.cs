@@ -6,7 +6,7 @@ using UnityEngine;
 public class StackableItemData : ItemData
 {
     [Header("Stackable")]
-    [SerializeField] int m_maxStack = 64;
+    [SerializeField] int m_maxStack = 99;
     public override int maxStack => m_maxStack;
     public override Item Create() => new StackableItem(this);
 }
