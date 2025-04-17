@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Jobs;
 
-public class Inventory : MonoBehaviour
+public class Inventory : NetworkBehaviour
 {
-    [SerializeField] int defaultSlotCount = 16;
+    [SerializeField] protected int defaultSlotCount = 16;
     public List<InventorySlot> slots { get; } = new();
     public Action<Item> onInventoryUpdate;
     int m_slotCount = 0;
@@ -17,7 +18,8 @@ public class Inventory : MonoBehaviour
         {
             for (int i = m_slotCount; i < value; i++)
             {
-                InventorySlot tmp = new InventorySlot();
+                InventorySlot tmp = new InventorySlot(this);
+                tmp.onItemChange += (prevItem, newItem) => { onInventoryUpdate?.Invoke(prevItem); onInventoryUpdate?.Invoke(newItem); };
                 tmp.onCountChange += () => { onInventoryUpdate?.Invoke(tmp.item); };
                 slots.Add(tmp);
             }
@@ -28,6 +30,17 @@ public class Inventory : MonoBehaviour
     public void Init()
     {
         slotCount = defaultSlotCount;
+    }
+    [Rpc(SendTo.Owner)]
+    public void InsertRpc(ItemInstanceData instanceData, int count, NetworkBehaviourReference source)
+    {
+        Item item = ItemManager.Instance.itemDatabase.GetItemData(instanceData.itemIndex).Create();
+        item.Load(instanceData.data.RetrieveData());
+        int left = Insert(item, count);
+        if(source.TryGet(out NetworkBehaviour sender) && sender is IntegerReceiver receiver)
+        {
+            receiver.ResponseRpc(left);
+        }
     }
     public int Insert(Item item, int count)
     {
@@ -104,8 +117,9 @@ public class Inventory : MonoBehaviour
         }
         return true;
     }
-    protected virtual void OnDestroy()
+    public override void OnDestroy()
     {
+        base.OnDestroy();
         foreach (var i in slots)
         {
             if (i.item != null) i.item.Delete();

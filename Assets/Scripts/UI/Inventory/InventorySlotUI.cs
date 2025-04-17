@@ -1,0 +1,77 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class InventorySlotUI : MonoBehaviour
+{
+    [Header("Default")]
+    [SerializeField] Image itemIcon;
+    [SerializeField] TMP_Text itemCount;
+
+    [Header("AmmoCountDisplayed")]
+    [SerializeField] GameObject ammoCountDisplay;
+    [SerializeField] Image ammoIcon;
+    [SerializeField] TMP_Text ammoCountText;
+
+    Item displaying;
+    InventorySlot slot;
+    public void Set(InventorySlot slot)
+    {
+        if(slot != null)
+        {
+            slot.onItemChange -= OnItemChange;
+            slot.onCountChange -= OnCountChange;
+        }
+        this.slot = slot;
+        if (slot != null)
+        {
+            slot.onItemChange += OnItemChange;
+            slot.onCountChange += OnCountChange;
+        }
+        OnItemChange(null, slot.item);
+        OnCountChange();
+    }
+    void OnItemChange(Item prevItem, Item newItem)
+    {
+        if (displaying is IAmmoCountDisplayed)
+        {
+            (displaying as IAmmoCountDisplayed).onAmmoCountDisplayUpdate -= OnAmmoCountDisplayUpdate;
+        }
+
+        displaying = newItem;
+
+        if(displaying != null)
+        {
+            itemIcon.gameObject.SetActive(true);
+            itemIcon.sprite = displaying.data.itemIcon;
+        }
+        else
+        {
+            itemIcon.gameObject.SetActive(false);
+        }
+        if (displaying is IAmmoCountDisplayed)
+        {
+            ammoCountDisplay.gameObject.SetActive(true);
+            (displaying as IAmmoCountDisplayed).onAmmoCountDisplayUpdate += OnAmmoCountDisplayUpdate;
+            OnAmmoCountDisplayUpdate();
+        }
+        else
+        {
+            ammoCountDisplay.gameObject.SetActive(false);
+        }
+    }
+    void OnCountChange()
+    {
+        if(slot.count <= 1) itemCount.gameObject.SetActive(false);
+        else
+        {
+            itemCount.gameObject.SetActive(true);
+            itemCount.text = $"x{slot.count}";
+        }
+    }
+    void OnAmmoCountDisplayUpdate()
+    {
+        ammoCountText.text = (displaying as IAmmoCountDisplayed).ammoCountText;
+        ammoIcon.sprite = (displaying as IAmmoCountDisplayed ).ammoIcon;
+    }
+}

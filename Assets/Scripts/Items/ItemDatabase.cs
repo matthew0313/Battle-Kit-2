@@ -7,5 +7,5 @@ public class ItemDatabase : ScriptableObject
 {
     [SerializeField] List<ItemData> items;
     public int GetIndex(ItemData item) => items.IndexOf(item);
-    public ItemData GetItem(int index) => items[index];
+    public ItemData GetItemData(int index) => items[index];
 }

@@ -17,12 +17,28 @@ public abstract class Item
     public Item(ItemData data)
     {
         this.data = data;
+        ItemManager.Instance.AddItem(this);
     }
     //Slot
-    public InventorySlot containedSlot;
+    InventorySlot m_containedSlot;
+    public InventorySlot containedSlot
+    {
+        get => m_containedSlot;
+        set
+        {
+            if (m_containedSlot == value) return;
+            InventorySlot prev = m_containedSlot;
+            m_containedSlot = value;
+            OnSlotChange(prev, m_containedSlot);
+        }
+    }
+    protected virtual void OnSlotChange(InventorySlot prevSlot, InventorySlot newSlot) { }
 
     //Stacking
     public abstract bool IsStackable(Item other);
+
+    //Life Cycle
+    public virtual void Update() { }
 
     //Wielding
     public virtual void OnWield(Player wielder) { }
@@ -31,7 +47,10 @@ public abstract class Item
 
     //Instance
     public virtual Item Copy() => data.Create();
-    public virtual void Delete() { }
+    public virtual void Delete()
+    {
+        ItemManager.Instance.RemoveItem(this);
+    }
 
     //Saving
     public virtual Dictionary<string, string> Save() => new();

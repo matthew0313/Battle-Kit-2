@@ -1,0 +1,1 @@
+This folder has only weapon images that have visual change when ammo is not applied.

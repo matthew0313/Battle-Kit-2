@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class InventorySlot
 {
-    public InventorySlot() { }
 
+    public readonly Inventory inventory;
     public readonly Func<Item, bool> slotRestriction;
-    public InventorySlot(Func<Item, bool> slotRestriction)
+    public InventorySlot(Inventory inventory = null, Func<Item, bool> slotRestriction = null)
     {
+        this.inventory = inventory;
         this.slotRestriction = slotRestriction;
     }
 
@@ -19,11 +20,12 @@ public class InventorySlot
         set
         {
             if (m_item == value) return;
+            Item prev = m_item;
             m_item = value;
-            onItemChange?.Invoke();
+            onItemChange?.Invoke(prev, m_item);
         }
     }
-    public Action onItemChange;
+    public Action<Item, Item> onItemChange;
     int m_count = 0;
     public int count
     {
@@ -32,6 +34,12 @@ public class InventorySlot
         {
             if (m_count == value) return;
             m_count = value;
+            if(m_count == 0)
+            {
+                item.Delete();
+                item = null;
+            }
+            onCountChange?.Invoke();
         }
     }
     public Action onCountChange;
@@ -92,9 +100,8 @@ public class InventorySlot
     }
     public void ForcedSetItem(Item item)
     {
-        this.item.containedSlot = null;
+        if(this.item != null) this.item.containedSlot = null;
         this.item = item;
-        this.item.containedSlot = this;
-        onItemChange?.Invoke();
+        if(this.item != null) this.item.containedSlot = this;
     }
 }

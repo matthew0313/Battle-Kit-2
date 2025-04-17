@@ -47,11 +47,11 @@ public class Lobby : MonoBehaviour
     void JoinOrStartSession()
     {
         if (sessionID.text == string.Empty || sessionID.text == null) return;
-        SessionManager.Instance.JoinOrStartSessionAsHost(sessionID.text);
+        SessionManager.Instance.JoinOrStartSession(sessionID.text);
     }
     void StartSession()
     {
-        SessionManager.Instance.StartSessionAsHost();
+        SessionManager.Instance.StartSession();
     }
     async void RefreshSessionList()
     {

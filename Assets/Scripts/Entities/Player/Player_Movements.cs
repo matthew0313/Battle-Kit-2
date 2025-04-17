@@ -16,9 +16,6 @@ public class Player_Movements : NetworkBehaviour
     [SerializeField] Transform rotator;
     [SerializeField] Transform flipped;
 
-    [Header("Input")]
-    [SerializeField] InputActionReference moveInput;
-
     Player origin;
     Rigidbody2D rb;
     public bool mouseLocked = false;
@@ -50,7 +47,7 @@ public class Player_Movements : NetworkBehaviour
     public Vector2 moveDir { get; private set; } = Vector2.zero;
     void Move()
     {
-        moveDir = moveInput.action.ReadValue<Vector2>();
+        moveDir = InputManager.Instance.MovementInput();
         rb.linearVelocity = moveDir * moveSpeed + knockback;
         if (!mouseLocked)
         {
@@ -66,24 +63,28 @@ public class Player_Movements : NetworkBehaviour
     }
     void Rotate()
     {
-        if(SystemInfo.deviceType == DeviceType.Desktop)
+        Vector2 tmp = InputManager.Instance.AimInput() - (Vector2)rotator.position;
+        float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
+        if (deg < 0.0f) deg += 360.0f;
+        if (deg > 90.0f && deg < 270.0f)
         {
-            Vector2 tmp = Camera.main.ScreenToWorldPoint(Input.mousePosition) - rotator.position;
-            float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
-            if (deg < 0.0f) deg += 360.0f;
-            if(deg > 90.0f && deg < 270.0f)
-            {
-                rotator.localScale = new Vector2(1.0f, -1.0f);
-            }
-            else
-            {
-                rotator.localScale = new Vector2(1.0f, 1.0f);
-            }
-            rotator.rotation = Quaternion.Euler(0, 0, deg);
+            rotator.localScale = new Vector2(1.0f, -1.0f);
         }
         else
         {
-            
+            rotator.localScale = new Vector2(1.0f, 1.0f);
+        }
+        rotator.rotation = Quaternion.Euler(0, 0, deg);
+        if (mouseLocked)
+        {
+            if (tmp.x > 0)
+            {
+                flipped.localScale = new Vector2(-1.0f, 1.0f);
+            }
+            else if (tmp.x < 0)
+            {
+                flipped.localScale = new Vector2(1.0f, 1.0f);
+            }
         }
     }
     void UpdateKnockback()

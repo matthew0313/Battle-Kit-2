@@ -61,19 +61,20 @@ public class SessionManager : MonoBehaviour
     {
         Dictionary<string, PlayerProperty> playerProperties = await GetPlayerProperties();
 
-        return new()
+        SessionOptions options = new()
         {
             MaxPlayers = maxPlayers,
             IsLocked = false,
             IsPrivate = false,
             PlayerProperties = playerProperties
         };
+        return options.WithDistributedAuthorityNetwork();
     }
-    public async UniTaskVoid StartSessionAsHost()
+    public async UniTaskVoid StartSession()
     {
         activeSession = await MultiplayerService.Instance.CreateSessionAsync(await GetSessionOptions());
     }
-    public async UniTaskVoid JoinOrStartSessionAsHost(string sessionId)
+    public async UniTaskVoid JoinOrStartSession(string sessionId)
     {
         activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, await GetSessionOptions());
         Debug.Log($"Session {activeSession.Id} Joined");

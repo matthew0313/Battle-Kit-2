@@ -4,52 +4,51 @@ using UnityEngine;
 
 public class HpComp : NetworkBehaviour, IDamagable
 {
-    public ulong ownerID => OwnerClientId;
+    public ulong ownerID => NetworkObject.OwnerClientId;
+
     [SerializeField] float baseHp = 100.0f;
-    float m_maxHp;
-    public float maxHp
-    {
-        get => m_maxHp;
-        set
-        {
-            m_maxHp = value;
-            onHpChange?.Invoke();
-        }
-    }
-    float m_hp;
-    public float hp
-    {
-        get => m_hp;
-        set
-        {
-            m_hp = value;
-            onHpChange?.Invoke();
-        }
-    }
-    public Action onHpChange;
-
-    [Rpc(SendTo.Everyone, AllowTargetOverride = true)]
-    public void SetMaxHpRpc(float maxHp, RpcParams rpcParams) => this.maxHp = maxHp;
-
-    [Rpc(SendTo.Everyone, AllowTargetOverride = true)]
-    public void SetHpRpc(float hp, RpcParams rpcParams) => this.hp = hp;
-
+    public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public readonly NetworkVariable<float> hp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public readonly NetworkVariable<bool> dead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
     public Action<DamageInfoWrapper> modifyDamageTaken;
-    public Action<DamageReceivedInfo> onDamageTake;
+    public Action<DamageInfo> onDamage;
     public Action onDeath;
-    [Rpc(SendTo.NotMe)]
+
+    public bool invincible = false;
+    private void Start()
+    {
+        maxHp.Value = baseHp;
+    }
+
+    [Rpc(SendTo.Owner)]
     public void GetDamageRpc(DamageInfo damage)
     {
-        ProcessDamage(damage);
+        if (dead.Value == true || invincible) return;
+
+        DamageInfoWrapper wrap = new() { damage = damage };
+        modifyDamageTaken?.Invoke(wrap);
+        damage = wrap.damage;
+
+        float amount = Mathf.Min(hp.Value, damage.amount);
+        hp.Value -= amount;
+        if(hp.Value <= 0)
+        {
+            dead.Value = false;
+            onDeath?.Invoke();
+        }
     }
-    public DamageReceivedInfo GetDamage(DamageInfo damage)
+    public void GetDamage(DamageInfo damage) => GetDamageRpc(damage);
+    /*public DamageReceivedInfo GetDamage(DamageInfo damage)
     {
+        DamageInfoWrapper wrapper = new() { damage = damage };
+        modifyDamageTaken?.Invoke(wrapper);
+        damage = wrapper.damage;
+
         GetDamageRpc(damage);
         return ProcessDamage(damage);
     }
-    public bool dead { get; private set; } = false;
-    public bool invincible = false;
-    DamageReceivedInfo ProcessDamage(DamageInfo damage)
+    protected virtual DamageReceivedInfo ProcessDamage(DamageInfo damage)
     {
         if (dead || invincible) return new() { ignored = true };
         float amount = Mathf.Min(hp, damage.amount);
@@ -61,30 +60,15 @@ public class HpComp : NetworkBehaviour, IDamagable
             fatal = hp <= 0
         };
         onDamageTake?.Invoke(info);
-        if(hp <= 0)
+        if (IsOwner)
         {
-            OnDeath();
+            if(hp <= 0)
+            {
+                DeathRpc(LocalDeferMode.SendImmediate);
+            }
         }
         return info;
-    }
-    protected virtual void OnDeath()
-    {
-        onDeath?.Invoke();
-    }
-    private void Awake()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-    }
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-    }
-    void OnClientConnected(ulong clientId)
-    {
-        SetMaxHpRpc(maxHp, RpcTarget.Single(clientId, RpcTargetUse.Temp));
-        SetHpRpc(maxHp, RpcTarget.Single(clientId, RpcTargetUse.Temp));
-    }
+    }*/
 }
 public class DamageInfoWrapper
 {
