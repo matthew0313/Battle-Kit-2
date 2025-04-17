@@ -54,7 +54,8 @@ public class Player_Movements : NetworkBehaviour
     }
     void Move()
     {
-        if (!canMove) return;
+        if (!canMove || origin.hpComp.dead.Value == true) return;
+
         moveDir = InputManager.Instance.MovementInput();
         rb.linearVelocity = moveDir * moveSpeed + knockback;
         if (!mouseLocked)
@@ -71,6 +72,8 @@ public class Player_Movements : NetworkBehaviour
     }
     void Rotate()
     {
+        if (origin.hpComp.dead.Value == true) return;
+
         Vector2 tmp = InputManager.Instance.AimInput() - (Vector2)rotator.position;
         float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
         if (deg < 0.0f) deg += 360.0f;

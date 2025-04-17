@@ -61,7 +61,7 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
         bul.Set(GetOnHit(wielder), data.arrowSpeed, data.arrowRange);
         bul.NetworkObject.Spawn();
     }
-    protected virtual Action<Bullet, Collider2D> GetOnHit(Player wielder)
+    protected virtual Action<Bullet, GameObject> GetOnHit(Player wielder)
     {
         return (bullet, hit) =>
         {

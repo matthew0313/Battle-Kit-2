@@ -43,6 +43,7 @@ public class HpComp : NetworkBehaviour, IDamagable
         if (hp.Value <= 0)
         {
             dead.Value = true;
+            OnDeath();
         }
     }
     public void GetDamage(DamageInfo damage) => GetDamageRpc(damage);

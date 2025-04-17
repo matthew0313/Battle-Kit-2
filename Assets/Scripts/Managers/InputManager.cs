@@ -18,6 +18,10 @@ public class InputManager : MonoBehaviour
     [SerializeField] InputActionReference itemUseInput;
     [SerializeField] InputActionReference skill1UseInput, skill2UseInput;
 
+    [Header("Item Grab")]
+    [SerializeField] InputActionReference itemGrabInput;
+    [SerializeField] InputActionReference itemReleaseInput;
+
     public Vector2 MovementInput() => movementInput.action.ReadValue<Vector2>();
     public Vector2 AimInput() => Camera.main.ScreenToWorldPoint(aimInput.action.ReadValue<Vector2>());
     public bool BeltSelectionInput(out int beltIndex)
@@ -28,4 +32,6 @@ public class InputManager : MonoBehaviour
     public bool ItemUseInput() => itemUseInput.action.triggered;
     public bool Skill1UseInput() => skill1UseInput.action.triggered;
     public bool Skill2UseInput() => skill2UseInput.action.triggered;
+    public bool ItemGrabInput() => itemGrabInput.action.triggered;
+    public bool ItemReleaseInput() => itemReleaseInput.action.triggered;
 }

@@ -14,7 +14,7 @@ public class InventorySlotUI : MonoBehaviour
     [SerializeField] TMP_Text ammoCountText;
 
     Item displaying;
-    InventorySlot slot;
+    public InventorySlot slot { get; private set; }
     public void Set(InventorySlot slot)
     {
         if(slot != null)

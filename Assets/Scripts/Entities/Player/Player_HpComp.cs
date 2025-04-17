@@ -7,7 +7,7 @@ public class Player_HpComp : HpComp
 {
     public void OnStart()
     {
-        Init();
+        if(IsOwner) Init();
     }
     protected override void OnDeath()
     {

@@ -3,9 +3,9 @@ using Unity.Netcode;
 using UnityEngine;
 public class Bullet : Projectile
 {
-    Action<Bullet, Collider2D> onHit;
+    Action<Bullet, GameObject> onHit;
     float speed, range;
-    public void Set(Action<Bullet, Collider2D> onHit, float speed, float range)
+    public void Set(Action<Bullet, GameObject> onHit, float speed, float range)
     {
         Debug.Log("AAAAAAAAA");
         this.onHit = onHit;
@@ -24,6 +24,6 @@ public class Bullet : Projectile
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!IsOwner) return;
-        onHit?.Invoke(this, collision);
+        onHit?.Invoke(this, collision.attachedRigidbody != null ? collision.attachedRigidbody.gameObject : collision.gameObject);
     }
 }

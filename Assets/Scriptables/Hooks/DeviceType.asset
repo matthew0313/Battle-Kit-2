@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2659428a8c6fe2a43b7cc6dc1b7d57c3, type: 3}
-  m_Name: Hook_FloatValue
+  m_Script: {fileID: 11500000, guid: 7dd1400235af3624ea0aef3db1f4b87e, type: 3}
+  m_Name: DeviceType
   m_EditorClassIdentifier: 
-  startValue: 0
-  m_value: 0
