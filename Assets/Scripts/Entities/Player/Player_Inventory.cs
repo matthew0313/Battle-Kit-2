@@ -54,7 +54,7 @@ public class Player_Inventory : Inventory
 
         foreach (var i in Physics2D.OverlapCircleAll(transform.position, pickupRange, LayerMask.GetMask("DroppedItem")))
         {
-            if (i.TryGetComponent(out DroppedItem item) && item.OwnerClientId == this.OwnerClientId) item.Pickup(this);
+            if (i.TryGetComponent(out DroppedItem item) && item.OwnerClientId == NetworkManager.Singleton.LocalClientId) item.Pickup(this);
         }
     }
     void UpdateBelt()

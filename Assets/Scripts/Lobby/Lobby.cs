@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Unity.Services.Multiplayer;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Unity.Netcode;
 
 public class Lobby : MonoBehaviour
 {
