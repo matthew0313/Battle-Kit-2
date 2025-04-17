@@ -5,11 +5,13 @@ using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Animations), typeof(Player_Inventory))]
+[RequireComponent(typeof(Player_HpComp))]
 public class Player : Entity
 {
     public Player_Movements movements { get; private set; }
     public Player_Animations animations { get; private set; }
     public Player_Inventory inventory { get; private set; }
+    public Player_HpComp hpComp { get; private set; }
     public static Player localPlayer { get; private set; }
     public NetworkVariable<Alliance> alliance = new NetworkVariable<Alliance>(Alliance.None, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private void Awake()
@@ -17,9 +19,11 @@ public class Player : Entity
         movements = GetComponent<Player_Movements>();
         animations = GetComponent<Player_Animations>();
         inventory = GetComponent<Player_Inventory>();
+        hpComp = GetComponent<Player_HpComp>();
         movements.OnAwake();
         animations.OnAwake();
         inventory.OnAwake();
+        hpComp.OnAwake();
         //NetworkManager.OnConnectionEvent += OnConnection;
     }
     static Dictionary<ulong, Player> players = new();
@@ -32,6 +36,7 @@ public class Player : Entity
     {
         movements.OnStart();
         inventory.OnStart();
+        hpComp.OnStart();
 
         if (IsLocalPlayer)
         {

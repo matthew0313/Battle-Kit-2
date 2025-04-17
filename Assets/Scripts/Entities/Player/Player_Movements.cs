@@ -9,6 +9,9 @@ using UnityEditor;
 [RequireComponent(typeof(NetworkTransform), typeof(Rigidbody2D))]
 public class Player_Movements : NetworkBehaviour
 {
+    Player origin;
+    public Rigidbody2D rb { get; private set; }
+
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float knockbackResistance = 10.0f;
 
@@ -16,13 +19,18 @@ public class Player_Movements : NetworkBehaviour
     [SerializeField] Transform rotator;
     [SerializeField] Transform flipped;
 
-    Player origin;
-    Rigidbody2D rb;
     public bool mouseLocked = false;
+    public ControlMachine<Player_Movements> mouseLockedControl;
+
+    public Vector2 moveDir { get; private set; } = Vector2.zero;
+    public bool canMove = true;
+    public ControlMachine<Player_Movements> canMoveControl;
     public void OnAwake()
     {
         origin = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
+        mouseLockedControl = new(this, (movements) => movements.mouseLocked = false);
+        canMoveControl = new(this, (movements) => movements.canMove = true);
     }
     public void OnStart()
     {
@@ -44,9 +52,9 @@ public class Player_Movements : NetworkBehaviour
     {
         this.knockback += knockback;
     }
-    public Vector2 moveDir { get; private set; } = Vector2.zero;
     void Move()
     {
+        if (!canMove) return;
         moveDir = InputManager.Instance.MovementInput();
         rb.linearVelocity = moveDir * moveSpeed + knockback;
         if (!mouseLocked)

@@ -45,8 +45,10 @@ public class Player_Inventory : Inventory
         if (IsOwner)
         {
             UpdateBelt();
+
             if (equipped != null) equipped.OnWieldUpdate(origin);
-            if (equipped is ISkill1User skill1User && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use();
+            if (equipped is ISkill1User skill1User && skill1User.canUseSkill1 && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
+            if (equipped is ISkill2User skill2User && skill2User.canUseSkill2 && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
         }
 
         foreach (var i in Physics2D.OverlapCircleAll(transform.position, pickupRange, LayerMask.GetMask("DroppedItem")))
@@ -71,14 +73,14 @@ public class Player_Inventory : Inventory
     }
     void OnEquippedSlotUpdate(Item prevItem, Item newItem)
     {
-        ChangeWieldingItem(newItem);
+        ChangeEquippedItem(newItem);
     }
-    void ChangeWieldingItem(Item item)
+    void ChangeEquippedItem(Item item)
     {
         if (equipped != null) equipped.OnUnwield(origin);
         equipped = item;
-        onEquippedItemChange?.Invoke(equipped);
         if (equipped != null) equipped.OnWield(origin);
+        onEquippedItemChange?.Invoke(equipped);
     }
     public void DropItem(Item item, int count, Vector2 dir)
     {

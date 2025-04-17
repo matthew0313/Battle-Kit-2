@@ -21,9 +21,8 @@ public class Player_Animations : NetworkBehaviour
         origin = GetComponent<Player>();
         currentSkinIndex.OnValueChanged += UpdateSkin;
         UpdateSkin(-1, currentSkinIndex.Value);
-
         moving.OnValueChanged += SetMoving;
-        SetMoving(false, moving.Value);
+        origin.hpComp.dead.OnValueChanged += SetDead;
     }
     public void ChangeSkin(int skinIndex)
     {
@@ -46,10 +45,23 @@ public class Player_Animations : NetworkBehaviour
             moving.Value = origin.movements.moveDir != Vector2.zero;
         }
     }
-    readonly int movingID = Animator.StringToHash("1_Move");
+    readonly int movingID = Animator.StringToHash("Moving");
     void SetMoving(bool prev, bool moving)
     {
         anim.SetBool(movingID, moving);
+    }
+    readonly int dieID = Animator.StringToHash("Die");
+    readonly int deadID = Animator.StringToHash("Dead");
+    void SetDead(bool prev, bool dead)
+    {
+        anim.SetBool(deadID, dead);
+        if (dead) anim.SetTrigger(dieID);
+    }
+    readonly int rollID = Animator.StringToHash("Roll");
+    [Rpc(SendTo.Everyone)]
+    public void RollRpc()
+    {
+        anim.SetTrigger(rollID);
     }
 }
 #if UNITY_EDITOR

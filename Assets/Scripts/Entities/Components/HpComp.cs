@@ -10,15 +10,21 @@ public class HpComp : NetworkBehaviour, IDamagable
     public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public readonly NetworkVariable<float> hp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public readonly NetworkVariable<bool> dead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    
+
+    public Action onHpChange;
     public Action<DamageInfoWrapper> modifyDamageTaken;
     public Action<DamageInfo> onDamage;
-    public Action onDeath;
 
     public bool invincible = false;
-    private void Start()
+    public virtual void OnAwake()
+    {
+        hp.OnValueChanged += (a, b) => onHpChange?.Invoke();
+        maxHp.OnValueChanged += (a, b) => onHpChange?.Invoke();
+    }
+    protected void Init()
     {
         maxHp.Value = baseHp;
+        hp.Value = baseHp;
     }
 
     [Rpc(SendTo.Owner)]
@@ -32,13 +38,21 @@ public class HpComp : NetworkBehaviour, IDamagable
 
         float amount = Mathf.Min(hp.Value, damage.amount);
         hp.Value -= amount;
-        if(hp.Value <= 0)
+        onDamage?.Invoke(damage);
+
+        if (hp.Value <= 0)
         {
-            dead.Value = false;
-            onDeath?.Invoke();
+            dead.Value = true;
         }
     }
     public void GetDamage(DamageInfo damage) => GetDamageRpc(damage);
+    protected virtual void OnDeath() { }
+    public void Revive()
+    {
+        if (!IsOwner) return;
+        hp.Value = maxHp.Value;
+        dead.Value = false;
+    }
     /*public DamageReceivedInfo GetDamage(DamageInfo damage)
     {
         DamageInfoWrapper wrapper = new() { damage = damage };

@@ -33,11 +33,12 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
         this.data = data;
     }
     protected float counter = 0.0f;
+    protected readonly ControlElement<Player_Movements> mouseLockedEnable = new ControlElement<Player_Movements>(0, (movements) => movements.mouseLocked = true, true);
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);
         counter = 0.0f;
-        wielder.movements.mouseLocked = true;
+        wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
     public override void OnWieldUpdate(Player wielder)
     {
@@ -49,13 +50,13 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
             {
                 counter = 0.0f;
                 containedSlot.inventory.TakeOut(ammunition, 1);
-                bow.FireRpc();
                 Fire(wielder);
             }
         }
     }
     protected virtual void Fire(Player wielder)
     {
+        bow.FireRpc();
         Bullet bul = MonoBehaviour.Instantiate(data.bullet, bow.firePoint.position, bow.firePoint.rotation);
         bul.Set(GetOnHit(wielder), data.arrowSpeed, data.arrowRange);
         bul.NetworkObject.Spawn();
@@ -84,7 +85,7 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
-        wielder.movements.mouseLocked = false;
+        wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
     }
     protected override void OnSlotChange(InventorySlot prevSlot, InventorySlot newSlot)
     {
