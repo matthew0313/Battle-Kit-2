@@ -49,6 +49,7 @@ public class Player_Inventory : Inventory
             if (equipped != null) equipped.OnWieldUpdate(origin);
             if (equipped is ISkill1User skill1User && skill1User.canUseSkill1 && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
             if (equipped is ISkill2User skill2User && skill2User.canUseSkill2 && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
+            if (equipped is IReloadable reloadable && reloadable.canReload && InputManager.Instance.ReloadInput()) reloadable.Reload(origin);
         }
 
         foreach (var i in Physics2D.OverlapCircleAll(transform.position, pickupRange, LayerMask.GetMask("DroppedItem")))

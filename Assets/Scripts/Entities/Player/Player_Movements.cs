@@ -74,7 +74,7 @@ public class Player_Movements : NetworkBehaviour
     {
         if (origin.hpComp.dead.Value == true) return;
 
-        Vector2 tmp = InputManager.Instance.AimInput() - (Vector2)rotator.position;
+        Vector2 tmp = Camera.main.ScreenToWorldPoint(InputManager.Instance.MouseInput()) - rotator.position;
         float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
         if (deg < 0.0f) deg += 360.0f;
         if (deg > 90.0f && deg < 270.0f)

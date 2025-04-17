@@ -36,7 +36,7 @@ public class InventorySlot
             m_count = value;
             if(m_count == 0)
             {
-                item.Delete();
+                if(item != null) item.Delete();
                 item = null;
             }
             onCountChange?.Invoke();

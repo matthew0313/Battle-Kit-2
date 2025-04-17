@@ -14,7 +14,7 @@ public class InventorySlotUI : MonoBehaviour
     [SerializeField] TMP_Text ammoCountText;
 
     Item displaying;
-    public InventorySlot slot { get; private set; }
+    public InventorySlot origin { get; private set; }
     public void Set(InventorySlot slot)
     {
         if(slot != null)
@@ -22,7 +22,7 @@ public class InventorySlotUI : MonoBehaviour
             slot.onItemChange -= OnItemChange;
             slot.onCountChange -= OnCountChange;
         }
-        this.slot = slot;
+        this.origin = slot;
         if (slot != null)
         {
             slot.onItemChange += OnItemChange;
@@ -62,11 +62,11 @@ public class InventorySlotUI : MonoBehaviour
     }
     void OnCountChange()
     {
-        if(slot.count <= 1) itemCount.gameObject.SetActive(false);
+        if(origin.count <= 1) itemCount.gameObject.SetActive(false);
         else
         {
             itemCount.gameObject.SetActive(true);
-            itemCount.text = $"x{slot.count}";
+            itemCount.text = $"x{origin.count}";
         }
     }
     void OnAmmoCountDisplayUpdate()

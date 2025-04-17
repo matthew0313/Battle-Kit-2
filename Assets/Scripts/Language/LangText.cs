@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public struct LangText
 {
-    public string en, kr;
+    [TextArea] public string en, kr;
     public string text
     {
         get

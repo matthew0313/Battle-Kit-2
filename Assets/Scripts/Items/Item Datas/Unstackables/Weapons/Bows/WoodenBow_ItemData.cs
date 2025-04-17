@@ -34,7 +34,7 @@ public class WoodenBow_ItemData : BowItemData
 public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
 {
     new public readonly WoodenBow_ItemData data;
-    new protected WoodenBow bow => base.bow as WoodenBow;
+    new protected WoodenBow weapon => base.weapon as WoodenBow;
     public WoodenBow_Item(WoodenBow_ItemData data) : base(data)
     {
         this.data = data;
@@ -46,9 +46,10 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     public float skill1CooldownBarFill => empowerCounter / data.empowerCooldown;
     public void Skill1Use(Player wielder)
     {
+        if (!canUseSkill1) return;
         empowerCounter = data.empowerCooldown;
         empowered = true;
-        bow.empowered.Value = true;
+        weapon.empowered.Value = true;
     }
     float rollCounter = 0.0f;
     public Sprite skill2Sprite => data.rollIcon;
@@ -56,6 +57,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     public float skill2CooldownBarFill => rollCounter / data.rollCooldown;
     public void Skill2Use(Player wielder)
     {
+        if(!canUseSkill2) return;
         rolling = Timing.RunCoroutine(Rolling(wielder));
         rollCounter = data.rollCooldown;
     }
@@ -72,7 +74,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         else
         {
             empowered = false;
-            bow.empowered.Value = false;
+            weapon.empowered.Value = false;
             empowerShot = Timing.RunCoroutine(EmpowerShot(wielder));
         }
     }
@@ -80,6 +82,8 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     {
         base.OnUnwield(wielder);
         Timing.KillCoroutines(empowerShot);
+        empowered = false;
+        weapon.empowered.Value = false;
     }
     IEnumerator<float> EmpowerShot(Player wielder)
     {

@@ -59,7 +59,7 @@ public class Player : Entity
         base.OnDestroy();
         //NetworkManager.OnConnectionEvent -= OnConnection;
     }
-    public bool IsEnemy(Player other) => (alliance.Value & other.alliance.Value) == 0;
+    public bool IsEnemy(Player other) => other != this && (alliance.Value & other.alliance.Value) == 0;
 
     /*void OnConnection(NetworkManager manager, ConnectionEventData data)
     {

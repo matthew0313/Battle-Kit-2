@@ -6,6 +6,15 @@
             "id": "7f49ed35-5a6f-454e-bf60-41852cfb4b42",
             "actions": [
                 {
+                    "name": "Mouse Input",
+                    "type": "Value",
+                    "id": "d1b4ccec-e03b-4002-a2e1-66c97c2f376e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Movement",
                     "type": "Value",
                     "id": "4a25d4fe-f53c-4044-81d6-ac6e699a30ea",
@@ -22,15 +31,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Aim Position",
-                    "type": "Value",
-                    "id": "4a52061f-0b82-42e7-85c6-33d9f6dfa889",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 },
                 {
                     "name": "Item Use",
@@ -54,6 +54,24 @@
                     "name": "Skill 2 Use",
                     "type": "Button",
                     "id": "a5c765ff-1b10-40b6-b46f-9b77decad631",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Item Grab",
+                    "type": "Button",
+                    "id": "cd69470b-02d7-4984-a284-660d9700e6ff",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Item Half Grab",
+                    "type": "Button",
+                    "id": "3d3ff62b-be50-4f98-99c6-87b8d7f0ad91",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -184,17 +202,6 @@
                 },
                 {
                     "name": "",
-                    "id": "aa98f6df-4e54-4aa6-97fc-604613d0ad6e",
-                    "path": "<Pointer>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Aim Position",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "87d36633-1c5f-471f-a51a-a1cd8efc40e8",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -223,6 +230,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Skill 2 Use",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "71e5ea4d-80c9-4b92-9771-c6238454e5f5",
+                    "path": "<Pointer>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse Input",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1148070c-c865-43bb-a250-f5ce58277d81",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Item Grab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d49f8a2a-b7d5-4bea-b213-e0b00a2358f4",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Item Half Grab",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

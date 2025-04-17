@@ -5,25 +5,10 @@ using UnityEngine.EventSystems;
 
 public class UIScanner : MonoBehaviour
 {
-    static UIScanner Instance;
     static List<RaycastResult> hits = new();
-    bool scanned = false;
-    public static List<RaycastResult> ScanUI()
+    public static List<RaycastResult> ScanUI(Vector2 pos)
     {
-        if(Instance == null)
-        {
-            Instance = new GameObject().AddComponent<UIScanner>();
-            DontDestroyOnLoad(Instance);
-        }
-        if (!Instance.scanned)
-        {
-            EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = Input.mousePosition }, hits);
-            Instance.scanned = true;
-        }
+        EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = pos }, hits);
         return hits;
-    }
-    private void Update()
-    {
-        scanned = false;
     }
 }

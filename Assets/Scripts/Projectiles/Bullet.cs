@@ -3,11 +3,12 @@ using Unity.Netcode;
 using UnityEngine;
 public class Bullet : Projectile
 {
-    Action<Bullet, GameObject> onHit;
+    Player player;
+    Action<Player, Bullet, GameObject> onHit;
     float speed, range;
-    public void Set(Action<Bullet, GameObject> onHit, float speed, float range)
+    public void Set(Player player, Action<Player, Bullet, GameObject> onHit, float speed, float range)
     {
-        Debug.Log("AAAAAAAAA");
+        this.player = player;   
         this.onHit = onHit;
         this.speed = speed;
         this.range = range;
@@ -24,6 +25,6 @@ public class Bullet : Projectile
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!IsOwner) return;
-        onHit?.Invoke(this, collision.attachedRigidbody != null ? collision.attachedRigidbody.gameObject : collision.gameObject);
+        onHit?.Invoke(player, this, collision.attachedRigidbody != null ? collision.attachedRigidbody.gameObject : collision.gameObject);
     }
 }
