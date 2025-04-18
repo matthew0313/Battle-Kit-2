@@ -19,7 +19,7 @@ public abstract class Projectile : NetworkBehaviour
         if (!IsOwner) return;
 
         transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
-        counter += Time.deltaTime;
+        counter += Time.deltaTime * speed;
         if (counter > range) NetworkObject.Despawn();
     }
 }

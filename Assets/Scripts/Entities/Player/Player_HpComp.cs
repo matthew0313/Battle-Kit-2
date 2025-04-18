@@ -27,6 +27,6 @@ public class Player_HpComp : HpComp
     }
     public override bool IsEnemy(Player other)
     {
-        return other != this && origin.combat.Value == true && (other.alliance.Value & origin.alliance.Value) == 0;
+        return other != origin && origin.combat.Value == true && (other.alliance.Value & origin.alliance.Value) == 0;
     }
 }

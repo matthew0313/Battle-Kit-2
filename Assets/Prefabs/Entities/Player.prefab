@@ -13504,8 +13504,6 @@ MonoBehaviour:
     m_InternalValue: 0
   combat:
     m_InternalValue: 0
-  isInRound:
-    m_InternalValue: 0
 --- !u!114 &7677471556559107211
 MonoBehaviour:
   m_ObjectHideFlags: 0

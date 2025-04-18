@@ -39,7 +39,7 @@ MonoBehaviour:
   m_damage: 10
   m_fireRate: 0.7
   m_arrowSpeed: 20
-  m_arrowRange: 10
+  m_arrowRange: 12
   m_spread: 0
   m_ammunition: {fileID: 11400000, guid: adcb664144b651f4bac9122740459332, type: 2}
   m_weaponPrefab: {fileID: 7062143739990131009, guid: 1b3b7314adc53ec46b3c88e8a71234ff, type: 3}

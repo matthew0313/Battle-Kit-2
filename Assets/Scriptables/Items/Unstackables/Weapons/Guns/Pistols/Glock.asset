@@ -25,7 +25,7 @@ MonoBehaviour:
   m_damage: 10
   m_fireRate: 0.2
   m_bulletSpeed: 20
-  m_bulletRange: 8
+  m_bulletRange: 10
   m_spread: 1
   m_reloadTime: 3
   m_magSize: 12

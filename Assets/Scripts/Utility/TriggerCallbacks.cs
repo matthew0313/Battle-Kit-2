@@ -12,7 +12,7 @@ public class TriggerCallbacks : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        onTriggerStay2D.Invoke(collision);
+        onTriggerStay2D?.Invoke(collision);
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
