@@ -15,10 +15,11 @@ public class Glock_ItemData : PistolItemData
     [SerializeField] Sprite m_shotgunShotIcon;
     [SerializeField] Glock_Bullet m_shotgunShotBullet;
     [SerializeField] int m_shotgunShotCount;
-    [SerializeField] float m_shotgunShotSpeed, m_shotgunShotRange, m_shotgunShotSpread, m_shotgunShotCooldown;
+    [SerializeField] float m_shotgunShotDamage, m_shotgunShotSpeed, m_shotgunShotRange, m_shotgunShotSpread, m_shotgunShotCooldown;
     public Sprite shotgunShotIcon => m_shotgunShotIcon;
     public Glock_Bullet shotgunShotBullet => m_shotgunShotBullet;
     public int shotgunShotCount => m_shotgunShotCount;
+    public float shotgunShotDamage => m_shotgunShotDamage;
     public float shotgunShotSpeed => m_shotgunShotSpeed;
     public float shotgunShotRange => m_shotgunShotRange;
     public float shotgunShotSpread => m_shotgunShotSpread;
@@ -47,10 +48,11 @@ public class Glock_Item : PistolItem, ISkill1User
     {
         shotgunShotCounter = data.shotgunShotCooldown;
         mag -= data.shotgunShotCount;
+        weapon.FireRpc();
         for (int i = 0; i < data.shotgunShotCount; i++)
         {
             Bullet bullet = MonoBehaviour.Instantiate(data.shotgunShotBullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.shotgunShotSpread, data.shotgunShotSpread)));
-            bullet.Set(wielder, data.damage, data.shotgunShotSpeed, data.shotgunShotRange);
+            bullet.Set(wielder, data.shotgunShotDamage, data.shotgunShotSpeed, data.shotgunShotRange);
             bullet.NetworkObject.Spawn();
         }
     }

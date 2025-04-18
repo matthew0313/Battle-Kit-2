@@ -15,7 +15,7 @@ public class Player : Entity
     public Player_HpComp hpComp { get; private set; }
     public static Player localPlayer { get; private set; }
     public NetworkVariable<Alliance> alliance = new NetworkVariable<Alliance>(Alliance.None, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public NetworkVariable<bool> combat = new NetworkVariable<bool>(false), isInRound = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> combat = new NetworkVariable<bool>(true);
     
     [Rpc(SendTo.Owner)]
     public void SetAllianceRpc(Alliance alliance, RpcParams rpcParams)
@@ -28,12 +28,6 @@ public class Player : Entity
     {
         if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
         this.combat.Value = combat;
-    }
-    [Rpc(SendTo.Owner)]
-    public void SetIsInRoundRpc(bool isInRound, RpcParams rpcParams)
-    {
-        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
-        this.isInRound.Value = isInRound;
     }
     private void Awake()
     {
@@ -73,6 +67,8 @@ public class Player : Entity
             }
         }
         players.Add(OwnerClientId, this);
+
+        if (IsOwner) combat.Value = true;
     }
     private void Update()
     {

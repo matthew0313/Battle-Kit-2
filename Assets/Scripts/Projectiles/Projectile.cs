@@ -1,7 +1,6 @@
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 [RequireComponent(typeof(NetworkTransform))]
 public abstract class Projectile : NetworkBehaviour

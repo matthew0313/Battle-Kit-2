@@ -22,7 +22,7 @@ MonoBehaviour:
   m_itemIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
   m_canDrop: 1
   m_auto: 0
-  m_damage: 7
+  m_damage: 10
   m_fireRate: 0.2
   m_bulletSpeed: 20
   m_bulletRange: 8
@@ -33,6 +33,10 @@ MonoBehaviour:
   m_weaponPrefab: {fileID: 3151999320843686830, guid: 4fa861a97c562df42a48a51be644726c, type: 3}
   m_bullet: {fileID: 8303371301881936506, guid: 7979abe7c13d8db488aa91ab637f8c17, type: 3}
   m_shotgunShotIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
-  m_shotgunShotCount: 4
+  m_shotgunShotBullet: {fileID: 8303371301881936506, guid: 168b36e60b5077543968f5d53c29aaa1, type: 3}
+  m_shotgunShotCount: 5
+  m_shotgunShotDamage: 8
+  m_shotgunShotSpeed: 30
+  m_shotgunShotRange: 6
   m_shotgunShotSpread: 5
   m_shotgunShotCooldown: 10

@@ -12,20 +12,20 @@ namespace SpriteTrail
 		private void Awake()
 		{
 			m_RigidBody = GetComponent<Rigidbody2D>();
-			m_RigidBody.velocity = new Vector2(5, 5);
+			m_RigidBody.linearVelocity = new Vector2(5, 5);
 
 		}
 
 
 		private void Update()
 		{
-			if (m_RigidBody.velocity.x <= m_MaxVelocityToBoost && Input.GetKey(KeyCode.RightArrow))
+			if (m_RigidBody.linearVelocity.x <= m_MaxVelocityToBoost && Input.GetKey(KeyCode.RightArrow))
 				m_RigidBody.AddForce(new Vector2(m_Force, 0), ForceMode2D.Force);
-			if (m_RigidBody.velocity.x >= -m_MaxVelocityToBoost && Input.GetKey(KeyCode.LeftArrow))
+			if (m_RigidBody.linearVelocity.x >= -m_MaxVelocityToBoost && Input.GetKey(KeyCode.LeftArrow))
 				m_RigidBody.AddForce(new Vector2(-m_Force, 0), ForceMode2D.Force);
-			if (m_RigidBody.velocity.y <= m_MaxVelocityToBoost && Input.GetKey(KeyCode.UpArrow))
+			if (m_RigidBody.linearVelocity.y <= m_MaxVelocityToBoost && Input.GetKey(KeyCode.UpArrow))
 				m_RigidBody.AddForce(new Vector2(0, m_Force), ForceMode2D.Force);
-			if (m_RigidBody.velocity.y >= -m_MaxVelocityToBoost && Input.GetKey(KeyCode.DownArrow))
+			if (m_RigidBody.linearVelocity.y >= -m_MaxVelocityToBoost && Input.GetKey(KeyCode.DownArrow))
 				m_RigidBody.AddForce(new Vector2(0, -m_Force), ForceMode2D.Force);
 		}
 	}

@@ -20,7 +20,7 @@ namespace SpriteTrail
 		private void OnEnable()
 		{
 			m_Character.transform.position = Vector2.zero;
-			m_Character.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+			m_Character.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
 			m_Character.GetComponent<Rigidbody2D>().AddForce(new Vector2(m_Character.GetComponent<SimpleCharacterControler2D>().m_Force, 0), ForceMode2D.Impulse);
 			m_UI.SetActive(true);
 			foreach (SpriteTrail _trail in m_Trails)
