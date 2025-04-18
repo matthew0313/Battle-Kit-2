@@ -3,8 +3,8 @@ using UnityEngine;
 
 public abstract class Gun : Weapon
 {
+    [Header("Gun")]
     [SerializeField] Transform m_firePoint;
-    [SerializeField] protected Animator anim;
     public Transform firePoint => m_firePoint;
 
     [Rpc(SendTo.Everyone)]

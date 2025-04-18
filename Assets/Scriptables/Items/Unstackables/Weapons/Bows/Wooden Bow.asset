@@ -35,15 +35,15 @@ MonoBehaviour:
       \uAD6C\uB974\uAE30</b>\n\uBE60\uB974\uAC8C \uAD6C\uB985\uB2C8\uB2E4."
   m_itemIcon: {fileID: 21300000, guid: bf50c41c100838e4fa5bf82362e6af13, type: 2}
   m_canDrop: 1
-  m_auto: 0
+  m_auto: 1
   m_damage: 10
   m_fireRate: 0.7
   m_arrowSpeed: 20
   m_arrowRange: 10
   m_spread: 0
   m_ammunition: {fileID: 11400000, guid: adcb664144b651f4bac9122740459332, type: 2}
-  m_bullet: {fileID: 2955243089623463494, guid: 75cd0ce2033de7949941b94b61e291bb, type: 3}
   m_weaponPrefab: {fileID: 7062143739990131009, guid: 1b3b7314adc53ec46b3c88e8a71234ff, type: 3}
+  m_arrow: {fileID: 6731784745661209372, guid: 75cd0ce2033de7949941b94b61e291bb, type: 3}
   m_empowerIcon: {fileID: 21300000, guid: bf50c41c100838e4fa5bf82362e6af13, type: 2}
   m_empowerCooldown: 10
   m_empowerShotCount: 3

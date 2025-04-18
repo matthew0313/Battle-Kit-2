@@ -13502,6 +13502,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   alliance:
     m_InternalValue: 0
+  combat:
+    m_InternalValue: 0
+  isInRound:
+    m_InternalValue: 0
 --- !u!114 &7677471556559107211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13521,6 +13525,7 @@ MonoBehaviour:
   flipped: {fileID: 5839804116184232438}
   mouseLocked: 0
   canMove: 1
+  canRotate: 1
 --- !u!114 &281736694314098834
 MonoBehaviour:
   m_ObjectHideFlags: 0

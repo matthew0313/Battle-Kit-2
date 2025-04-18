@@ -30,5 +30,9 @@ MonoBehaviour:
   m_reloadTime: 3
   m_magSize: 12
   m_ammunition: {fileID: 11400000, guid: 5ac9c05e9a6b9b14c81af80fc200e27b, type: 2}
-  m_bullet: {fileID: 4050169374410396675, guid: 7979abe7c13d8db488aa91ab637f8c17, type: 3}
   m_weaponPrefab: {fileID: 3151999320843686830, guid: 4fa861a97c562df42a48a51be644726c, type: 3}
+  m_bullet: {fileID: 8303371301881936506, guid: 7979abe7c13d8db488aa91ab637f8c17, type: 3}
+  m_shotgunShotIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
+  m_shotgunShotCount: 4
+  m_shotgunShotSpread: 5
+  m_shotgunShotCooldown: 10

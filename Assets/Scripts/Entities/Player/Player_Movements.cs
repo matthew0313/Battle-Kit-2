@@ -19,18 +19,23 @@ public class Player_Movements : NetworkBehaviour
     [SerializeField] Transform rotator;
     [SerializeField] Transform flipped;
 
+    public Vector2 moveDir { get; private set; } = Vector2.zero;
+
     public bool mouseLocked = false;
     public ControlMachine<Player_Movements> mouseLockedControl;
 
-    public Vector2 moveDir { get; private set; } = Vector2.zero;
     public bool canMove = true;
     public ControlMachine<Player_Movements> canMoveControl;
+
+    public bool canRotate = true;
+    public ControlMachine<Player_Movements> canRotateControl;
     public void OnAwake()
     {
         origin = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
         mouseLockedControl = new(this, (movements) => movements.mouseLocked = false);
         canMoveControl = new(this, (movements) => movements.canMove = true);
+        canRotateControl = new(this, (movements) => movements.canRotate = true);
     }
     public void OnStart()
     {
