@@ -45,10 +45,12 @@ public struct NetworkDictionary : INetworkSerializable
         if (serializer.IsReader)
         {
             serializer.SerializeValue(ref dataCount);
+            if(data == null) data = new();
             for (int i = 0; i < dataCount; i++)
             {
                 StringKeyValuePair pair = new();
                 pair.NetworkSerialize(serializer);
+                Debug.Log(pair.value);
                 data.Add(pair);
             }
         }

@@ -16,7 +16,7 @@ public class DroppedItem : NetworkBehaviour
     NetworkVariable<int> count = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     bool pending = false;
 
-    [SerializeField] SpriteRenderer rend;
+    [SerializeField] SpriteRenderer rend1, rend2;
     [SerializeField] float pendingTimeout = 3.0f;
     [SerializeField] float pickupAvailableMagnitude = 0.5f;
     static DroppedItem prefab;
@@ -39,11 +39,11 @@ public class DroppedItem : NetworkBehaviour
     {
         item = ItemManager.Instance.itemDatabase.GetItemData(itemInstanceData.Value.itemIndex).Create();
         item.Load(itemInstanceData.Value.data.RetrieveData());
-        rend.sprite = item.data.itemIcon;
+        rend1.sprite = item.data.itemIcon; rend2.sprite = item.data.itemIcon;
     }
     void OnCountChange(int prev, int data)
     {
-
+        rend2.gameObject.SetActive(data > 1);
     }
     public void Set(Item item, int count)
     {

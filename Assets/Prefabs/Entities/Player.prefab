@@ -13553,7 +13553,7 @@ MonoBehaviour:
   defaultSlotCount: 36
   pickupRange: 2
   m_weaponAnchor: {fileID: 6207405347879610256}
-  dropForce: 3
+  dropForce: 10
   debugGivenItem: {fileID: 0}
 --- !u!114 &5289569941692065921
 MonoBehaviour:

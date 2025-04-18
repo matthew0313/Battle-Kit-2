@@ -52,6 +52,8 @@ public class Player_Movements : NetworkBehaviour
     {
         this.knockback += knockback;
     }
+    [Rpc(SendTo.Owner)]
+    public void TeleportRpc(Vector2 position) => transform.position = position;
     void Move()
     {
         if (!canMove || origin.hpComp.dead.Value == true) return;

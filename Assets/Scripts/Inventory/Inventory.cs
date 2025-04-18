@@ -42,6 +42,11 @@ public class Inventory : NetworkBehaviour
             receiver.ResponseRpc(left);
         }
     }
+    [Rpc(SendTo.Owner)]
+    public void ClearRpc()
+    {
+        foreach (var i in slots) i.count = 0;
+    }
     public int Insert(Item item, int count)
     {
         foreach (var i in slots)

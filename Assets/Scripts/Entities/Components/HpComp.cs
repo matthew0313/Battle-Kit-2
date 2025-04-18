@@ -1,10 +1,11 @@
 using Unity.Netcode;
 using System;
 using UnityEngine;
+using System.Net.NetworkInformation;
 
-public class HpComp : NetworkBehaviour, IDamagable
+public abstract class HpComp : NetworkBehaviour, IDamagable
 {
-    public ulong ownerID => NetworkObject.OwnerClientId;
+    public NetworkBehaviour self => this;
 
     [SerializeField] float baseHp = 100.0f;
     public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -54,6 +55,7 @@ public class HpComp : NetworkBehaviour, IDamagable
         hp.Value = maxHp.Value;
         dead.Value = false;
     }
+    public abstract bool IsEnemy(Player other);
     /*public DamageReceivedInfo GetDamage(DamageInfo damage)
     {
         DamageInfoWrapper wrapper = new() { damage = damage };

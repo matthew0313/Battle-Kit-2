@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Animations), typeof(Player_Inventory))]
@@ -14,6 +15,26 @@ public class Player : Entity
     public Player_HpComp hpComp { get; private set; }
     public static Player localPlayer { get; private set; }
     public NetworkVariable<Alliance> alliance = new NetworkVariable<Alliance>(Alliance.None, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<bool> combat = new NetworkVariable<bool>(false), isInRound = new NetworkVariable<bool>(false);
+    
+    [Rpc(SendTo.Owner)]
+    public void SetAllianceRpc(Alliance alliance, RpcParams rpcParams)
+    {
+        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
+        this.alliance.Value = alliance;
+    }
+    [Rpc(SendTo.Owner)]
+    public void SetCombatRpc(bool combat, RpcParams rpcParams)
+    {
+        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
+        this.combat.Value = combat;
+    }
+    [Rpc(SendTo.Owner)]
+    public void SetIsInRoundRpc(bool isInRound, RpcParams rpcParams)
+    {
+        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
+        this.isInRound.Value = isInRound;
+    }
     private void Awake()
     {
         movements = GetComponent<Player_Movements>();
@@ -31,6 +52,11 @@ public class Player : Entity
     {
         if(players.ContainsKey(clientID)) return players[clientID];
         return null;
+    }
+    public static int GetPlayerCount() => players.Count;
+    public static IEnumerable<Player> GetPlayers()
+    {
+        foreach(var i in players.Values) yield return i;
     }
     private void Start()
     {
@@ -59,7 +85,6 @@ public class Player : Entity
         base.OnDestroy();
         //NetworkManager.OnConnectionEvent -= OnConnection;
     }
-    public bool IsEnemy(Player other) => other != this && (alliance.Value & other.alliance.Value) == 0;
 
     /*void OnConnection(NetworkManager manager, ConnectionEventData data)
     {

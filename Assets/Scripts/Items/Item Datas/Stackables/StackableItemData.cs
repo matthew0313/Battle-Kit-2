@@ -17,5 +17,5 @@ public class StackableItem : Item
     {
         this.data = data;
     }
-    public override bool IsStackable(Item other) => other.data == data;
+    public override bool IsStackable(Item other) => other != null && other.data == data;
 }

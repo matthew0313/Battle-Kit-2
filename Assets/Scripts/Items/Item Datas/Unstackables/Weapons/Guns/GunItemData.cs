@@ -144,4 +144,10 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
         if (data == null) return;
         if (data.TryGetValue("Mag", out string mag)) this.mag = int.Parse(mag);
     }
+    public override Item Copy()
+    {
+        GunItem tmp = base.Copy() as GunItem;
+        tmp.mag = mag;
+        return tmp;
+    }
 }

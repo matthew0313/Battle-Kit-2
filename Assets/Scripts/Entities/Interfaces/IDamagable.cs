@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    public ulong ownerID { get; }
+    public bool IsEnemy(Player other);
     public void GetDamage(DamageInfo damage);
 }
 [System.Serializable]

@@ -169,6 +169,6 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
     }
     void DropItem(Item item, int count)
     {
-        player.inventory.DropItem(item, count, (Camera.main.ScreenToWorldPoint(InputManager.Instance.MouseInput()) - player.transform.position).normalized);
+        player.inventory.DropItem(item, count, ((Vector2)Camera.main.ScreenToWorldPoint(InputManager.Instance.MouseInput()) - (Vector2)player.transform.position).normalized);
     }
 }

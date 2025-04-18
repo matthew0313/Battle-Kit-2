@@ -27,7 +27,7 @@ public class Bullet : Projectile
         GameObject hit = collision.attachedRigidbody != null ? collision.attachedRigidbody.gameObject : collision.gameObject;
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if (wielder.IsEnemy(Player.GetPlayerWithID(damagable.ownerID)))
+            if (damagable.IsEnemy(wielder))
             {
                 damagable.GetDamage(new()
                 {
