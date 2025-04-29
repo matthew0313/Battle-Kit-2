@@ -43,7 +43,6 @@ public class IronSword_FlyingSlash : Projectile
                     damageSource = DamageSource.Player,
                     damageGiverClientID = wielder.OwnerClientId
                 });
-                NetworkObject.Despawn(); return;
             }
         }
 

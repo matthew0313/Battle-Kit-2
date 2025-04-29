@@ -60,13 +60,14 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
         counter = 0.0f;
         wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
+    protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
         if (counter >= data.fireRate)
         {
-            if ((data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && GetAmmoCount() > 0)
+            if (canFire && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && GetAmmoCount() > 0)
             {
                 counter = 0.0f;
                 containedSlot.inventory.TakeOut(ammunition, 1);

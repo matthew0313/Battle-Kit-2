@@ -30,13 +30,14 @@ public abstract class MeleeItem : WeaponItem
         weapon.hitbox.onTriggerEnter2D += OnTriggerEnter2D;
         wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
+    protected virtual bool canSlash => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
         if(counter >= data.slashRate)
         {
-            if(data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput())
+            if(canSlash && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()))
             {
                 counter = 0.0f;
                 Slash(wielder);

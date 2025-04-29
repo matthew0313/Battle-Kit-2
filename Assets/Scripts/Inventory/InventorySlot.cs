@@ -19,7 +19,6 @@ public class InventorySlot
         get => m_item;
         set
         {
-            if (m_item == value) return;
             Item prev = m_item;
             m_item = value;
             onItemChange?.Invoke(prev, m_item);
@@ -32,7 +31,6 @@ public class InventorySlot
         get => m_count;
         set
         {
-            if (m_count == value) return;
             m_count = value;
             if(m_count == 0)
             {

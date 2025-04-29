@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MEC;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,9 +14,12 @@ public class IronSword_ItemData : SwordItemData
     [Header("FlyingSlash")]
     [SerializeField] Sprite m_flyingSlashSprite;
     [SerializeField] IronSword_FlyingSlash m_flyingSlash;
-    [SerializeField] float m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown;
+    [SerializeField] float m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f,
+        m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown;
     public Sprite flyingSlashSprite => m_flyingSlashSprite;
     public IronSword_FlyingSlash flyingSlash => m_flyingSlash;
+    public float flyingSlashDelay => m_flyingSlashDelay;
+    public float flyingSlashDuration => m_flyingSlashDuration;
     public float flyingSlashDamage => m_flyingSlashDamage;
     public float flyingSlashSpeed => m_flyingSlashSpeed;
     public float flyingSlashAcceleration => m_flyingSlashAcceleration;
@@ -33,23 +37,37 @@ public class IronSword_Item : SwordItem, ISkill1User
         this.data = data;
     }
     float flyingSlashCounter = 0.0f;
+    bool usingFlyingSlash = false;
     public Sprite skill1Sprite => data.flyingSlashSprite;
     public bool canUseSkill1 => flyingSlashCounter <= 0.0f && counter >= data.slashRate;
     public float skill1CooldownBarFill => flyingSlashCounter / data.flyingSlashCooldown;
+    CoroutineHandle flyingSlashCoroutine;
+    protected override bool canSlash => base.canSlash && !usingFlyingSlash;
     public void Skill1Use(Player wielder)
     {
-        counter = 0.0f;
         flyingSlashCounter = data.flyingSlashCooldown;
+        usingFlyingSlash = true;
 
         weapon.FlyingSlashRpc();
-
-        IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
-        flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange);
-        flyingSlash.NetworkObject.Spawn();
+        flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
+        Timing.RunCoroutine(MyCoroutines.WaitThen(data.flyingSlashDuration, () => usingFlyingSlash = false));
     }
     public override void Update()
     {
         base.Update();
         flyingSlashCounter = Mathf.Max(0.0f, flyingSlashCounter - Time.deltaTime);
+    }
+    public override void OnUnwield(Player wielder)
+    {
+        base.OnUnwield(wielder);
+        Timing.KillCoroutines(flyingSlashCoroutine);
+    }
+    IEnumerator<float> FlyingSlash()
+    {
+        yield return Timing.WaitForSeconds(data.flyingSlashDelay);
+
+        IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
+        flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange);
+        flyingSlash.NetworkObject.Spawn();
     }
 }

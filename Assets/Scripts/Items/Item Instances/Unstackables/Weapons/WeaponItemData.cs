@@ -46,6 +46,6 @@ public abstract class WeaponItem : UnstackableItem
     public override void Delete()
     {
         base.Delete();
-        weapon.NetworkObject.Despawn();
+        if(weapon != null) weapon.NetworkObject.Despawn();
     }
 }

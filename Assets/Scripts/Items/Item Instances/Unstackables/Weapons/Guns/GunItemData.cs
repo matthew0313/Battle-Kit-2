@@ -91,6 +91,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
         counter = 0.0f;
         wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
+    protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
@@ -99,7 +100,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
         {
             if (counter >= data.fireRate)
             {
-                if ((data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && mag > 0)
+                if (canFire && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && mag > 0)
                 {
                     counter = 0.0f;
                     mag--;
