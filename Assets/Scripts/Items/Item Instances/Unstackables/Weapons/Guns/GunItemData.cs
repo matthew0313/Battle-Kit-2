@@ -132,15 +132,15 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
         base.OnUnwield(wielder);
         wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
     }
-    public override Dictionary<string, string> Save()
+    public override Dictionary<string, string> SaveProperties()
     {
-        var data = base.Save();
+        var data = base.SaveProperties();
         data.Add("Mag", mag.ToString());
         return data;
     }
-    public override void Load(Dictionary<string, string> data)
+    public override void LoadProperties(Dictionary<string, string> data)
     {
-        base.Load(data);
+        base.LoadProperties(data);
         if (data == null) return;
         if (data.TryGetValue("Mag", out string mag)) this.mag = int.Parse(mag);
     }

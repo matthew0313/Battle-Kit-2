@@ -15,7 +15,8 @@ public class IronSword_ItemData : SwordItemData
     [SerializeField] Sprite m_flyingSlashSprite;
     [SerializeField] IronSword_FlyingSlash m_flyingSlash;
     [SerializeField] float m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f,
-        m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown;
+        m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown, m_flyingSlashKnockback,
+        m_flyingSlashSlowPercentage, m_flyingSlashSlowDuration;
     public Sprite flyingSlashSprite => m_flyingSlashSprite;
     public IronSword_FlyingSlash flyingSlash => m_flyingSlash;
     public float flyingSlashDelay => m_flyingSlashDelay;
@@ -25,6 +26,9 @@ public class IronSword_ItemData : SwordItemData
     public float flyingSlashAcceleration => m_flyingSlashAcceleration;
     public float flyingSlashRange => m_flyingSlashRange;
     public float flyingSlashCooldown => m_flyingSlashCooldown;
+    public float flyingSlashKnockback => m_flyingSlashKnockback;
+    public float flyingSlashSlowPercentage => m_flyingSlashSlowPercentage;
+    public float flyingSlashSlowDuration => m_flyingSlashSlowDuration;
     public override Item Create() => new IronSword_Item(this);
 }
 public class IronSword_Item : SwordItem, ISkill1User
@@ -67,7 +71,7 @@ public class IronSword_Item : SwordItem, ISkill1User
         yield return Timing.WaitForSeconds(data.flyingSlashDelay);
 
         IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
-        flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange);
+        flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange, data.flyingSlashKnockback, data.flyingSlashSlowPercentage, data.flyingSlashSlowDuration);
         flyingSlash.NetworkObject.Spawn();
     }
 }

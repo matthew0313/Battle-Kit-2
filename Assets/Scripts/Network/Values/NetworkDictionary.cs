@@ -10,15 +10,17 @@ public struct NetworkDictionary : INetworkSerializable
 {
     public List<StringKeyValuePair> data;
     int dataCount;
-    public NetworkDictionary AssignData(Dictionary<string, string> data)
+
+    public static explicit operator NetworkDictionary(Dictionary<string, string> data)
     {
-        if (this.data == null) this.data = new();
-        this.data.Clear();
+        NetworkDictionary self = new();
+        if (self.data == null) self.data = new();
+        self.data.Clear();
         foreach (var i in data)
         {
-            this.data.Add(new StringKeyValuePair() { key = i.Key, value = i.Value });
+            self.data.Add(new StringKeyValuePair() { key = i.Key, value = i.Value });
         }
-        return this;
+        return self;
     }
     public Dictionary<string, string> RetrieveData()
     {

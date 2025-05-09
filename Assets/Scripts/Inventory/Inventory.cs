@@ -32,11 +32,9 @@ public class Inventory : NetworkBehaviour
         slotCount = defaultSlotCount;
     }
     [Rpc(SendTo.Owner)]
-    public void InsertRpc(ItemInstanceData instanceData, int count, NetworkBehaviourReference source)
+    public void InsertRpc(ItemInstanceData data, int count, NetworkBehaviourReference source)
     {
-        Item item = ItemManager.Instance.itemDatabase.GetItemData(instanceData.itemIndex).Create();
-        item.Load(instanceData.data.RetrieveData());
-        int left = Insert(item, count);
+        int left = Insert(data.ToItem(), count);
         if(source.TryGet(out NetworkBehaviour sender) && sender is IntegerReceiver receiver)
         {
             receiver.ResponseRpc(left);

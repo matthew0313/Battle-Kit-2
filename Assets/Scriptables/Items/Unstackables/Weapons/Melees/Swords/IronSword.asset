@@ -26,8 +26,13 @@ MonoBehaviour:
   m_weaponPrefab: {fileID: 5344650502320582198, guid: 6c5999fa938437c4fadae9fba1f1ec6a, type: 3}
   m_flyingSlashSprite: {fileID: 21300000, guid: 27f21d39285613c4fbcf004dab157eca, type: 3}
   m_flyingSlash: {fileID: 4472886428249030566, guid: f5b8dc925138a274b8a431f3d62c6b67, type: 3}
+  m_flyingSlashDelay: 0.5
+  m_flyingSlashDuration: 1
   m_flyingSlashDamage: 20
   m_flyingSlashSpeed: 3
   m_flyingSlashRange: 15
   m_flyingSlashAcceleration: 6
   m_flyingSlashCooldown: 10
+  m_flyingSlashKnockback: 10
+  m_flyingSlashSlowPercentage: 95
+  m_flyingSlashSlowDuration: 10

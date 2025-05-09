@@ -26,8 +26,8 @@ public abstract class Bullet : Projectile
                 damagable.GetDamage(new()
                 {
                     amount = damage,
-                    damageSource = DamageSource.Player,
-                    damageGiverClientID = wielder.OwnerClientId
+                    source = DamageSource.Player,
+                    clientID = wielder.OwnerClientId
                 });
                 NetworkObject.Despawn(); return;
             }

@@ -38,7 +38,7 @@ public class DroppedItem : NetworkBehaviour
     void OnItemSet(ItemInstanceData prev, ItemInstanceData data)
     {
         item = ItemManager.Instance.itemDatabase.GetItemData(itemInstanceData.Value.itemIndex).Create();
-        item.Load(itemInstanceData.Value.data.RetrieveData());
+        item.LoadProperties(itemInstanceData.Value.properties.RetrieveData());
         rend1.sprite = item.data.itemIcon; rend2.sprite = item.data.itemIcon;
     }
     void OnCountChange(int prev, int data)
@@ -51,7 +51,7 @@ public class DroppedItem : NetworkBehaviour
         itemInstanceData.Value = new ItemInstanceData()
         {
             itemIndex = ItemManager.Instance.itemDatabase.GetIndex(item.data),
-            data = new NetworkDictionary().AssignData(item.Save())
+            properties = (NetworkDictionary)item.SaveProperties()
         };
         this.count.Value = count;
     }

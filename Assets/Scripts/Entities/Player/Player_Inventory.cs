@@ -98,7 +98,7 @@ public class Player_Inventory : Inventory
         InsertRpc(new ItemInstanceData()
         {
             itemIndex = ItemManager.Instance.itemDatabase.GetIndex(debugGivenItem),
-            data = new()
+            properties = new()
         }, 1, new());
     }
 }

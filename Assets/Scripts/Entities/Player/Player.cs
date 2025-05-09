@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Animations), typeof(Player_Inventory))]
 [RequireComponent(typeof(Player_HpComp))]
@@ -28,6 +29,10 @@ public class Player : Entity
     {
         if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
         this.combat.Value = combat;
+    }
+    public bool IsEnemy(Player other)
+    {
+        return other != this && this.combat.Value == true && (other.alliance.Value & this.alliance.Value) == 0;
     }
     private void Awake()
     {
@@ -75,6 +80,7 @@ public class Player : Entity
         movements.OnUpdate();
         animations.OnUpdate();
         inventory.OnUpdate();
+        hpComp.OnUpdate();
     }
     public override void OnDestroy()
     {
@@ -94,4 +100,13 @@ public class Player : Entity
 public interface ILocalPlayerSpawnCallbackReceiver
 {
     public void OnLocalPlayerSpawn(Player player);
+}
+[System.Serializable]
+public enum Alliance
+{
+    None = 0,
+    TeamRed = 1,
+    TeamBlue = 2,
+    TeamGreen = 3,
+    TeamYellow = 4
 }

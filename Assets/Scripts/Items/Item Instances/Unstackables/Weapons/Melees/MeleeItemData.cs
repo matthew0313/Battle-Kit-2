@@ -75,8 +75,8 @@ public abstract class MeleeItem : WeaponItem
                 damagable.GetDamage(new()
                 {
                     amount = data.damage,
-                    damageSource = DamageSource.Player,
-                    damageGiverClientID = wielder.OwnerClientId
+                    source = DamageSource.Player,
+                    clientID = wielder.OwnerClientId
                 });
             }
         }

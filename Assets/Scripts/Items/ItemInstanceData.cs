@@ -8,10 +8,16 @@ using UnityEngine;
 public struct ItemInstanceData : INetworkSerializable
 {
     public int itemIndex;
-    public NetworkDictionary data;
+    public NetworkDictionary properties;
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref itemIndex);
-        serializer.SerializeValue(ref data);
+        serializer.SerializeValue(ref properties);
+    }
+    public Item ToItem()
+    {
+        Item tmp = ItemManager.Instance.itemDatabase.GetItemData(itemIndex).Create();
+        tmp.LoadProperties(properties.RetrieveData());
+        return tmp;
     }
 }

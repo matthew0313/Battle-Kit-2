@@ -59,6 +59,14 @@ public abstract class Item
     }
 
     //Saving
-    public virtual Dictionary<string, string> Save() => new();
-    public virtual void Load(Dictionary<string, string> data) { }
+    public virtual Dictionary<string, string> SaveProperties() => new();
+    public virtual void LoadProperties(Dictionary<string, string> data) { }
+    public ItemInstanceData ToInstanceData()
+    {
+        return new()
+        {
+            itemIndex = ItemManager.Instance.itemDatabase.GetIndex(data),
+            properties = (NetworkDictionary)SaveProperties()
+        };
+    }
 }

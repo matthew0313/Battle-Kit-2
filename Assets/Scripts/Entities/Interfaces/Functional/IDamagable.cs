@@ -1,9 +1,8 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public interface IDamagable
+public interface IDamagable : IEnemyAffectable
 {
-    public bool IsEnemy(Player other);
     public void GetDamage(DamageInfo damage);
 }
 [System.Serializable]
@@ -11,15 +10,22 @@ public struct DamageInfo : INetworkSerializable
 {
     public float amount;
 
-    public DamageSource damageSource;
+    public DamageSource source;
     //source is player
-    public ulong damageGiverClientID;
+    public ulong clientID;
+
+    public bool hasColor;
+    public Color color;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref amount);
-        serializer.SerializeValue(ref damageSource);
-        if (damageSource == DamageSource.Player) serializer.SerializeValue(ref damageGiverClientID);
+
+        serializer.SerializeValue(ref source);
+        if (source == DamageSource.Player) serializer.SerializeValue(ref clientID);
+
+        serializer.SerializeValue(ref hasColor);
+        if(hasColor) serializer.SerializeValue(ref color);
     }
 }
 /*public struct DamageReceivedInfo
@@ -34,15 +40,6 @@ public struct DamageInfo : INetworkSerializable
 [System.Serializable]
 public enum DamageSource
 {
-    Player = 0
-}
-
-[System.Serializable]
-public enum Alliance
-{
-    None = 0,
-    TeamRed = 1,
-    TeamBlue = 2,
-    TeamGreen = 3,
-    TeamYellow = 4
+    Player = 0,
+    Aliment = 1
 }

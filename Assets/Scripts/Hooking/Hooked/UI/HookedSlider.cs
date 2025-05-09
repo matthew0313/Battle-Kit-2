@@ -4,23 +4,23 @@ using UnityEngine.UI;
 
 public class HookedSlider : MonoBehaviour
 {
-    [SerializeField] FloatHook hook;
+    [SerializeField] IRef<IHookProvider<float>> hook;
 
     [Header("Display")]
     [SerializeField] Slider slider;
     private void OnEnable()
     {
-        hook.AssignCallback(OnValueChange);
-        slider.onValueChanged.AddListener(hook.SetValue);
+        hook.I.AssignCallback(OnValueChange);
+        slider.onValueChanged.AddListener(hook.I.SetValue);
         OnValueChange();
     }
     private void OnDisable()
     {
-        hook.RemoveCallback(OnValueChange);
-        slider.onValueChanged.RemoveListener(hook.SetValue);
+        hook.I.RemoveCallback(OnValueChange);
+        slider.onValueChanged.RemoveListener(hook.I.SetValue);
     }
     void OnValueChange()
     {
-        slider.value = hook.value;
+        slider.value = hook.I.value;
     }
 }

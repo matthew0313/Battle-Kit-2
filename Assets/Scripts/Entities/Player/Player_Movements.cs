@@ -7,7 +7,7 @@ using UnityEditor;
 #endif
 
 [RequireComponent(typeof(NetworkTransform), typeof(Rigidbody2D))]
-public class Player_Movements : NetworkBehaviour
+public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAdjustable
 {
     Player origin;
     public Rigidbody2D rb { get; private set; }
@@ -29,6 +29,8 @@ public class Player_Movements : NetworkBehaviour
 
     public bool canRotate = true;
     public ControlMachine<Player_Movements> canRotateControl;
+
+    public float speedMultiplier { get; set; } = 1.0f;
     public void OnAwake()
     {
         origin = GetComponent<Player>();
@@ -52,30 +54,45 @@ public class Player_Movements : NetworkBehaviour
             UpdateKnockback();
         }
     }
-    [Rpc(SendTo.Owner)]
-    public void GetKnockbackRpc(Vector2 knockback)
+    public bool IsEnemy(Player other)
     {
-        this.knockback += knockback;
+        return origin.IsEnemy(other);
+    }
+
+    public void GetKnockback(KnockbackInfo knockback)
+    {
+        GetKnockbackRpc(knockback);
+    }
+    [Rpc(SendTo.Owner)]
+    public void GetKnockbackRpc(KnockbackInfo knockback)
+    {
+        this.knockback += knockback.value;
     }
     [Rpc(SendTo.Owner)]
     public void TeleportRpc(Vector2 position) => transform.position = position;
     void Move()
     {
-        if (!canMove || origin.hpComp.dead.Value == true) return;
+        Vector2 dir = Vector2.zero;
 
-        moveDir = InputManager.Instance.MovementInput();
-        rb.linearVelocity = moveDir * moveSpeed + knockback;
-        if (!mouseLocked)
+        if (canMove && origin.hpComp.dead.Value == false)
         {
-            if(moveDir.x > 0)
+            moveDir = InputManager.Instance.MovementInput();
+            dir += moveDir * moveSpeed * speedMultiplier;
+            if (!mouseLocked)
             {
-                flipped.localScale = new Vector2(-1.0f, 1.0f);
-            }
-            else if(moveDir.x < 0)
-            {
-                flipped.localScale = new Vector2(1.0f, 1.0f);
+                if (moveDir.x > 0)
+                {
+                    flipped.localScale = new Vector2(-1.0f, 1.0f);
+                }
+                else if (moveDir.x < 0)
+                {
+                    flipped.localScale = new Vector2(1.0f, 1.0f);
+                }
             }
         }
+        dir += knockback;
+
+        rb.linearVelocity = dir;
     }
     void Rotate()
     {
@@ -120,7 +137,7 @@ public class Player_Movements_Editor : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        if (GUILayout.Button("Receive Knockback (RPC)")) (target as Player_Movements).GetKnockbackRpc(Vector2.up * 5.0f);
+        if (GUILayout.Button("Receive Knockback (RPC)")) (target as Player_Movements).GetKnockbackRpc(new() { value = Vector2.up * 5.0f });
     }
 }
 #endif
