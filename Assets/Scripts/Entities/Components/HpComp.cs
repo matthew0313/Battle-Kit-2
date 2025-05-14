@@ -10,9 +10,9 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
     public NetworkBehaviour self => this;
 
     [SerializeField] float baseHp = 100.0f;
-    public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public readonly NetworkVariable<float> hp = new NetworkVariable<float>(100.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public readonly NetworkVariable<bool> dead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f);
+    public readonly NetworkVariable<float> hp = new NetworkVariable<float>(100.0f);
+    public readonly NetworkVariable<bool> dead = new NetworkVariable<bool>(false);
 
     public Action onHpChange;
     public Action<DamageInfoWrapper> modifyDamageTaken;
@@ -67,7 +67,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
         hp.Value = baseHp;
     }
 
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void GetDamageRpc(DamageInfo damage)
     {
         if (dead.Value == true || invincible) return;
@@ -96,7 +96,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
     }
     public abstract bool IsEnemy(Player other);
 
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void AddAlimentRpc(AlimentInstanceData info)
     {
         Aliment tmp = info.ToAliment();

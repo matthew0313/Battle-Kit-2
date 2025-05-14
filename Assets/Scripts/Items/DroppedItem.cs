@@ -12,8 +12,8 @@ public class DroppedItem : NetworkBehaviour
     IntegerReceiver receiver;
     OwnerOnlyRigidbody2D ownerOnlyRb;
 
-    NetworkVariable<ItemInstanceData> itemInstanceData = new NetworkVariable<ItemInstanceData>(new ItemInstanceData(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    NetworkVariable<int> count = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    NetworkVariable<ItemInstanceData> itemInstanceData = new NetworkVariable<ItemInstanceData>(new ItemInstanceData());
+    NetworkVariable<int> count = new NetworkVariable<int>(0);
     bool pending = false;
 
     [SerializeField] SpriteRenderer rend1, rend2;

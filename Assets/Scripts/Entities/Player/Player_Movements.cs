@@ -65,12 +65,12 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
     {
         GetKnockbackRpc(knockback);
     }
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void GetKnockbackRpc(KnockbackInfo knockback)
     {
         this.knockback += knockback.value;
     }
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void TeleportRpc(Vector2 position) => transform.position = position;
     void Move()
     {

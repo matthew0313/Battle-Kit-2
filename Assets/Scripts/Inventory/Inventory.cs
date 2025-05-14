@@ -31,7 +31,7 @@ public class Inventory : NetworkBehaviour
     {
         slotCount = defaultSlotCount;
     }
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void InsertRpc(ItemInstanceData data, int count, NetworkBehaviourReference source)
     {
         int left = Insert(data.ToItem(), count);
@@ -40,7 +40,7 @@ public class Inventory : NetworkBehaviour
             receiver.ResponseRpc(left);
         }
     }
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void ClearRpc()
     {
         foreach (var i in slots) i.count = 0;

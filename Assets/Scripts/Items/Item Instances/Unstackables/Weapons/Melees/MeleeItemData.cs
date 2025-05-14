@@ -20,10 +20,10 @@ public abstract class MeleeItem : WeaponItem
     protected MeleeItem(MeleeItemData data) : base(data)
     {
         this.data = data;
-        scaleBound = false;
     }
     protected float counter = 0.0f;
     protected readonly ControlElement<Player_Movements> mouseLockedEnable = new ControlElement<Player_Movements>(0, (movements) => movements.mouseLocked = true, true);
+    protected override bool scaleBound => false;
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);

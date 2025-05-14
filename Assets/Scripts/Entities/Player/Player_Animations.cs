@@ -14,8 +14,8 @@ public class Player_Animations : NetworkBehaviour
     PlayerSkin currentSkin;
 
     Animator anim => currentSkin.anim;
-    NetworkVariable<int> currentSkinIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    NetworkVariable<bool> moving = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    NetworkVariable<int> currentSkinIndex = new NetworkVariable<int>(0);
+    NetworkVariable<bool> moving = new NetworkVariable<bool>(false);
     public void OnAwake()
     {
         origin = GetComponent<Player>();
