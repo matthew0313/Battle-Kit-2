@@ -10,6 +10,7 @@ using UnityEditor;
 public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAdjustable
 {
     Player origin;
+    public NetworkTransform networkTransform { get; private set; }
     public Rigidbody2D rb { get; private set; }
 
     [SerializeField] float moveSpeed = 5.0f;
@@ -35,6 +36,7 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
     {
         origin = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
+        networkTransform = GetComponent<NetworkTransform>();
         mouseLockedControl = new(this, (movements) => movements.mouseLocked = false);
         canMoveControl = new(this, (movements) => movements.canMove = true);
         canRotateControl = new(this, (movements) => movements.canRotate = true);

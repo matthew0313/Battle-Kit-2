@@ -3,7 +3,7 @@ using Unity.Netcode.Components;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkTransform))]
-public abstract class Projectile : NetworkBehaviour
+public abstract class Projectile : NetworkBehaviour, ITimeSlowable
 {
     protected Player wielder;
     protected float speed, range;
@@ -22,4 +22,12 @@ public abstract class Projectile : NetworkBehaviour
         counter += Time.deltaTime * speed;
         if (counter > range) NetworkObject.Despawn();
     }
+    float timeScale = 1.0f;
+    public void SlowTime(float scale) => SlowTimeRpc(scale);
+    [Rpc(SendTo.Owner)]
+    public void SlowTimeRpc(float scale) => timeScale *= scale;
+    public void RevertTime(float scale) => RevertTimeRpc(scale);
+    [Rpc(SendTo.Owner)]
+    public void RevertTimeRpc(float scale) => timeScale /= scale;
+    public bool IsEnemy(Player other) => other.IsEnemy(wielder);
 }
