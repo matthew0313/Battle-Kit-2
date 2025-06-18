@@ -28,9 +28,13 @@ public class Player_Inventory : Inventory
     //Equipped Item
     public Item equipped { get; private set; }
     public Action<Item> onEquippedItemChange;
+
+    public bool canUseItem = true;
+    public ControlMachine<Player_Inventory> canUseItemControl;
     public void OnAwake()
     {
         origin = GetComponent<Player>();
+        canUseItemControl = new(this, (inventory) => inventory.canUseItem = true);
     }
     public void OnStart()
     {
@@ -46,7 +50,10 @@ public class Player_Inventory : Inventory
         {
             UpdateBelt();
 
+
             if (equipped != null) equipped.OnWieldUpdate(origin);
+
+            if (equipped is ILMBUser lmbUser && InputManager.Instance.ItemUseHoldInput()) lmbUser.LMBUse(origin, InputManager.Instance.ItemUseInput());
             if (equipped is ISkill1User skill1User && skill1User.canUseSkill1 && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
             if (equipped is ISkill2User skill2User && skill2User.canUseSkill2 && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
             if (equipped is IReloadable reloadable && reloadable.canReload && InputManager.Instance.ReloadInput()) reloadable.Reload(origin);

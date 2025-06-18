@@ -22,7 +22,7 @@ public abstract class GunItemData : WeaponItemData
     public abstract Bullet bullet { get; }
 
 }
-public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
+public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, ILMBUser
 {
     new public readonly GunItemData data;
     new protected Gun weapon => base.weapon as Gun;
@@ -96,20 +96,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
-        if (!reloading)
-        {
-            if (counter >= data.fireRate)
-            {
-                if (canFire && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && mag > 0)
-                {
-                    counter = 0.0f;
-                    mag--;
-                    weapon.FireRpc();
-                    Fire(wielder);
-                }
-            }
-        }
-        else
+        if(reloading)
         {
             reloadCounter = Mathf.Max(0.0f, reloadCounter - Time.deltaTime);
             if(reloadCounter <= 0.0f)
@@ -118,6 +105,20 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable
                 int amount = Mathf.Min(data.magSize - mag, GetAmmoCount());
                 mag += amount;
                 containedSlot.inventory.TakeOut(ammunition, amount);
+            }
+        }
+    }
+    public void LMBUse(Player wielder, bool down)
+    {
+        if (!data.auto && !down) return;
+        if (!reloading)
+        {
+            if (canFire && counter >= data.fireRate && mag > 0)
+            {
+                counter = 0.0f;
+                mag--;
+                weapon.FireRpc();
+                Fire(wielder);
             }
         }
     }

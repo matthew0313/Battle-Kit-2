@@ -13,7 +13,7 @@ public abstract class MeleeItemData : WeaponItemData
     public float damage => m_damage;
     public float slashRate => m_slashRate;
 }
-public abstract class MeleeItem : WeaponItem
+public abstract class MeleeItem : WeaponItem, ILMBUser
 {
     new public readonly MeleeItemData data;
     new protected Melee weapon => base.weapon as Melee;
@@ -35,13 +35,14 @@ public abstract class MeleeItem : WeaponItem
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
-        if(counter >= data.slashRate)
+    }
+    public void LMBUse(Player wielder, bool down)
+    {
+        if (!data.auto && !down) return;
+        if (canSlash && counter >= data.slashRate)
         {
-            if(canSlash && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()))
-            {
-                counter = 0.0f;
-                Slash(wielder);
-            }
+            counter = 0.0f;
+            Slash(wielder);
         }
     }
     public override void OnUnwield(Player wielder)

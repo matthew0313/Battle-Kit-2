@@ -17,7 +17,7 @@ public abstract class BowItemData : WeaponItemData
     public ItemData ammunition => m_ammunition;
     public abstract Arrow arrow { get; }
 }
-public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
+public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
 {
     new public readonly BowItemData data;
     new protected Bow weapon => base.weapon as Bow;
@@ -65,14 +65,15 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
-        if (counter >= data.fireRate)
+    }
+    public void LMBUse(Player wielder, bool down)
+    {
+        if (!data.auto && !down) return;
+        if (canFire && counter >= data.fireRate && GetAmmoCount() > 0)
         {
-            if (canFire && (data.auto ? InputManager.Instance.ItemUseHoldInput() : InputManager.Instance.ItemUseInput()) && GetAmmoCount() > 0)
-            {
-                counter = 0.0f;
-                containedSlot.inventory.TakeOut(ammunition, 1);
-                Fire(wielder);
-            }
+            counter = 0.0f;
+            containedSlot.inventory.TakeOut(ammunition, 1);
+            Fire(wielder);
         }
     }
     protected virtual void Fire(Player wielder)
