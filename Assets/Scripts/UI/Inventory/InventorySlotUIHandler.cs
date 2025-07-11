@@ -29,11 +29,22 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
     {
         if (player == null) return;
         GrabUpdate();
-        DescUpdate();
     }
     void GrabUpdate()
     {
         Vector2 pos = InputManager.Instance.MouseInput();
+        if(SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            if (!UIManager.Instance.isTabOpen)
+            {
+                if (grabbing)
+                {
+                    DropItem(grabbingSlot.item, grabbingSlot.count);
+                    grabbingSlot.count = 0;
+                }
+                return;
+            }
+        }
         if (!grabbing)
         {
             if (InputManager.Instance.ItemGrabInput())
@@ -74,7 +85,7 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
         else
         {
             grabbingSlotUI.transform.position = pos;
-            if (InputManager.Instance.ItemGrabInput())
+            if (InputManager.Instance.ItemUngrabInput())
             {
                 List<RaycastResult> results = UIScanner.ScanUI(pos);
                 bool slotHit = false;
@@ -105,7 +116,7 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
                     grabbingSlot.count = 0;
                 }
             }
-            else if (InputManager.Instance.ItemHalfGrabInput())
+            else if (InputManager.Instance.ItemHalfUngrabInput())
             {
                 List<RaycastResult> results = UIScanner.ScanUI(pos);
                 bool slotHit = false;
@@ -125,46 +136,6 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
                 }
             }
         }
-    }
-    void DescUpdate()
-    {
-        Vector2 pos = InputManager.Instance.MouseInput();
-        if(grabbingSlot.item == null)
-        {
-            List<RaycastResult> results = UIScanner.ScanUI(pos);
-            foreach (var i in results)
-            {
-                if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
-                {
-                    if (slot.origin.item != null)
-                    {
-                        if (describing != slot.origin.item) Describe(slot.origin.item);
-                        describer.transform.position = pos;
-                        describer.SetActive(true);
-                        return;
-                    }
-                }
-            }
-
-            Collider2D hit = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(pos), LayerMask.GetMask("DroppedItem"));
-            if(hit != null && hit.TryGetComponent(out DroppedItem dropped))
-            {
-                if (describing != dropped.item) Describe(dropped.item);
-                describer.transform.position = pos;
-                describer.SetActive(true);
-                return;
-            }
-        }
-
-        describing = null;
-        describer.SetActive(false);
-    }
-    Item describing = null;
-    void Describe(Item item)
-    {
-        describing = item;
-        itemName.text = item.data.itemName.text;
-        itemDesc.text = item.data.description.text;
     }
     void DropItem(Item item, int count)
     {

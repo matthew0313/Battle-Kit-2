@@ -6,24 +6,27 @@ using MEC;
 public class Player_HpComp : HpComp
 {
     Player origin;
-    public override void OnAwake()
+    protected override void Awake()
     {
-        base.OnAwake();
+        base.Awake();
         origin = GetComponent<Player>();
     }
-    public void OnStart()
-    {
-        if(IsOwner) Init();
-    }
+    readonly int isDeadID = Animator.StringToHash("IsDead");
     protected override void OnDeath()
     {
         base.OnDeath();
+        origin.anim.SetBool(isDeadID, true);
         Timing.RunCoroutine(ReviveWait());
     }
     IEnumerator<float> ReviveWait()
     {
         yield return Timing.WaitForSeconds(3.0f);
         Revive();
+    }
+    protected override void OnRevive()
+    {
+        base.OnRevive();
+        origin.anim.SetBool(isDeadID, false);
     }
     public override bool IsEnemy(Player other)
     {

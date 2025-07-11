@@ -52,6 +52,7 @@ public class Glock_Item : PistolItem, ISkill1User
         for (int i = 0; i < data.shotgunShotCount; i++)
         {
             Bullet bullet = MonoBehaviour.Instantiate(data.shotgunShotBullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.shotgunShotSpread, data.shotgunShotSpread)));
+            bullet.transform.localScale = weapon.firePoint.lossyScale;
             bullet.Set(wielder, data.shotgunShotDamage, data.shotgunShotSpeed, data.shotgunShotRange);
             bullet.NetworkObject.Spawn();
         }

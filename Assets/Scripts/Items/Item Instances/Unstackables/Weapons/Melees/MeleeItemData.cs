@@ -22,13 +22,10 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
         this.data = data;
     }
     protected float counter = 0.0f;
-    protected readonly ControlElement<Player_Movements> mouseLockedEnable = new ControlElement<Player_Movements>(0, (movements) => movements.mouseLocked = true, true);
-    protected override bool scaleBound => false;
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);
         weapon.hitbox.onTriggerEnter2D += OnTriggerEnter2D;
-        wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
     protected virtual bool canSlash => true;
     public override void OnWieldUpdate(Player wielder)
@@ -49,7 +46,6 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     {
         base.OnUnwield(wielder);
         weapon.hitbox.onTriggerEnter2D -= OnTriggerEnter2D;
-        wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
     }
     protected virtual void Slash(Player wielder)
     {

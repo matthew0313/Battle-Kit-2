@@ -20,7 +20,7 @@ public class IronSword_FlyingSlash : Projectile
 
         speed += Time.deltaTime * acceleration;
 
-        transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
+        transform.Translate(transform.right * (transform.localScale.x > 0.0f ? 1.0f : -1.0f) * speed * Time.deltaTime, Space.World);
         counter += Time.deltaTime * speed;
 
         if (counter > range) NetworkObject.Despawn();
@@ -66,7 +66,5 @@ public class IronSword_FlyingSlash : Projectile
                 });
             }
         }
-
-        if (hit.gameObject.layer == LayerMask.NameToLayer("Map")) NetworkObject.Despawn();
     }
 }

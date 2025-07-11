@@ -8,28 +8,28 @@ public class Inventory : NetworkBehaviour
 {
     [SerializeField] protected int defaultSlotCount = 16;
     public List<InventorySlot> slots { get; } = new();
-    public Action<Item> onInventoryUpdate;
+    public event Action<Item> onInventoryUpdate;
     int m_slotCount = 0;
-    public Action onSlotCountChange;
+    public event Action onSlotCountChange;
     public int slotCount
     {
         get { return m_slotCount; }
         set
         {
-            for (int i = m_slotCount; i < value; i++)
+            m_slotCount = value;
+            for (int i = slots.Count; i < slotCount; i++)
             {
                 InventorySlot tmp = new InventorySlot(this);
-                tmp.onItemChange += (prevItem, newItem) => { onInventoryUpdate?.Invoke(prevItem); onInventoryUpdate?.Invoke(newItem); };
+                tmp.onItemChange += () => { if (tmp.item != null) onInventoryUpdate?.Invoke(tmp.item); };
                 tmp.onCountChange += () => { onInventoryUpdate?.Invoke(tmp.item); };
                 slots.Add(tmp);
             }
-            m_slotCount = value;
             onSlotCountChange?.Invoke();
         }
     }
-    public void Init()
+    protected void Init()
     {
-        slotCount = defaultSlotCount;
+        if(IsOwner) slotCount = defaultSlotCount;
     }
     [Rpc(SendTo.Authority)]
     public void InsertRpc(ItemInstanceData data, int count, NetworkBehaviourReference source)
@@ -45,9 +45,10 @@ public class Inventory : NetworkBehaviour
     {
         foreach (var i in slots) i.count = 0;
     }
+    protected virtual IEnumerable<InventorySlot> GetInsertableSlots() => slots;
     public int Insert(Item item, int count)
     {
-        foreach (var i in slots)
+        foreach (var i in GetInsertableSlots())
         {
             if (i.item != null && i.item.IsStackable(item) && item.IsStackable(i.item))
             {
@@ -55,17 +56,16 @@ public class Inventory : NetworkBehaviour
                 if (count <= 0) return 0;
             }
         }
-        for (int i = 0; i < slotCount; i++)
+        foreach (var i in GetInsertableSlots())
         {
-            count = slots[i].Insert(item.Copy(), count);
+            count = i.Insert(item, count);
             if (count <= 0) return 0;
         }
-        onInventoryUpdate?.Invoke(item);
         return count;
     }
     public int TryInsert(Item item, int count)
     {
-        foreach (var i in slots)
+        foreach (var i in GetInsertableSlots())
         {
             if (i.item != null && i.item.IsStackable(item) && item.IsStackable(i.item))
             {
@@ -73,27 +73,18 @@ public class Inventory : NetworkBehaviour
                 if (count <= 0) return 0;
             }
         }
-        for (int i = 0; i < slotCount; i++)
+        foreach (var i in GetInsertableSlots())
         {
-            count = slots[i].TryInsert(item.Copy(), count);
+            count = i.TryInsert(item, count);
             if (count <= 0) return 0;
         }
         return count;
     }
-    public int Search(ItemData data)
-    {
-        return Search((item) => item.data == data);
-    }
+    public int Search(ItemData data) => Search((item) => item != null && item.data == data);
     public int Search(Func<Item, bool> predicate)
     {
         int tot = 0;
-        foreach (var i in slots)
-        {
-            if (i.item != null && predicate.Invoke(i.item))
-            {
-                tot += i.count;
-            }
-        }
+        foreach (var i in SearchAll(predicate)) tot += i.count;
         return tot;
     }
     public IEnumerable<InventorySlot> SearchAll(Func<Item, bool> predicate)
@@ -103,10 +94,7 @@ public class Inventory : NetworkBehaviour
             if (i.item != null && predicate.Invoke(i.item)) yield return i;
         }
     }
-    public bool TakeOut(ItemData data, int count)
-    {
-        return TakeOut((item) => item.data == data, count);
-    }
+    public bool TakeOut(ItemData data, int count) => TakeOut((item) => item.data == data, count);
     public bool TakeOut(Func<Item, bool> predicate, int count)
     {
         if (Search(predicate) < count) return false;

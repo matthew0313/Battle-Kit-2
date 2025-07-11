@@ -30,21 +30,22 @@ public class Player_Inventory : Inventory
     public Action<Item> onEquippedItemChange;
 
     public bool canUseItem = true;
-    public ControlMachine<Player_Inventory> canUseItemControl;
-    public void OnAwake()
+    public ControlMachine<bool> canUseItemControl;
+
+    public bool canSwitchSlot = true;
+    public ControlMachine<bool> canSwitchSlotControl;
+    private void Awake()
     {
         origin = GetComponent<Player>();
-        canUseItemControl = new(this, (inventory) => inventory.canUseItem = true);
+        canUseItemControl = new(value => canUseItem = value, true);
+        canSwitchSlotControl = new(value => canSwitchSlot = value, true);
     }
-    public void OnStart()
+    new public void Init()
     {
-        if (IsOwner)
-        {
-            Init();
-            ChangeEquippedSlot(0);
-        }
+        base.Init();
+        if (IsOwner) ChangeEquippedSlot(0);
     }
-    public void OnUpdate()
+    private void Update()
     {
         if (IsOwner)
         {
@@ -53,6 +54,7 @@ public class Player_Inventory : Inventory
 
             if (equipped != null) equipped.OnWieldUpdate(origin);
 
+            if (!canUseItem) return;
             if (equipped is ILMBUser lmbUser && InputManager.Instance.ItemUseHoldInput()) lmbUser.LMBUse(origin, InputManager.Instance.ItemUseInput());
             if (equipped is ISkill1User skill1User && skill1User.canUseSkill1 && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
             if (equipped is ISkill2User skill2User && skill2User.canUseSkill2 && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
@@ -70,18 +72,19 @@ public class Player_Inventory : Inventory
     }
     void ChangeEquippedSlot(int index)
     {
-        if (index < 0 || index >= beltLength) return;
+        if (!canSwitchSlot || index < 0 || index >= beltLength) return;
 
         if (equippedSlot != null) equippedSlot.onItemChange -= OnEquippedSlotUpdate;
         equippedSlot = slots[index];
         equippedSlotIndex = index;
         equippedSlot.onItemChange += OnEquippedSlotUpdate;
         onEquippedSlotChange?.Invoke();
-        OnEquippedSlotUpdate(null, equippedSlot.item);
+        OnEquippedSlotUpdate();
     }
-    void OnEquippedSlotUpdate(Item prevItem, Item newItem)
+    void OnEquippedSlotUpdate()
     {
-        ChangeEquippedItem(newItem);
+        Debug.Log("RR");
+        ChangeEquippedItem(equippedSlot.item);
     }
     void ChangeEquippedItem(Item item)
     {

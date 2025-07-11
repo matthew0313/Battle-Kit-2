@@ -5,26 +5,24 @@ using UnityEngine;
 public class InventorySlot
 {
 
+    readonly Func<Item, bool> slotRestriction;
     public readonly Inventory inventory;
-    public readonly Func<Item, bool> slotRestriction;
-    public InventorySlot(Inventory inventory = null, Func<Item, bool> slotRestriction = null)
-    {
-        this.inventory = inventory;
-        this.slotRestriction = slotRestriction;
-    }
+    public InventorySlot(Inventory inventory) { this.inventory = inventory; }
+    public InventorySlot(Inventory inventory, Func<Item, bool> slotRestriction) { this.inventory = inventory; this.slotRestriction = slotRestriction; }
 
-    Item m_item;
+
+    public event Action onItemChange, onCountChange;
+    Item m_item = null;
     public Item item
     {
         get => m_item;
         set
         {
-            Item prev = m_item;
             m_item = value;
-            onItemChange?.Invoke(prev, m_item);
+            if (m_item != null) m_item.containedSlot = this;
+            onItemChange?.Invoke();
         }
     }
-    public Action<Item, Item> onItemChange;
     int m_count = 0;
     public int count
     {
@@ -32,22 +30,27 @@ public class InventorySlot
         set
         {
             m_count = value;
-            if(m_count == 0)
-            {
-                if(item != null) item.Delete();
-                item = null;
-            }
             onCountChange?.Invoke();
+            if (count <= 0)
+            {
+                m_count = 0;
+                if (item != null)
+                {
+                    item.Delete();
+                    item.containedSlot = null;
+                    item = null;
+                }
+            }
         }
     }
-    public Action onCountChange;
     public int Insert(Item item, int count)
     {
+        if (count <= 0) return 0;
         if (this.item == null)
         {
-            if (SetItem(item))
+            if (SetItem(item.Copy()))
             {
-                this.count = Mathf.Min(item.data.maxStack, this.count + count);
+                this.count = Mathf.Min(item.data.maxStack, count);
                 count -= this.count;
             }
         }
@@ -61,11 +64,12 @@ public class InventorySlot
     }
     public int TryInsert(Item item, int count)
     {
+        if (count <= 0) return 0;
         if (this.item == null)
         {
             if (CanSetItem(item))
             {
-                count -= Mathf.Min(item.data.maxStack, this.count + count);
+                count -= Mathf.Min(item.data.maxStack, count);
             }
         }
         else if (this.item.IsStackable(item) && item.IsStackable(this.item))
@@ -82,7 +86,7 @@ public class InventorySlot
     public bool SetItem(Item item)
     {
         if (!CanSetItem(item)) return false;
-        ForcedSetItem(item);
+        this.item = item;
         return true;
     }
     public bool Swap(InventorySlot slot)
@@ -90,16 +94,12 @@ public class InventorySlot
         if (!slot.CanSetItem(item) || !CanSetItem(slot.item)) return false;
         Item tmp = item;
         int tmp2 = count;
-        ForcedSetItem(slot.item);
+
+        item = slot.item;
         count = slot.count;
-        slot.ForcedSetItem(tmp);
+
+        slot.item = tmp;
         slot.count = tmp2;
         return true;
-    }
-    public void ForcedSetItem(Item item)
-    {
-        if(this.item != null) this.item.containedSlot = null;
-        this.item = item;
-        if(this.item != null) this.item.containedSlot = this;
     }
 }

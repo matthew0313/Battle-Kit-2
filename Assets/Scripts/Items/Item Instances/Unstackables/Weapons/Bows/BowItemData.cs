@@ -53,12 +53,10 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
     }
 
     protected float counter = 0.0f;
-    protected readonly ControlElement<Player_Movements> mouseLockedEnable = new ControlElement<Player_Movements>(0, (movements) => movements.mouseLocked = true, true);
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);
         counter = 0.0f;
-        wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
     protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
@@ -80,12 +78,8 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
     {
         weapon.FireRpc();
         Arrow arrow = MonoBehaviour.Instantiate(data.arrow, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
+        arrow.transform.localScale = weapon.firePoint.lossyScale;
         arrow.Set(wielder, data.damage, data.arrowSpeed, data.arrowRange);
         arrow.NetworkObject.Spawn();
-    }
-    public override void OnUnwield(Player wielder)
-    {
-        base.OnUnwield(wielder);
-        wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
     }
 }

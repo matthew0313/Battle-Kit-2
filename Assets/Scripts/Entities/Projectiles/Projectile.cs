@@ -21,7 +21,7 @@ public abstract class Projectile : NetworkBehaviour, ITimeSlowable
         if (timeScale < targetTimeScale) timeScale = Mathf.Min(timeScale + timeScaleRate * Time.deltaTime, targetTimeScale);
         if (timeScale > targetTimeScale) timeScale = Mathf.Max(timeScale - timeScaleRate * Time.deltaTime, targetTimeScale);
 
-        transform.Translate(transform.right * speed * Time.deltaTime * timeScale, Space.World);
+        transform.Translate(transform.right * (transform.localScale.x > 0.0f ? 1.0f : -1.0f) * speed * Time.deltaTime * timeScale, Space.World);
         counter += speed * Time.deltaTime * timeScale;
 
         if (counter > range) NetworkObject.Despawn();

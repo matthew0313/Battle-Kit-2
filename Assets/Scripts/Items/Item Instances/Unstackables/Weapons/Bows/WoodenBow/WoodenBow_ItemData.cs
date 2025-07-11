@@ -55,7 +55,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     }
     float rollCounter = 0.0f;
     public Sprite skill2Sprite => data.rollIcon;
-    public bool canUseSkill2 => InputManager.Instance.MovementInput().magnitude > 0.1f && rollCounter <= 0.0f;
+    public bool canUseSkill2 => Mathf.Abs(InputManager.Instance.MovementInput()) > 0.1f && rollCounter <= 0.0f;
     public float skill2CooldownBarFill => rollCounter / data.rollCooldown;
     public void Skill2Use(Player wielder)
     {
@@ -95,18 +95,18 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
             yield return Timing.WaitForSeconds(data.empowerShotInterval);
         }
     }
-    static ControlElement<Player_Movements> rollMovementDisable;
+    ControlElement<bool> rollMovementDisable = new(false, 0, true);
+    readonly int rollID = Animator.StringToHash("Roll");
     IEnumerator<float> Rolling(Player wielder)
     {
-        if (rollMovementDisable == null) rollMovementDisable = new(10, (movements) => movements.canMove = false, true);
-        wielder.movements.canMoveControl.AddControls(rollMovementDisable);
-        wielder.animations.RollRpc();
+        wielder.movements.canMoveControl.AddControl(rollMovementDisable);
+        wielder.anim.SetTrigger(rollID);
 
         float counter = 0.0f;
-        Vector2 dir = InputManager.Instance.MovementInput().normalized;
+        float rollDirection = InputManager.Instance.MovementInput();
         while (counter * data.rollSpeed < data.rollDistance)
         {
-            wielder.movements.rb.linearVelocity = dir * data.rollSpeed;
+            wielder.movements.rb.linearVelocityX = rollDirection * data.rollSpeed;
             counter += Time.deltaTime;
             yield return Timing.WaitForOneFrame;
         }

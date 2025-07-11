@@ -26,17 +26,12 @@ public abstract class WeaponItem : UnstackableItem
         }
         weapon.enabledState.Value = true;
     }
-    protected virtual bool rotationBound => true;
     protected virtual bool scaleBound => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
         weapon.transform.position = wielder.inventory.weaponAnchor.position;
-
-        if (rotationBound) weapon.transform.rotation = wielder.inventory.weaponAnchor.rotation;
-
-        if (scaleBound) weapon.transform.localScale = wielder.inventory.weaponAnchor.localScale;
-        else weapon.transform.localScale = Vector3.one;
+        if (scaleBound) weapon.transform.localScale = wielder.inventory.weaponAnchor.lossyScale;
     }
     public override void OnUnwield(Player wielder)
     {

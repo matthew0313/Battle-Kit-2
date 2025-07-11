@@ -8,15 +8,13 @@ public class PlayerSpawner : MonoBehaviour
     {
         NetworkManager.Singleton.OnConnectionEvent += OnConnection;
     }
-    private void OnDestroy()
-    {
-        NetworkManager.Singleton.OnConnectionEvent -= OnConnection;
-    }
     void OnConnection(NetworkManager manager, ConnectionEventData data)
     {
         if(data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
         {
-            Instantiate(playerPrefab).SpawnAsPlayerObject(NetworkManager.Singleton.LocalClientId);
+            var player = Instantiate(playerPrefab);
+            player.SpawnAsPlayerObject(NetworkManager.Singleton.LocalClientId);
+            player.transform.position = transform.position;
         }
     }
 }

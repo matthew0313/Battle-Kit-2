@@ -28,17 +28,17 @@ public class InventorySlotUI : MonoBehaviour
             slot.onItemChange += OnItemChange;
             slot.onCountChange += OnCountChange;
         }
-        OnItemChange(null, slot.item);
+        OnItemChange();
         OnCountChange();
     }
-    void OnItemChange(Item prevItem, Item newItem)
+    void OnItemChange()
     {
         if (displaying is IAmmoCountDisplayed)
         {
             (displaying as IAmmoCountDisplayed).onAmmoCountDisplayUpdate -= OnAmmoCountDisplayUpdate;
         }
 
-        displaying = newItem;
+        displaying = origin.item;
 
         if(displaying != null)
         {

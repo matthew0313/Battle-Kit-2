@@ -14,13 +14,11 @@ public class IronSword_ItemData : SwordItemData
     [Header("FlyingSlash")]
     [SerializeField] Sprite m_flyingSlashSprite;
     [SerializeField] IronSword_FlyingSlash m_flyingSlash;
-    [SerializeField] float m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f,
-        m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown, m_flyingSlashKnockback,
+    [SerializeField] float m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown, m_flyingSlashKnockback,
         m_flyingSlashSlowPercentage, m_flyingSlashSlowDuration;
+    [SerializeField] UnitTime m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f;
     public Sprite flyingSlashSprite => m_flyingSlashSprite;
     public IronSword_FlyingSlash flyingSlash => m_flyingSlash;
-    public float flyingSlashDelay => m_flyingSlashDelay;
-    public float flyingSlashDuration => m_flyingSlashDuration;
     public float flyingSlashDamage => m_flyingSlashDamage;
     public float flyingSlashSpeed => m_flyingSlashSpeed;
     public float flyingSlashAcceleration => m_flyingSlashAcceleration;
@@ -29,14 +27,17 @@ public class IronSword_ItemData : SwordItemData
     public float flyingSlashKnockback => m_flyingSlashKnockback;
     public float flyingSlashSlowPercentage => m_flyingSlashSlowPercentage;
     public float flyingSlashSlowDuration => m_flyingSlashSlowDuration;
+    public float flyingSlashDelay => m_flyingSlashDelay;
+    public float flyingSlashDuration => m_flyingSlashDuration;
 
     [Header("SpiralSlash")]
     [SerializeField] Sprite m_spiralSlashSprite;
-    [SerializeField] float m_spiralSlashCooldown, m_spiralSlashDuration, m_spiralSlashKnockback;
+    [SerializeField] float m_spiralSlashCooldown, m_spiralSlashKnockback;
+    [SerializeField] UnitTime m_spiralSlashDuration;
     public Sprite spiralSlashSprite => m_spiralSlashSprite;
     public float spiralSlashCooldown => m_spiralSlashCooldown;
-    public float spiralSlashDuration => m_spiralSlashDuration;
     public float spiralSlashKnockback => m_spiralSlashKnockback;
+    public float spiralSlashDuration => m_spiralSlashDuration;
     public override Item Create() => new IronSword_Item(this);
 }
 public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
@@ -73,7 +74,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
         Timing.RunCoroutine(MyCoroutines.WaitThen(data.flyingSlashDuration, () => usingFlyingSlash = false));
     }
-    protected override bool rotationBound => base.rotationBound && !usingSpiralSlash;
+    protected override bool scaleBound => base.scaleBound && !usingSpiralSlash;
     public void Skill2Use(Player wielder)
     {
         spiralSlashCounter = data.spiralSlashCooldown;
@@ -105,6 +106,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         yield return Timing.WaitForSeconds(data.flyingSlashDelay);
 
         IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
+        flyingSlash.transform.localScale = weapon.flyingSlashFirePoint.lossyScale;
         flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange, data.flyingSlashKnockback, data.flyingSlashSlowPercentage, data.flyingSlashSlowDuration);
         flyingSlash.NetworkObject.Spawn();
     }

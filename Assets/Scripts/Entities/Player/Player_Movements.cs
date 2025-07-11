@@ -2,6 +2,8 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,47 +15,52 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
     public NetworkTransform networkTransform { get; private set; }
     public Rigidbody2D rb { get; private set; }
 
+    [Header("Movement")]
     [SerializeField] float moveSpeed = 5.0f;
-    [SerializeField] float knockbackResistance = 10.0f;
+    [SerializeField] float jumpPower = 10.0f;
+    [SerializeField] Vector2 groundScanOffset, groundScanSize;
+    [SerializeField] LayerMask groundMask;
+    public bool isGrounded => Physics2D.OverlapBox((Vector2)transform.position + groundScanOffset, groundScanSize, 0.0f, groundMask);
 
     [Header("Rotation")]
-    [SerializeField] Transform rotator;
     [SerializeField] Transform flipped;
 
     public Vector2 moveDir { get; private set; } = Vector2.zero;
 
-    public bool mouseLocked = false;
-    public ControlMachine<Player_Movements> mouseLockedControl;
-
     public bool canMove = true;
-    public ControlMachine<Player_Movements> canMoveControl;
-
-    public bool canRotate = true;
-    public ControlMachine<Player_Movements> canRotateControl;
+    public ControlMachine<bool> canMoveControl;
 
     public float speedMultiplier { get; set; } = 1.0f;
-    public void OnAwake()
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube((Vector2)transform.position + groundScanOffset, groundScanSize);
+    }
+    private void Awake()
     {
         origin = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
         networkTransform = GetComponent<NetworkTransform>();
-        mouseLockedControl = new(this, (movements) => movements.mouseLocked = false);
-        canMoveControl = new(this, (movements) => movements.canMove = true);
-        canRotateControl = new(this, (movements) => movements.canRotate = true);
+        canMoveControl = new(value => canMove = value, true);
     }
-    public void OnStart()
-    {
-        if (!IsOwner) rb.bodyType = RigidbodyType2D.Kinematic;
-        else rb.bodyType = RigidbodyType2D.Dynamic;
-    }
-    Vector2 knockback = Vector2.zero;
-    public void OnUpdate()
+    readonly int isFallingID = Animator.StringToHash("IsFalling"), isGroundedID = Animator.StringToHash("IsGrounded");
+    float knockbackX = 0.0f;
+    bool doubleJumped = false;
+    private void Update()
     {
         if (IsOwner)
         {
-            Move();
-            Rotate();
+            if (isGrounded) doubleJumped = false;
+            if(canMove) Move();
             UpdateKnockback();
+        }
+    }
+    private void FixedUpdate()
+    {
+        if (IsOwner)
+        {
+            origin.anim.SetBool(isFallingID, rb.linearVelocityY < -0.1f);
+            origin.anim.SetBool(isGroundedID, isGrounded);
         }
     }
     public bool IsEnemy(Player other)
@@ -68,68 +75,48 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
     [Rpc(SendTo.Authority)]
     public void GetKnockbackRpc(KnockbackInfo knockback)
     {
-        this.knockback += knockback.value;
+        rb.linearVelocityY = knockback.value.y;
+        knockbackX = knockback.value.x;
     }
     [Rpc(SendTo.Authority)]
     public void TeleportRpc(Vector2 position) => transform.position = position;
+    readonly int isMovingID = Animator.StringToHash("IsMoving");
+    readonly int jumpID = Animator.StringToHash("Jump");
     void Move()
     {
-        Vector2 dir = Vector2.zero;
-
-        if (canMove && origin.hpComp.dead.Value == false)
+        rb.linearVelocityX = InputManager.Instance.MovementInput() * moveSpeed * speedMultiplier + knockbackX;
+        origin.anim.SetBool(isMovingID, InputManager.Instance.MovementInput() != 0);
+        if (isGrounded)
         {
-            moveDir = InputManager.Instance.MovementInput();
-            dir += moveDir * moveSpeed * speedMultiplier;
-            if (!mouseLocked)
+            if (InputManager.Instance.MovementInput() > 0) flipped.localScale = new Vector2(1.0f, 1.0f);
+            if (InputManager.Instance.MovementInput() < 0) flipped.localScale = new Vector2(-1.0f, 1.0f);
+            if (InputManager.Instance.JumpInput()) Jump();
+        }
+        else 
+        {
+            if (!doubleJumped && InputManager.Instance.JumpInput())
             {
-                if (moveDir.x > 0)
-                {
-                    flipped.localScale = new Vector2(-1.0f, 1.0f);
-                }
-                else if (moveDir.x < 0)
-                {
-                    flipped.localScale = new Vector2(1.0f, 1.0f);
-                }
+                doubleJumped = true;
+                Jump();
             }
         }
-        dir += knockback;
-
-        rb.linearVelocity = dir;
     }
-    void Rotate()
+    void Jump()
     {
-        if (origin.hpComp.dead.Value == true) return;
-
-        Vector2 tmp = Camera.main.ScreenToWorldPoint(InputManager.Instance.MouseInput()) - rotator.position;
-        float deg = Mathf.Atan2(tmp.y, tmp.x) * Mathf.Rad2Deg;
-        if (deg < 0.0f) deg += 360.0f;
-        if (deg > 90.0f && deg < 270.0f)
-        {
-            rotator.localScale = new Vector2(1.0f, -1.0f);
-        }
-        else
-        {
-            rotator.localScale = new Vector2(1.0f, 1.0f);
-        }
-        rotator.rotation = Quaternion.Euler(0, 0, deg);
-        if (mouseLocked)
-        {
-            if (tmp.x > 0)
-            {
-                flipped.localScale = new Vector2(-1.0f, 1.0f);
-            }
-            else if (tmp.x < 0)
-            {
-                flipped.localScale = new Vector2(1.0f, 1.0f);
-            }
-        }
+        rb.linearVelocityY = jumpPower;
+        origin.anim.SetBool(isFallingID, false);
+        origin.anim.SetTrigger(jumpID);
     }
     void UpdateKnockback()
     {
-        if (knockback == Vector2.zero) return;
-
-        knockback -= knockback.normalized * Mathf.Min(knockbackResistance * Time.deltaTime, knockback.magnitude);
-        if (knockback.magnitude < 0.1f) knockback = Vector2.zero;
+        if (knockbackX < 0.0f) knockbackX = Mathf.Min(knockbackX + Time.deltaTime * rb.gravityScale, 0.0f);
+        if (knockbackX > 0.0f) knockbackX = Mathf.Max(knockbackX - Time.deltaTime * rb.gravityScale, 0.0f);
+    }
+    private void OnDisable()
+    {
+        rb.linearVelocityX = 0.0f;
+        knockbackX = 0.0f;
+        origin.anim.SetBool(isMovingID, false);
     }
 }
 #if UNITY_EDITOR

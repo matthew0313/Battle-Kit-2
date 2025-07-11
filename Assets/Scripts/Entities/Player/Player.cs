@@ -6,15 +6,50 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
-[RequireComponent(typeof(Player_Movements), typeof(Player_Animations), typeof(Player_Inventory))]
+[RequireComponent(typeof(Player_Movements), typeof(Player_Skins), typeof(Player_Inventory))]
 [RequireComponent(typeof(Player_HpComp))]
 public class Player : Entity, ITimeSlowable
 {
-    public Player_Movements movements { get; private set; }
-    public Player_Animations animations { get; private set; }
-    public Player_Inventory inventory { get; private set; }
-    public Player_HpComp hpComp { get; private set; }
+    public Animator anim;
+
+    Player_Movements m_movements;
+    public Player_Movements movements
+    {
+        get
+        {
+            if (m_movements == null) m_movements = GetComponent<Player_Movements>();
+            return m_movements;
+        }
+    }
+    Player_Skins m_animations;
+    public Player_Skins animations
+    {
+        get
+        {
+            if(m_animations == null) m_animations = GetComponent<Player_Skins>();
+            return m_animations;
+        }
+    }
+    Player_Inventory m_inventory;
+    public Player_Inventory inventory
+    {
+        get
+        {
+            if(m_inventory == null) m_inventory = GetComponent<Player_Inventory>();
+            return m_inventory;
+        }
+    }
+    Player_HpComp m_hpComp;
+    public Player_HpComp hpComp
+    {
+        get
+        {
+            if(m_hpComp == null) m_hpComp = GetComponent<Player_HpComp>();
+            return m_hpComp;
+        }
+    }
     public static Player localPlayer { get; private set; }
+
     public NetworkVariable<Alliance> alliance = new NetworkVariable<Alliance>(Alliance.None);
     public NetworkVariable<bool> combat = new NetworkVariable<bool>(true);
     
@@ -34,19 +69,7 @@ public class Player : Entity, ITimeSlowable
     {
         return other != this && this.combat.Value == true && (other.alliance.Value & this.alliance.Value) == 0;
     }
-    
-    private void Awake()
-    {
-        movements = GetComponent<Player_Movements>();
-        animations = GetComponent<Player_Animations>();
-        inventory = GetComponent<Player_Inventory>();
-        hpComp = GetComponent<Player_HpComp>();
-        movements.OnAwake();
-        animations.OnAwake();
-        inventory.OnAwake();
-        hpComp.OnAwake();
-        //NetworkManager.OnConnectionEvent += OnConnection;
-    }
+
     static Dictionary<ulong, Player> players = new();
     public static Player GetPlayerWithID(ulong clientID)
     {
@@ -60,14 +83,11 @@ public class Player : Entity, ITimeSlowable
     }
     private void Start()
     {
-        movements.OnStart();
-        inventory.OnStart();
-        hpComp.OnStart();
-
+        inventory.Init();
         if (IsLocalPlayer)
         {
             localPlayer = this;
-            foreach (var i in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<ILocalPlayerSpawnCallbackReceiver>())
+            foreach(var i in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<ILocalPlayerSpawnCallbackReceiver>())
             {
                 i.OnLocalPlayerSpawn(this);
             }
@@ -76,18 +96,6 @@ public class Player : Entity, ITimeSlowable
 
         if (IsOwner) combat.Value = true;
     }
-    private void Update()
-    {
-        movements.OnUpdate();
-        animations.OnUpdate();
-        inventory.OnUpdate();
-        hpComp.OnUpdate();
-    }
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        //NetworkManager.OnConnectionEvent -= OnConnection;
-    }
     public float timeScale { get; private set; } = 1.0f;
     public void SlowTime(float scale) => SlowTimeRpc(scale);
     [Rpc(SendTo.Authority)]
@@ -95,15 +103,6 @@ public class Player : Entity, ITimeSlowable
     public void RevertTime(float scale) => RevertTimeRpc(scale);
     [Rpc(SendTo.Authority)]
     public void RevertTimeRpc(float scale) => timeScale /= scale;
-
-    /*void OnConnection(NetworkManager manager, ConnectionEventData data)
-    {
-        if(data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
-        {
-            NetworkObject.enabled = true;
-            NetworkObject.SpawnAsPlayerObject(data.ClientId);
-        }
-    }*/
 }
 public interface ILocalPlayerSpawnCallbackReceiver
 {

@@ -84,12 +84,10 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     }
 
     protected float counter = 0.0f;
-    protected readonly ControlElement<Player_Movements> mouseLockedEnable = new ControlElement<Player_Movements>(0, (movements) => movements.mouseLocked = true, true);
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);
         counter = 0.0f;
-        wielder.movements.mouseLockedControl.AddControls(mouseLockedEnable);
     }
     protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
@@ -125,13 +123,9 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     protected virtual void Fire(Player wielder)
     {
         Bullet bullet = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
+        bullet.transform.localScale = weapon.firePoint.lossyScale;
         bullet.Set(wielder, data.damage, data.bulletSpeed, data.bulletRange);
         bullet.NetworkObject.Spawn();
-    }
-    public override void OnUnwield(Player wielder)
-    {
-        base.OnUnwield(wielder);
-        wielder.movements.mouseLockedControl.RemoveControl(mouseLockedEnable);
     }
     public override Dictionary<string, string> SaveProperties()
     {
