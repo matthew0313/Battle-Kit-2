@@ -6,9 +6,11 @@ using UnityEngine;
 public abstract class MeleeItemData : WeaponItemData
 {
     [Header("Melee")]
+    [SerializeField] Sprite m_lmbIcon;
     [SerializeField] bool m_auto;
     [SerializeField] float m_damage;
     [SerializeField] float m_slashRate;
+    public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
     public float slashRate => m_slashRate;
@@ -33,6 +35,9 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
     }
+    public Sprite lmbSprite => data.lmbIcon;
+    public bool canUseLmb => canSlash && counter >= data.slashRate;
+    public float lmbCooldownBarFill => 1.0f - counter / data.slashRate;
     public void LMBUse(Player wielder, bool down)
     {
         if (!data.auto && !down) return;
@@ -67,7 +72,7 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     {
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if (damagable.IsEnemy(wielder))
+            if (wielder.GetRelation(damagable.self) == Relation.Enemy)
             {
                 damagable.GetDamage(new()
                 {

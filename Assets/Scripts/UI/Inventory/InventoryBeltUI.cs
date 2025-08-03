@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class InventoryBeltUI : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
 {
-    [SerializeField] InventorySlotUI[] slots = new InventorySlotUI[Player_Inventory.beltLength];
+    [SerializeField] InventoryBeltSlotUI[] slots = new InventoryBeltSlotUI[Player_Inventory.beltLength];
     [SerializeField] Transform equippedSlotIndicator;
     Player player;
     public void OnLocalPlayerSpawn(Player player)
@@ -12,7 +12,7 @@ public class InventoryBeltUI : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
         this.player = player;
         for(int i = 0; i < slots.Length; i++)
         {
-            slots[i].Set(player.inventory.slots[i]);
+            slots[i].Set(player.inventory.slots[i], player, i);
         }
     }
     private void Update()

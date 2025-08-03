@@ -20,7 +20,7 @@ MonoBehaviour:
     kr: "\uAD8C\uCD1D\uC774\uB77C \uD558\uBA74 \uC0AC\uB78C\uB4E4\uC774 \uB300\uBD80\uBD84
       \uB5A0\uC62C\uB9AC\uB294 \uB300\uD45C\uC801\uC778 \uAD8C\uCD1D\uC785\uB2C8\uB2E4."
   m_itemIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
-  m_canDrop: 1
+  m_lmbIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
   m_auto: 0
   m_damage: 10
   m_fireRate: 0.2
@@ -33,7 +33,7 @@ MonoBehaviour:
   m_weaponPrefab: {fileID: 3151999320843686830, guid: 4fa861a97c562df42a48a51be644726c, type: 3}
   m_bullet: {fileID: 8303371301881936506, guid: 7979abe7c13d8db488aa91ab637f8c17, type: 3}
   m_shotgunShotIcon: {fileID: -8401589990244493734, guid: b9b4b868e4f973d4f8fdf603558f117f, type: 3}
-  m_shotgunShotBullet: {fileID: 8303371301881936506, guid: 168b36e60b5077543968f5d53c29aaa1, type: 3}
+  m_shotgunShotBullet: {fileID: 8303371301881936506, guid: 631b2f4678cbece428fd920bb22bf3a7, type: 3}
   m_shotgunShotCount: 5
   m_shotgunShotDamage: 8
   m_shotgunShotSpeed: 30

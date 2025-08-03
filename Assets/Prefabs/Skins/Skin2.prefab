@@ -3121,7 +3121,7 @@ GameObject:
   - component: {fileID: 5822970497544072144}
   - component: {fileID: 1925909294217170284}
   - component: {fileID: 533484754511476595}
-  - component: {fileID: 1013638985918136813}
+  - component: {fileID: 576254398851372140}
   m_Layer: 0
   m_Name: Skin2
   m_TagString: Untagged
@@ -3193,7 +3193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_anim: {fileID: 1925909294217170284}
---- !u!114 &1013638985918136813
+--- !u!114 &576254398851372140
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3202,7 +3202,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4758053683105489482}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 709142010e9388b4ba1a6e6d8a36b7c7, type: 3}
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1

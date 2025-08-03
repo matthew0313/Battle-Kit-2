@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
 {
@@ -12,17 +13,13 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
     Player player;
 
     [SerializeField] InventorySlotUI grabbingSlotUI;
-
-    [Header("Describing")]
-    [SerializeField] GameObject describer;
-    [SerializeField] TMP_Text itemName, itemDesc;
-
-    public InventorySlot grabbingSlot { get; private set; }
-    bool grabbing => grabbingSlot.item != null;
+    InventorySlot prevSlot;
+    public InventorySlot grabbingSlot;
+    public bool grabbing => grabbingSlot.item != null;
     public void OnLocalPlayerSpawn(Player player)
     {
         this.player = player;
-        grabbingSlot = new InventorySlot(player.inventory);
+        grabbingSlot = new(player.inventory);
         grabbingSlotUI.Set(grabbingSlot);
     }
     private void Update()
@@ -30,115 +27,141 @@ public class InventorySlotUIHandler : MonoBehaviour, ILocalPlayerSpawnCallbackRe
         if (player == null) return;
         GrabUpdate();
     }
+    bool SearchSlot(out InventorySlotUI slotUI)
+    {
+        List<RaycastResult> results = UIScanner.ScanUI(Input.mousePosition);
+        foreach(var i in results)
+        {
+            if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
+            {
+                slotUI = slot;
+                return true;
+            }
+        }
+        slotUI = null; return false;
+    }
     void GrabUpdate()
     {
-        Vector2 pos = InputManager.Instance.MouseInput();
-        if(SystemInfo.deviceType == DeviceType.Handheld)
+        Vector2 pos = Input.mousePosition;
+        if (DeviceManager.deviceType == DeviceType.Desktop)
         {
-            if (!UIManager.Instance.isTabOpen)
+            if (grabbing)
             {
-                if (grabbing)
+                grabbingSlotUI.transform.position = pos;
+                if (Input.GetMouseButtonDown(0))
                 {
-                    DropItem(grabbingSlot.item, grabbingSlot.count);
-                    grabbingSlot.count = 0;
-                }
-                return;
-            }
-        }
-        if (!grabbing)
-        {
-            if (InputManager.Instance.ItemGrabInput())
-            {
-                List<RaycastResult> results = UIScanner.ScanUI(pos);
-                foreach (var i in results)
-                {
-                    if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
-                    {
-                        if (slot.origin.item != null && slot.origin.Swap(grabbingSlot))
-                        {
-                            grabbingSlotUI.transform.position = Input.mousePosition;
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (InputManager.Instance.ItemHalfGrabInput())
-            {
-                List<RaycastResult> results = UIScanner.ScanUI(pos);
-                foreach (var i in results)
-                {
-                    if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
-                    {
-                        if (slot.origin.item != null && grabbingSlot.CanSetItem(slot.origin.item))
-                        {
-                            int count = slot.origin.count / 2 + slot.origin.count % 2;
-                            grabbingSlot.SetItem(slot.origin.item.Copy());
-                            grabbingSlot.count = count;
-                            slot.origin.count -= count;
-                            grabbingSlotUI.transform.position = Input.mousePosition;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            grabbingSlotUI.transform.position = pos;
-            if (InputManager.Instance.ItemUngrabInput())
-            {
-                List<RaycastResult> results = UIScanner.ScanUI(pos);
-                bool slotHit = false;
-                foreach (var i in results)
-                {
-                    if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
+                    if (SearchSlot(out InventorySlotUI slot))
                     {
                         if (grabbingSlot.item is IApplied applied && slot.origin.item != null && applied.IsAppliableTo(slot.origin.item))
                         {
                             applied.ApplyTo(slot.origin.item);
                             return;
                         }
-                        slotHit = true;
-                        if (grabbingSlot.item.IsStackable(slot.origin.item))
-                        {
-                            grabbingSlot.count = slot.origin.Insert(grabbingSlot.item, grabbingSlot.count);
-                            break;
-                        }
-                        else if (grabbingSlot.Swap(slot.origin))
-                        {
-                            break;
-                        }
+                        if (grabbingSlot.item.IsStackable(slot.origin.item)) grabbingSlot.count = slot.origin.Insert(grabbingSlot.item, grabbingSlot.count);
+                        else if (grabbingSlot.Swap(slot.origin)) { }
+                    }
+                    else
+                    {
+                        DropItem(grabbingSlot.item, grabbingSlot.count);
+                        grabbingSlot.count = 0;
                     }
                 }
-                if (!slotHit && grabbingSlot.item.data.canDrop)
+                else if (Input.GetMouseButtonDown(1))
                 {
-                    DropItem(grabbingSlot.item.Copy(), grabbingSlot.count);
-                    grabbingSlot.count = 0;
+                    if (SearchSlot(out InventorySlotUI slot))
+                    {
+                        if (grabbingSlot.item is IApplied applied && slot.origin.item != null && applied.IsAppliableTo(slot.origin.item))
+                        {
+                            applied.ApplyTo(slot.origin.item);
+                            return;
+                        }
+                        grabbingSlot.count -= 1 - slot.origin.Insert(grabbingSlot.item, 1);
+                    }
+                    else
+                    {
+                        DropItem(grabbingSlot.item, 1);
+                        grabbingSlot.count -= 1;
+                    }
                 }
             }
-            else if (InputManager.Instance.ItemHalfUngrabInput())
+            else
             {
-                List<RaycastResult> results = UIScanner.ScanUI(pos);
-                bool slotHit = false;
-                foreach (var i in results)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (i.gameObject.TryGetComponent(out InventorySlotUI slot))
+                    if (SearchSlot(out InventorySlotUI slot))
                     {
-                        slotHit = true;
-                        grabbingSlot.count -= 1 - slot.origin.Insert(grabbingSlot.item.Copy(), 1);
-                        break;
+                        if (slot.origin.item != null && slot.origin.Swap(grabbingSlot))
+                        {
+                            grabbingSlotUI.transform.position = Input.mousePosition;
+                        }
                     }
                 }
-                if (!slotHit && grabbingSlot.item.data.canDrop)
+                else if (Input.GetMouseButtonDown(1))
                 {
-                    DropItem(grabbingSlot.item.Copy(), 1);
-                    grabbingSlot.count--;
+                    if (SearchSlot(out InventorySlotUI slot))
+                    {
+                        if (slot.origin.item != null)
+                        {
+                            int count = slot.origin.count / 2 + slot.origin.count % 2;
+                            slot.origin.count -= count - grabbingSlot.Insert(slot.origin.item, count);
+                            grabbingSlotUI.transform.position = Input.mousePosition;
+                        }
+                    }
+                }
+            }
+        }
+        if (DeviceManager.deviceType == DeviceType.Handheld)
+        {
+            if (grabbing)
+            {
+                grabbingSlotUI.transform.position = pos;
+                if (!UIManager.Instance.isTabOpen)
+                {
+                    if (prevSlot != null) grabbingSlot.count = prevSlot.Insert(grabbingSlot.item, grabbingSlot.count);
+                    if (grabbingSlot.count > 0) player.inventory.InsertAndDropRest(grabbingSlot.item, grabbingSlot.count);
+                    grabbingSlot.count = 0;
+                    return;
+                }
+                if (!Input.GetMouseButton(0))
+                {
+                    if (SearchSlot(out InventorySlotUI slot))
+                    {
+                        if (grabbingSlot.item is IApplied applied && slot.origin.item != null && applied.IsAppliableTo(slot.origin.item)) applied.ApplyTo(slot.origin.item);
+                        else grabbingSlot.count = slot.origin.Insert(grabbingSlot.item, grabbingSlot.count);
+                        if (grabbingSlot.count > 0)
+                        {
+                            if (prevSlot != null) grabbingSlot.count = prevSlot.Insert(grabbingSlot.item, grabbingSlot.count);
+                            if (grabbingSlot.count > 0) player.inventory.InsertAndDropRest(grabbingSlot.item, grabbingSlot.count);
+                            grabbingSlot.count = 0;
+                        }
+                    }
+                    else
+                    {
+                        DropItem(grabbingSlot.item, grabbingSlot.count);
+                        grabbingSlot.count = 0;
+                    }
+                }
+            }
+            else
+            {
+                if (!UIManager.Instance.isTabOpen) return;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if(SearchSlot(out InventorySlotUI slot))
+                    {
+                        if (slot.origin.item != null)
+                        {
+                            slot.origin.Swap(grabbingSlot);
+                            prevSlot = slot.origin;
+                            grabbingSlotUI.transform.position = Input.mousePosition;
+                        }
+                    }
                 }
             }
         }
     }
     void DropItem(Item item, int count)
     {
-        player.inventory.DropItem(item, count, ((Vector2)Camera.main.ScreenToWorldPoint(InputManager.Instance.MouseInput()) - (Vector2)player.transform.position).normalized);
+        player.inventory.DropItem(item, count);
     }
 }

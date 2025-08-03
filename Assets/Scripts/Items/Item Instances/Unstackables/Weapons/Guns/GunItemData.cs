@@ -6,10 +6,12 @@ using UnityEngine.AI;
 public abstract class GunItemData : WeaponItemData
 {
     [Header("Gun")]
+    [SerializeField] Sprite m_lmbIcon;
     [SerializeField] bool m_auto;
     [SerializeField] float m_damage, m_fireRate, m_bulletSpeed, m_bulletRange, m_spread, m_reloadTime;
     [SerializeField] int m_magSize;
     [SerializeField] ItemData m_ammunition;
+    public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
     public float fireRate => m_fireRate;
@@ -106,6 +108,9 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
             }
         }
     }
+    public Sprite lmbSprite => data.lmbIcon;
+    public bool canUseLmb => canFire && counter >= data.fireRate && mag > 0;
+    public float lmbCooldownBarFill => 1.0f - counter / data.fireRate;
     public void LMBUse(Player wielder, bool down)
     {
         if (!data.auto && !down) return;
@@ -123,8 +128,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     protected virtual void Fire(Player wielder)
     {
         Bullet bullet = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
-        bullet.transform.localScale = weapon.firePoint.lossyScale;
-        bullet.Set(wielder, data.damage, data.bulletSpeed, data.bulletRange);
+        bullet.Set(data.damage, data.bulletSpeed, data.bulletRange);
         bullet.NetworkObject.Spawn();
     }
     public override Dictionary<string, string> SaveProperties()

@@ -11,6 +11,7 @@ using UnityEditor;
 [RequireComponent(typeof(NetworkTransform), typeof(Rigidbody2D))]
 public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAdjustable
 {
+    public Entity self => origin;
     Player origin;
     public NetworkTransform networkTransform { get; private set; }
     public Rigidbody2D rb { get; private set; }
@@ -27,8 +28,11 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
 
     public Vector2 moveDir { get; private set; } = Vector2.zero;
 
-    public bool canMove = true;
+    public bool canMove { get; private set; } = true;
     public ControlMachine<bool> canMoveControl;
+
+    public bool canRotate { get; private set; } = true;
+    public ControlMachine<bool> canRotateControl;
 
     public float speedMultiplier { get; set; } = 1.0f;
     private void OnDrawGizmosSelected()
@@ -42,6 +46,7 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
         rb = GetComponent<Rigidbody2D>();
         networkTransform = GetComponent<NetworkTransform>();
         canMoveControl = new(value => canMove = value, true);
+        canRotateControl = new(value => canRotate = value, true);
     }
     readonly int isFallingID = Animator.StringToHash("IsFalling"), isGroundedID = Animator.StringToHash("IsGrounded");
     float knockbackX = 0.0f;
@@ -62,10 +67,6 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
             origin.anim.SetBool(isFallingID, rb.linearVelocityY < -0.1f);
             origin.anim.SetBool(isGroundedID, isGrounded);
         }
-    }
-    public bool IsEnemy(Player other)
-    {
-        return origin.IsEnemy(other);
     }
 
     public void GetKnockback(KnockbackInfo knockback)
@@ -88,9 +89,20 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
         origin.anim.SetBool(isMovingID, InputManager.Instance.MovementInput() != 0);
         if (isGrounded)
         {
-            if (InputManager.Instance.MovementInput() > 0) flipped.localScale = new Vector2(1.0f, 1.0f);
-            if (InputManager.Instance.MovementInput() < 0) flipped.localScale = new Vector2(-1.0f, 1.0f);
             if (InputManager.Instance.JumpInput()) Jump();
+            if (canRotate)
+            {
+                if (InputManager.Instance.MovementInput() > 0)
+                {
+                    flipped.rotation = Quaternion.Euler(0, 0, 0);
+                    flipped.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                }
+                if (InputManager.Instance.MovementInput() < 0)
+                {
+                    flipped.rotation = Quaternion.Euler(0, 0, 180);
+                    flipped.localScale = new Vector3(1.0f, -1.0f, 1.0f);
+                }
+            }
         }
         else 
         {

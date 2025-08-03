@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public interface IKnockable : IEnemyAffectable
+public interface IKnockable : IEntityAffectable
 {
     public void GetKnockback(KnockbackInfo knockback);
 }

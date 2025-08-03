@@ -19,7 +19,7 @@ MonoBehaviour:
     en: A massive iron sword.
     kr: "\uAC70\uB300\uD55C \uCCA0 \uAC80\uC785\uB2C8\uB2E4."
   m_itemIcon: {fileID: 21300000, guid: 78ed6c7e0b3cfb84889c3b54461e61a8, type: 3}
-  m_canDrop: 1
+  m_lmbIcon: {fileID: 21300000, guid: 27f21d39285613c4fbcf004dab157eca, type: 3}
   m_auto: 1
   m_damage: 25
   m_slashRate: 0.3

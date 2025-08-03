@@ -8,81 +8,56 @@ using static UnityEngine.UI.Image;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Skins), typeof(Player_Inventory))]
 [RequireComponent(typeof(Player_HpComp))]
-public class Player : Entity, ITimeSlowable
+public class Player : Entity
 {
     public Animator anim;
 
-    Player_Movements m_movements;
-    public Player_Movements movements
-    {
-        get
-        {
-            if (m_movements == null) m_movements = GetComponent<Player_Movements>();
-            return m_movements;
-        }
-    }
-    Player_Skins m_animations;
-    public Player_Skins animations
-    {
-        get
-        {
-            if(m_animations == null) m_animations = GetComponent<Player_Skins>();
-            return m_animations;
-        }
-    }
-    Player_Inventory m_inventory;
-    public Player_Inventory inventory
-    {
-        get
-        {
-            if(m_inventory == null) m_inventory = GetComponent<Player_Inventory>();
-            return m_inventory;
-        }
-    }
-    Player_HpComp m_hpComp;
-    public Player_HpComp hpComp
-    {
-        get
-        {
-            if(m_hpComp == null) m_hpComp = GetComponent<Player_HpComp>();
-            return m_hpComp;
-        }
-    }
+    public Player_Movements movements { get; private set; }
+    public Player_Skins skins { get; private set; }
+    public Player_Inventory inventory { get; private set; }
+    public Player_HpComp hpComp { get; private set; }
     public static Player localPlayer { get; private set; }
 
-    public NetworkVariable<Alliance> alliance = new NetworkVariable<Alliance>(Alliance.None);
-    public NetworkVariable<bool> combat = new NetworkVariable<bool>(true);
+    public NetworkVariable<Team> team = new NetworkVariable<Team>(Team.None);
+    public NetworkVariable<bool> PVPOn { get; } = new NetworkVariable<bool>(true);
     
     [Rpc(SendTo.Authority)]
-    public void SetAllianceRpc(Alliance alliance, RpcParams rpcParams)
+    public void SetTeamRpc(Team team, RpcParams rpcParams)
     {
         if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
-        this.alliance.Value = alliance;
+        this.team.Value = team;
     }
     [Rpc(SendTo.Authority)]
-    public void SetCombatRpc(bool combat, RpcParams rpcParams)
+    public void SetPVPOnRpc(bool PVPOn, RpcParams rpcParams)
     {
         if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
-        this.combat.Value = combat;
+        this.PVPOn.Value = PVPOn;
     }
-    public bool IsEnemy(Player other)
+    public Relation GetRelation(Entity other)
     {
-        return other != this && this.combat.Value == true && (other.alliance.Value & this.alliance.Value) == 0;
+        if (other == null) return Relation.None;
+        if (other == this) return Relation.Self;
+        if(other is Player player)
+        {
+            if (!PVPOn.Value || !player.PVPOn.Value) return Relation.None;
+            if (team.Value != Team.None && team.Value == player.team.Value) return Relation.Ally;
+            return Relation.Enemy;
+        }
+        return Relation.None;
     }
-
     static Dictionary<ulong, Player> players = new();
-    public static Player GetPlayerWithID(ulong clientID)
+    public static Player GetPlayer(ulong clientID) => players[clientID];
+    private void Awake()
     {
-        if(players.ContainsKey(clientID)) return players[clientID];
-        return null;
-    }
-    public static int GetPlayerCount() => players.Count;
-    public static IEnumerable<Player> GetPlayers()
-    {
-        foreach(var i in players.Values) yield return i;
+        movements = GetComponent<Player_Movements>();
+        skins = GetComponent<Player_Skins>();
+        inventory = GetComponent<Player_Inventory>();
+        hpComp = GetComponent<Player_HpComp>();
     }
     private void Start()
     {
+        players.Add(OwnerClientId, this);
+        GameManager.Instance.AddPlayer(this);
         inventory.Init();
         if (IsLocalPlayer)
         {
@@ -92,28 +67,32 @@ public class Player : Entity, ITimeSlowable
                 i.OnLocalPlayerSpawn(this);
             }
         }
-        players.Add(OwnerClientId, this);
-
-        if (IsOwner) combat.Value = true;
     }
-    public float timeScale { get; private set; } = 1.0f;
-    public void SlowTime(float scale) => SlowTimeRpc(scale);
-    [Rpc(SendTo.Authority)]
-    public void SlowTimeRpc(float scale) => timeScale *= scale;
-    public void RevertTime(float scale) => RevertTimeRpc(scale);
-    [Rpc(SendTo.Authority)]
-    public void RevertTimeRpc(float scale) => timeScale /= scale;
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (players.ContainsKey(OwnerClientId)) players.Remove(OwnerClientId);
+        GameManager.Instance.RemovePlayer(this);
+    }
 }
 public interface ILocalPlayerSpawnCallbackReceiver
 {
     public void OnLocalPlayerSpawn(Player player);
 }
 [System.Serializable]
-public enum Alliance
+public enum Team
 {
     None = 0,
     TeamRed = 1,
     TeamBlue = 2,
     TeamGreen = 3,
     TeamYellow = 4
+}
+[System.Serializable]
+public enum Relation
+{
+    None = 0,
+    Enemy = 1,
+    Ally = 2,
+    Self = 3
 }

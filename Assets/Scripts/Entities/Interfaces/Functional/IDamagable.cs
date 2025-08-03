@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public interface IDamagable : IEnemyAffectable
+public interface IDamagable : IEntityAffectable
 {
     public void GetDamage(DamageInfo damage);
 }
@@ -41,5 +41,5 @@ public struct DamageInfo : INetworkSerializable
 public enum DamageSource
 {
     Player = 0,
-    Aliment = 1
+    Other = 1
 }

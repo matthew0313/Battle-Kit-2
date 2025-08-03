@@ -8,6 +8,11 @@ public class EquippedItemUI : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
     [SerializeField] Color availableColor;
     [SerializeField] Color unavailableColor;
 
+    [Header("LMBUser")]
+    [SerializeField] GameObject lmbUseDisplay;
+    [SerializeField] Image lmbUseBack;
+    [SerializeField] Image lmbUseIcon, lmbUseCooldownBar;
+
     [Header("Skill1")]
     [SerializeField] GameObject skill1Display;
     [SerializeField] Image skill1Back;
@@ -34,7 +39,17 @@ public class EquippedItemUI : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
     void OnEquippedItemChange(Item item)
     {
         displaying = item;
-        if(displaying is ISkill1User skill1User)
+        if (displaying is ILMBUser lmbUser)
+        {
+            lmbUseDisplay.SetActive(true);
+            lmbUseIcon.sprite = lmbUser.lmbSprite;
+            UpdateLMB(lmbUser);
+        }
+        else
+        {
+            lmbUseDisplay.SetActive(false);
+        }
+        if (displaying is ISkill1User skill1User)
         {
             skill1Display.SetActive(true);
             skill1Icon.sprite = skill1User.skill1Sprite;
@@ -66,9 +81,15 @@ public class EquippedItemUI : MonoBehaviour, ILocalPlayerSpawnCallbackReceiver
     }
     private void Update()
     {
+        if (displaying is ILMBUser lmbUser) UpdateLMB(lmbUser);
         if (displaying is ISkill1User skill1User) UpdateSkill1(skill1User);
         if (displaying is ISkill2User skill2User) UpdateSkill2(skill2User);
         if (displaying is IReloadable reloadable) UpdateReload(reloadable);
+    }
+    void UpdateLMB(ILMBUser lmbUser)
+    {
+        lmbUseBack.color = lmbUser.canUseLmb ? availableColor : unavailableColor;
+        lmbUseCooldownBar.fillAmount = lmbUser.lmbCooldownBarFill;
     }
     void UpdateSkill1(ISkill1User skill1User)
     {

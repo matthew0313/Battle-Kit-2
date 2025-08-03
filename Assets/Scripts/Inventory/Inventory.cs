@@ -4,9 +4,8 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Jobs;
 
-public class Inventory : NetworkBehaviour
+public abstract class Inventory : NetworkBehaviour
 {
-    [SerializeField] protected int defaultSlotCount = 16;
     public List<InventorySlot> slots { get; } = new();
     public event Action<Item> onInventoryUpdate;
     int m_slotCount = 0;
@@ -14,7 +13,7 @@ public class Inventory : NetworkBehaviour
     public int slotCount
     {
         get { return m_slotCount; }
-        set
+        protected set
         {
             m_slotCount = value;
             for (int i = slots.Count; i < slotCount; i++)
@@ -27,25 +26,17 @@ public class Inventory : NetworkBehaviour
             onSlotCountChange?.Invoke();
         }
     }
-    protected void Init()
-    {
-        if(IsOwner) slotCount = defaultSlotCount;
-    }
     [Rpc(SendTo.Authority)]
     public void InsertRpc(ItemInstanceData data, int count, NetworkBehaviourReference source)
     {
         int left = Insert(data.ToItem(), count);
-        if(source.TryGet(out NetworkBehaviour sender) && sender is IntegerReceiver receiver)
+        if(source.TryGet(out IntegerReceiver receiver))
         {
             receiver.ResponseRpc(left);
         }
     }
-    [Rpc(SendTo.Authority)]
-    public void ClearRpc()
-    {
-        foreach (var i in slots) i.count = 0;
-    }
     protected virtual IEnumerable<InventorySlot> GetInsertableSlots() => slots;
+    protected virtual IEnumerable<InventorySlot> GetSearchableSlots() => slots;
     public int Insert(Item item, int count)
     {
         foreach (var i in GetInsertableSlots())
@@ -80,21 +71,20 @@ public class Inventory : NetworkBehaviour
         }
         return count;
     }
-    public int Search(ItemData data) => Search((item) => item != null && item.data == data);
+    public IEnumerable<InventorySlot> SearchAll(Func<Item, bool> predicate)
+    {
+        foreach (var i in GetSearchableSlots())
+        {
+            if (i.item != null && predicate.Invoke(i.item)) yield return i;
+        }
+    }
     public int Search(Func<Item, bool> predicate)
     {
         int tot = 0;
         foreach (var i in SearchAll(predicate)) tot += i.count;
         return tot;
     }
-    public IEnumerable<InventorySlot> SearchAll(Func<Item, bool> predicate)
-    {
-        foreach (var i in slots)
-        {
-            if (i.item != null && predicate.Invoke(i.item)) yield return i;
-        }
-    }
-    public bool TakeOut(ItemData data, int count) => TakeOut((item) => item.data == data, count);
+    public int Search(ItemData data) => Search((item) => item != null && item.data == data);
     public bool TakeOut(Func<Item, bool> predicate, int count)
     {
         if (Search(predicate) < count) return false;
@@ -108,10 +98,11 @@ public class Inventory : NetworkBehaviour
         }
         return true;
     }
+    public bool TakeOut(ItemData data, int count) => TakeOut((item) => item.data == data, count);
     public override void OnDestroy()
     {
         base.OnDestroy();
-        foreach (var i in slots)
+        foreach (var i in GetSearchableSlots())
         {
             if (i.item != null) i.item.Delete();
         }

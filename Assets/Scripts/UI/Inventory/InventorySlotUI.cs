@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class InventorySlotUI : MonoBehaviour
 {
+    [SerializeField] Animator anim;
+
     [Header("Default")]
     [SerializeField] Image itemIcon;
     [SerializeField] TMP_Text itemCount;
@@ -74,4 +76,7 @@ public class InventorySlotUI : MonoBehaviour
         ammoCountText.text = (displaying as IAmmoCountDisplayed).ammoCountText;
         ammoIcon.sprite = (displaying as IAmmoCountDisplayed ).ammoIcon;
     }
+    readonly int highlightID = Animator.StringToHash("Highlight"), selectID = Animator.StringToHash("Select");
+    public void SetHighlight(bool highlight) => anim.SetBool(highlightID, highlight);
+    public void SetSelect(bool select) => anim.SetBool(selectID, select);
 }

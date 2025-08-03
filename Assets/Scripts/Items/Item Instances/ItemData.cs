@@ -6,13 +6,9 @@ public abstract class ItemData : ScriptableObject
 {
     [Header("Item")]
     [SerializeField] LangText m_itemName;
-    [SerializeField] LangText m_description;
     [SerializeField] Sprite m_itemIcon;
-    [SerializeField] bool m_canDrop = true;
     public LangText itemName => m_itemName;
-    public LangText description => m_description;
     public Sprite itemIcon => m_itemIcon;
-    public bool canDrop => m_canDrop;
     public abstract Item Create();
     public abstract int maxStack { get; }
 }

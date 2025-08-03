@@ -5,43 +5,95 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
-    public InputManager() => Instance = this;
-
-    [Header("Keybinds")]
-    public KeyCode moveLeft = KeyCode.A;
-    public KeyCode moveRight = KeyCode.D, jump = KeyCode.Space;
-    public KeyCode skill1Key = KeyCode.Q, skill2Key = KeyCode.E, reloadKey = KeyCode.R;
-    public float MovementInput()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void Init()
     {
-        float tmp = 0.0f;
-        if (Input.GetKey(moveRight)) tmp += 1.0f;
-        if (Input.GetKey(moveLeft)) tmp -= 1.0f;
-        return tmp;
+        Instance = Instantiate(Resources.Load<InputManager>("InputManager"));
+        DontDestroyOnLoad(Instance.gameObject);
     }
-    public bool JumpInput() => Input.GetKeyDown(jump);
-    public Vector2 MouseInput() => Input.mousePosition;
-    public bool BeltSelectionInput(out int beltIndex)
+
+    PlayerInputs playerInputs;
+    [Header("Select Move")]
+    [SerializeField] float holdThreshold = 0.5f;
+    [SerializeField] float holdRepeatTime = 0.1f;
+    private void Awake()
     {
-        for(int i = 0; i < 6; i++)
+        playerInputs = new PlayerInputs();
+    }
+    private void OnEnable()
+    {
+        playerInputs.Enable();
+    }
+    private void OnDisable()
+    {
+        playerInputs.Disable();
+    }
+    Vector2 selectMoveVal = Vector2.zero;
+    Vector2 lastMoveDir = Vector2.zero;
+    float holdCounter = 0.0f, holdRepeatCounter = 0.0f;
+    private void Update()
+    {
+        Vector2 tmp = playerInputs.Default.SelectMove.ReadValue<Vector2>();
+        Vector2 moveDir = Vector2.zero;
+        if (tmp.x > 0) moveDir.x += 1;
+        else if (tmp.x < 0) moveDir.x -= 1;
+        else if (tmp.y > 0) moveDir.y += 1;
+        else if (tmp.y < 0) moveDir.y -= 1;
+        selectMoveVal = Vector2.zero;
+        if (moveDir != Vector2.zero)
         {
-            if(Input.GetKeyDown(KeyCode.Alpha1 + i))
+            if (moveDir != lastMoveDir)
             {
-                beltIndex = i; return true;
+                selectMoveVal = moveDir;
+                holdCounter = 0.0f; holdRepeatCounter = 0.0f;
+            }
+            else
+            {
+                holdCounter += Time.deltaTime;
+                if (holdCounter >= holdThreshold)
+                {
+                    holdRepeatCounter = Mathf.Max(holdRepeatCounter - Time.deltaTime, 0);
+                    if (holdRepeatCounter <= 0.0f)
+                    {
+                        holdRepeatCounter = holdRepeatTime;
+                        selectMoveVal = moveDir;
+                    }
+                }
             }
         }
-        beltIndex = -1; return false;
+        lastMoveDir = moveDir;
     }
-    public bool ItemUseInput() => Input.GetMouseButtonDown(0) && UIScanner.ScanUI(MouseInput()).Count <= 0;
-    public bool ItemUseHoldInput() => Input.GetMouseButton(0) && UIScanner.ScanUI(MouseInput()).Count <= 0;
-    public bool Skill1UseInput() => Input.GetKeyDown(skill1Key);
-    public bool Skill2UseInput() => Input.GetKeyDown(skill2Key);
-    public bool ItemGrabInput() => Input.GetMouseButtonDown(0) && UIScanner.ScanUI(MouseInput()).Count > 0;
-    public bool ItemUngrabInput()
+    public float MovementInput() => playerInputs.Default.Movement.ReadValue<float>();
+    public bool JumpInput()
     {
-        if (SystemInfo.deviceType == DeviceType.Handheld) return Input.GetMouseButtonUp(0);
-        return Input.GetMouseButtonDown(0);
+        if (DeviceManager.deviceType == DeviceType.Console && UIManager.Instance.isTabOpen) return false;
+        return playerInputs.Default.Jump.triggered;
     }
-    public bool ItemHalfGrabInput() => Input.GetMouseButtonDown(1) && UIScanner.ScanUI(MouseInput()).Count > 0;
-    public bool ItemHalfUngrabInput() => Input.GetMouseButtonDown(1);
-    public bool ReloadInput() => Input.GetKeyDown(reloadKey);
+    public bool ItemUseInput(out bool down)
+    {
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            if(UIScanner.ScanUI(Input.mousePosition).Count > 0 || InventorySlotUIHandler.Instance.grabbing)
+            {
+                down = false;
+                return false;
+            }
+        }
+        down = playerInputs.Default.ItemUse.triggered;
+        return playerInputs.Default.ItemUse.IsPressed();
+    }
+    public bool Skill1UseInput() => !UIManager.Instance.isTabOpen && playerInputs.Default.Skill1Use.triggered;
+    public bool Skill2UseInput() => !UIManager.Instance.isTabOpen && playerInputs.Default.Skill2Use.triggered;
+    public bool ReloadInput() => !UIManager.Instance.isTabOpen && playerInputs.Default.Reload.triggered;
+    public Vector2 SelectMoveInput() => selectMoveVal;
+    public bool SelectInput() => playerInputs.Default.Select.triggered;
+    public bool CancelInput() => playerInputs.Default.Cancel.triggered;
+    public bool InventoryOpenInput() => playerInputs.Default.InventoryOpen.triggered;
+}
+public enum ButtonMode
+{
+    None,
+    Down,
+    Pressed,
+    Up
 }

@@ -26,10 +26,6 @@ public class SessionManager : MonoBehaviour
         }
     }
     public Action<ISession> onSessionChange;
-    private void Awake()
-    {
-        DontDestroyOnLoad(this);
-    }
     public Action onSignIn;
     async void Start()
     {

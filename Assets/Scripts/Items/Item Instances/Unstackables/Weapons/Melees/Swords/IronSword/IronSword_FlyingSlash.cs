@@ -4,23 +4,25 @@ using UnityEngine;
 
 public class IronSword_FlyingSlash : Projectile
 {
-    float damage, acceleration, knockback, slowPercentage, slowDuration;
+    float damage, speed, range, acceleration, knockback, slowPercentage, slowDuration;
+    float counter = 0.0f;
     public void Set(Player wielder, float damage, float speed, float acceleration, float range, float knockback, float slowPercentage, float slowDuration)
     {
-        base.Set(wielder, speed, range);
         this.damage = damage;
+        this.speed = speed;
+        this.range = range;
         this.acceleration = acceleration;
         this.knockback = knockback;
         this.slowPercentage = slowPercentage;
         this.slowDuration = slowDuration;
     }
-    protected override void Update()
+    private void Update()
     {
         if (!IsOwner) return;
 
         speed += Time.deltaTime * acceleration;
 
-        transform.Translate(transform.right * (transform.localScale.x > 0.0f ? 1.0f : -1.0f) * speed * Time.deltaTime, Space.World);
+        transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
         counter += Time.deltaTime * speed;
 
         if (counter > range) NetworkObject.Despawn();
@@ -34,35 +36,38 @@ public class IronSword_FlyingSlash : Projectile
         if (this.hit.Contains(hit)) return;
         this.hit.Add(hit);
 
-        if(hit.TryGetComponent(out Bullet bullet))
+        if(hit.TryGetComponent(out IReflectable reflectable))
         {
-            bullet.Reflect(wielder, transform.right);
-            return;
+            if(owner.GetRelation(reflectable.self.owner) == Relation.Enemy)
+            {
+                reflectable.Reflect(owner, transform.right);
+                return;
+            }
         }
 
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if (damagable.IsEnemy(wielder))
+            if (owner.GetRelation(damagable.self) == Relation.Enemy)
             {
                 if(damagable is HpComp hpComp) hpComp.AddAliment(new Slowed(slowDuration, slowPercentage));
                 damagable.GetDamage(new()
                 {
                     amount = damage,
                     source = DamageSource.Player,
-                    clientID = wielder.OwnerClientId
+                    clientID = OwnerClientId
                 });
             }
         }
 
         if(hit.TryGetComponent(out IKnockable knockable))
         {
-            if (knockable.IsEnemy(wielder))
+            if (owner.GetRelation(knockable.self) == Relation.Enemy)
             {
                 knockable.GetKnockback(new()
                 {
-                    value = transform.right * knockback,
+                    value = transform.right * (transform.localScale.x > 0.0f ? 1.0f : -1.0f) * knockback,
                     source = KnockbackSource.Player,
-                    clientID = wielder.OwnerClientId
+                    clientID = OwnerClientId
                 });
             }
         }

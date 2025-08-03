@@ -12,7 +12,7 @@ public abstract class Aliment
     public abstract LangText alimentDisplay { get; }
     public Action onAlimentDisplayChange;
 
-    public int id;
+    public ulong id;
 
     public float initialDuration = 3.0f;
     float m_duration = 3.0f;
@@ -27,7 +27,7 @@ public abstract class Aliment
     }
     public virtual void AddTo(HpComp target)
     {
-        target.AddAlimentInstanceRpc(UnityEngine.Random.Range(int.MinValue, int.MaxValue), new()
+        target.AddAlimentInstanceRpc(MathUtilities.GenerateRandomID(), new()
         {
             type = type,
             properties = (NetworkDictionary)SaveProperties()
@@ -59,6 +59,7 @@ public abstract class Aliment
         switch (type)
         {
             case AlimentType.Slowed: return new Slowed();
+            case AlimentType.Burning: return new Burning();
             default: return null;
         }
     }
@@ -74,5 +75,6 @@ public abstract class Aliment
 [System.Serializable]
 public enum AlimentType
 {
-    Slowed = 0
+    Slowed = 0,
+    Burning = 1
 }

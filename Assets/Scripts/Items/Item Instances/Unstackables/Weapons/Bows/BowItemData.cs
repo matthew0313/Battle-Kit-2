@@ -5,14 +5,14 @@ using UnityEngine;
 public abstract class BowItemData : WeaponItemData
 {
     [Header("Bow")]
-    [SerializeField] bool m_auto;
-    [SerializeField] float m_damage, m_fireRate, m_arrowSpeed, m_arrowRange, m_spread;
+    [SerializeField] Sprite m_lmbIcon;
+    [SerializeField] float m_damage, m_fireRate, m_arrowLifetime, m_arrowVelocity, m_spread;
     [SerializeField] ItemData m_ammunition;
-    public bool auto => m_auto;
+    public Sprite lmbIcon => m_lmbIcon;
     public float damage => m_damage;
     public float fireRate => m_fireRate;
-    public float arrowSpeed => m_arrowSpeed;
-    public float arrowRange => m_arrowRange;
+    public float arrowLifetime => m_arrowLifetime;
+    public float arrowVelocity => m_arrowVelocity;
     public float spread => m_spread;
     public ItemData ammunition => m_ammunition;
     public abstract Arrow arrow { get; }
@@ -64,22 +64,24 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
     }
+    public Sprite lmbSprite => data.lmbIcon;
+    public bool canUseLmb => canFire && counter >= data.fireRate && GetAmmoCount() > 0;
+    public float lmbCooldownBarFill => 1.0f - counter / data.fireRate;
     public void LMBUse(Player wielder, bool down)
     {
-        if (!data.auto && !down) return;
+        if (!down) return;
         if (canFire && counter >= data.fireRate && GetAmmoCount() > 0)
         {
             counter = 0.0f;
             containedSlot.inventory.TakeOut(ammunition, 1);
+            weapon.FireRpc();
             Fire(wielder);
         }
     }
     protected virtual void Fire(Player wielder)
     {
-        weapon.FireRpc();
         Arrow arrow = MonoBehaviour.Instantiate(data.arrow, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
-        arrow.transform.localScale = weapon.firePoint.lossyScale;
-        arrow.Set(wielder, data.damage, data.arrowSpeed, data.arrowRange);
+        arrow.Set(data.damage, data.arrowLifetime, data.arrowVelocity);
         arrow.NetworkObject.Spawn();
     }
 }

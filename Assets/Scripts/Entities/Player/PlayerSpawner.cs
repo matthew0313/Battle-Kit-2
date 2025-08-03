@@ -12,9 +12,9 @@ public class PlayerSpawner : MonoBehaviour
     {
         if(data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
         {
-            var player = Instantiate(playerPrefab);
-            player.SpawnAsPlayerObject(NetworkManager.Singleton.LocalClientId);
-            player.transform.position = transform.position;
+            //var player = Instantiate(playerPrefab);
+            //player.SpawnAsPlayerObject(NetworkManager.Singleton.LocalClientId);
+            //player.transform.position = transform.position;
         }
     }
 }

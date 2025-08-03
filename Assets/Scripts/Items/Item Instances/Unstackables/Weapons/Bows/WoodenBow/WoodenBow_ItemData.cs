@@ -91,6 +91,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     {
         for(int i = 0; i < data.empowerShotCount; i++)
         {
+            weapon.FireRpc();
             base.Fire(wielder);
             yield return Timing.WaitForSeconds(data.empowerShotInterval);
         }

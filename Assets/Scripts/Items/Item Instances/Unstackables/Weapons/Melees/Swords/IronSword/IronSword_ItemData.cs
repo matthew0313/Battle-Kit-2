@@ -56,7 +56,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     public Sprite skill1Sprite => data.flyingSlashSprite;
     public bool canUseSkill1 => flyingSlashCounter <= 0.0f && counter >= data.slashRate && !usingSpiralSlash;
     public float skill1CooldownBarFill => flyingSlashCounter / data.flyingSlashCooldown;
-    CoroutineHandle flyingSlashCoroutine;
+    CoroutineHandle flyingSlashCoroutine, flyingSlashEndCoroutine;
 
     //spiralSlash
     float spiralSlashCounter = 0.0f;
@@ -64,6 +64,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     public Sprite skill2Sprite => data.spiralSlashSprite;
     public bool canUseSkill2 => spiralSlashCounter <= 0.0f && counter >= data.slashRate && !usingFlyingSlash;
     public float skill2CooldownBarFill => spiralSlashCounter / data.spiralSlashCooldown;
+    CoroutineHandle spiralSlashEndCoroutine;
     protected override bool canSlash => base.canSlash && !usingFlyingSlash && !usingSpiralSlash;
     public void Skill1Use(Player wielder)
     {
@@ -72,9 +73,9 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
 
         weapon.FlyingSlashRpc();
         flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
-        Timing.RunCoroutine(MyCoroutines.WaitThen(data.flyingSlashDuration, () => usingFlyingSlash = false));
+        flyingSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.flyingSlashDuration, () => usingFlyingSlash = false));
     }
-    protected override bool scaleBound => base.scaleBound && !usingSpiralSlash;
+    protected override bool canFlip => base.canFlip && !usingSpiralSlash;
     public void Skill2Use(Player wielder)
     {
         spiralSlashCounter = data.spiralSlashCooldown;
@@ -82,7 +83,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         spiralSlashHitList.Clear();
 
         weapon.SpiralSlashRpc();
-        Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashDuration, () => { usingSpiralSlash = false; }));
+        spiralSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashDuration, () => { usingSpiralSlash = false; }));
     }
     public override void Update()
     {
@@ -99,6 +100,8 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     {
         base.OnUnwield(wielder);
         Timing.KillCoroutines(flyingSlashCoroutine);
+        Timing.KillCoroutines(flyingSlashEndCoroutine);
+        Timing.KillCoroutines(spiralSlashEndCoroutine);
         weapon.circularSlashHitbox.onTriggerEnter2D -= OnSpiralSlashTriggerEnter2D;
     }
     IEnumerator<float> FlyingSlash()
@@ -106,7 +109,6 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         yield return Timing.WaitForSeconds(data.flyingSlashDelay);
 
         IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
-        flyingSlash.transform.localScale = weapon.flyingSlashFirePoint.lossyScale;
         flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange, data.flyingSlashKnockback, data.flyingSlashSlowPercentage, data.flyingSlashSlowDuration);
         flyingSlash.NetworkObject.Spawn();
     }
@@ -123,23 +125,29 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     }
     void OnSpiralSlashHit(GameObject hit)
     {
-        if (hit.TryGetComponent(out IDamagable damagable) && damagable.IsEnemy(wielder))
+        if (hit.TryGetComponent(out IDamagable damagable))
         {
-            damagable.GetDamage(new()
+            if(wielder.GetRelation(damagable.self) == Relation.Enemy)
             {
-                amount = data.damage,
-                source = DamageSource.Player,
-                clientID = wielder.OwnerClientId
-            });
+                damagable.GetDamage(new()
+                {
+                    amount = data.damage,
+                    source = DamageSource.Player,
+                    clientID = wielder.OwnerClientId
+                });
+            }
         }
-        if (hit.TryGetComponent(out IKnockable knockable) && knockable.IsEnemy(wielder))
+        if (hit.TryGetComponent(out IKnockable knockable))
         {
-            knockable.GetKnockback(new()
+            if(wielder.GetRelation(knockable.self) == Relation.Enemy)
             {
-                value = (hit.transform.position - wielder.transform.position).normalized * data.spiralSlashKnockback,
-                source = KnockbackSource.Player,
-                clientID = wielder.OwnerClientId
-            });
+                knockable.GetKnockback(new()
+                {
+                    value = (hit.transform.position - wielder.transform.position).normalized * data.spiralSlashKnockback,
+                    source = KnockbackSource.Player,
+                    clientID = wielder.OwnerClientId
+                });
+            }
         }
     }
 }

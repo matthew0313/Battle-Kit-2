@@ -6,7 +6,7 @@ using UnityEngine;
 using MEC;
 using Unity.VisualScripting;
 
-[RequireComponent(typeof(IntegerReceiver), typeof(OwnerOnlyRigidbody2D))]
+[RequireComponent(typeof(IntegerReceiver))]
 public class DroppedItem : NetworkBehaviour
 {
     IntegerReceiver receiver;
@@ -18,7 +18,6 @@ public class DroppedItem : NetworkBehaviour
 
     [SerializeField] SpriteRenderer rend1, rend2;
     [SerializeField] float pendingTimeout = 3.0f;
-    [SerializeField] float pickupAvailableMagnitude = 0.5f;
     static DroppedItem prefab;
     public Rigidbody2D rb => ownerOnlyRb.rb;
     public static DroppedItem Create()
@@ -34,6 +33,10 @@ public class DroppedItem : NetworkBehaviour
         itemInstanceData.OnValueChanged += OnItemSet;
         count.OnValueChanged += OnCountChange;
     }
+    private void Update()
+    {
+        pickupDelay -= Time.deltaTime;
+    }
     public Item item { get; private set; }
     void OnItemSet(ItemInstanceData prev, ItemInstanceData data)
     {
@@ -45,7 +48,8 @@ public class DroppedItem : NetworkBehaviour
     {
         rend2.gameObject.SetActive(data > 1);
     }
-    public void Set(Item item, int count)
+    float pickupDelay = 0.0f;
+    public void Set(Item item, int count, float pickupDelay = 0.0f)
     {
         if (!IsOwner) return;
         itemInstanceData.Value = new ItemInstanceData()
@@ -54,11 +58,12 @@ public class DroppedItem : NetworkBehaviour
             properties = (NetworkDictionary)item.SaveProperties()
         };
         this.count.Value = count;
+        this.pickupDelay = pickupDelay;
     }
     CoroutineHandle pendingWaiting;
     public void Pickup(Inventory inventory)
     {
-        if (!IsOwner || pending || rb.linearVelocity.magnitude > pickupAvailableMagnitude) return;
+        if (!IsOwner || pending || pickupDelay > 0.0f) return;
 
         Timing.KillCoroutines(pendingWaiting);
         pending = true;

@@ -7,7 +7,7 @@ using Unity.Collections;
 
 public abstract class HpComp : NetworkBehaviour, IDamagable
 {
-    public NetworkBehaviour self => this;
+    public abstract Entity self { get; }
 
     [SerializeField] float baseHp = 100.0f;
     public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f);
@@ -19,7 +19,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
     public event Action<DamageInfo> onDamage;
 
     public bool invincible = false;
-    public readonly Dictionary<int, Aliment> aliments = new();
+    public readonly Dictionary<ulong, Aliment> aliments = new();
     public event Action onAlimentsUpdate;
 
     protected virtual void Awake()
@@ -34,7 +34,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
             hp.Value = baseHp;
         }
     }
-    readonly List<int> alimentRemoveQueue = new();
+    readonly List<ulong> alimentRemoveQueue = new();
     protected virtual void Update()
     {
         if(alimentRemoveQueue.Count > 0)
@@ -98,7 +98,6 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
         OnRevive();
     }
     protected virtual void OnRevive() { }
-    public abstract bool IsEnemy(Player other);
 
     [Rpc(SendTo.Authority)]
     public void AddAlimentRpc(AlimentInstanceData info)
@@ -118,7 +117,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
         }
     }
     [Rpc(SendTo.Everyone, AllowTargetOverride = true)]
-    public void AddAlimentInstanceRpc(int id, AlimentInstanceData info, RpcParams rpcParams)
+    public void AddAlimentInstanceRpc(ulong id, AlimentInstanceData info, RpcParams rpcParams)
     {
         if (aliments.ContainsKey(id))
         {
@@ -133,7 +132,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
         onAlimentsUpdate?.Invoke();
     }
     [Rpc(SendTo.Everyone)]
-    public void DeleteAlimentInstanceRpc(int id)
+    public void DeleteAlimentInstanceRpc(ulong id)
     {
         if (!aliments.ContainsKey(id) || alimentRemoveQueue.Contains(id)) return;
         alimentRemoveQueue.Add(id);

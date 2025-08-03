@@ -50,7 +50,7 @@ public class Burning : Aliment
             affected.GetDamage(new()
             {
                 amount = burnDamage,
-                source = DamageSource.Aliment,
+                source = DamageSource.Other,
                 hasColor = true,
                 color = settings.alimentColor
             });

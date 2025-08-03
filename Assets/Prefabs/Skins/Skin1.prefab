@@ -1568,7 +1568,7 @@ GameObject:
   - component: {fileID: 6028997947181178035}
   - component: {fileID: 9171654447433942219}
   - component: {fileID: 2051877939642658791}
-  - component: {fileID: 8878780462710290903}
+  - component: {fileID: 9162640707695287229}
   m_Layer: 0
   m_Name: Skin1
   m_TagString: Untagged
@@ -1640,7 +1640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_anim: {fileID: 9171654447433942219}
---- !u!114 &8878780462710290903
+--- !u!114 &9162640707695287229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1649,7 +1649,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2708574575954537388}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 709142010e9388b4ba1a6e6d8a36b7c7, type: 3}
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1

@@ -171,7 +171,9 @@ GameObject:
   - component: {fileID: 3068820398821160503}
   - component: {fileID: 6318131332594655552}
   - component: {fileID: 4938179765809836668}
-  - component: {fileID: 8756970771458848532}
+  - component: {fileID: 1135615714633709695}
+  - component: {fileID: 5542425998214067781}
+  - component: {fileID: 3976176002577592584}
   m_Layer: 5
   m_Name: InventorySlotUI
   m_TagString: Untagged
@@ -239,7 +241,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8756970771458848532
+--- !u!114 &1135615714633709695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,11 +253,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aef42159a1032fd49b2188a30eb1e48f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 3976176002577592584}
   itemIcon: {fileID: 9207022347171369442}
   itemCount: {fileID: 6751397551977774651}
   ammoCountDisplay: {fileID: 2128509969288275156}
   ammoIcon: {fileID: 4227674199554472018}
   ammoCountText: {fileID: 4062095030468005841}
+--- !u!225 &5542425998214067781
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4806565592719385239}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!95 &3976176002577592584
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4806565592719385239}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 80a638c566554454cbbeca059d042714, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5283003512502573526
 GameObject:
   m_ObjectHideFlags: 0

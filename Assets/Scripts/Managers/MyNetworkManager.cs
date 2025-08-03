@@ -8,8 +8,13 @@ using UnityEngine.SceneManagement;
 public class MyNetworkManager : MonoBehaviour
 {
     public static MyNetworkManager Instance { get; private set; }
-    public MyNetworkManager() => Instance = this;
-    [SerializeField] GameObject playerPrefab;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void Init()
+    {
+        Instance = Instantiate(Resources.Load<MyNetworkManager>("MyNetworkManager"));
+        DontDestroyOnLoad(Instance.gameObject);
+    }
+
     NetworkManager networkManager;
     private void Awake()
     {
@@ -17,72 +22,22 @@ public class MyNetworkManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        //networkManager.OnClientStarted += ClientStarted;
-        //networkManager.OnServerStarted += ServerStarted;
-        SessionManager.Instance.onSessionChange += OnSessionChange;
-        networkManager.OnConnectionEvent += OnConnection;
-        //networkManager.OnSessionOwnerPromoted += OnSessionOwnerPromoted;
+        networkManager.OnConnectionEvent += OnConnectionEvent;
     }
     private void OnDisable()
     {
-        //networkManager.OnClientStarted -= ClientStarted;
-        //networkManager.OnServerStarted -= ServerStarted;
-        SessionManager.Instance.onSessionChange -= OnSessionChange;
-        networkManager.OnConnectionEvent -= OnConnection;
-        //networkManager.OnSessionOwnerPromoted -= OnSessionOwnerPromoted;
+        networkManager.OnConnectionEvent -= OnConnectionEvent;
     }
-    ISession currentSession;
-    void OnSessionChange(ISession session)
+    void OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
     {
-        if (session != null)
+        if (data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
         {
-            //if (session.IsHost) networkManager.StartHost();
-            //else networkManager.StartClient();
-            //networkManager.StartClient();
-            SceneManager.LoadScene("Game");
-            Debug.Log(networkManager.NetworkConfig.NetworkTransport);
-        }
-        else SceneManager.LoadScene("Lobby");
-    }
-    void OnConnection(NetworkManager manager, ConnectionEventData data)
-    {
-        Debug.Log("Connection Event");
-        /*if (data.EventType == ConnectionEvent.ClientConnected && manager.LocalClient.IsSessionOwner)
-        {
-            manager.SceneManager.LoadScene("Game", LoadSceneMode.Single);
-        }
-        if(data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
-        {
-            Instantiate(playerPrefab).GetComponent<NetworkObject>().SpawnAsPlayerObject(manager.LocalClientId);
-            Debug.Log("Player Spawned");
-        }*/
-    }
-    /*void OnSessionOwnerPromoted(ulong ownerID)
-    {
-        if(ownerID == networkManager.LocalClientId)
-        {
-            networkManager.SceneManager.LoadScene("Game", LoadSceneMode.Single);
+            Debug.Log($"{data.ClientId}, {manager.LocalClientId}");
+            if (manager.LocalClient.IsSessionOwner)
+            {
+                Debug.LogWarning("RRRRRR");
+                networkManager.SceneManager.LoadScene("Game", LoadSceneMode.Single);
+            }
         }
     }
-    void ClientStarted()
-    {
-        Debug.Log("Client Started");
-        SceneManager.LoadScene("Game");
-    }
-    void ServerStarted()
-    {
-        if (networkManager.IsServer)
-        {
-            networkManager.SceneManager.OnLoadComplete += OnSceneLoadComplete;
-            networkManager.SceneManager.LoadScene("Game", UnityEngine.SceneManagement.LoadSceneMode.Single);
-        }
-    }
-    private void OnSceneLoadComplete(ulong clientId, string sceneName, LoadSceneMode mode)
-    {
-        if (sceneName == "Game" && networkManager.IsClient && !networkManager.IsServer)
-        {
-            var player = Instantiate(networkManager.NetworkConfig.PlayerPrefab);
-            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-        }
-    }*/
 }

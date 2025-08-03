@@ -4,7 +4,7 @@ using UnityEngine;
 public class TabOpener : MonoBehaviour
 {
     [SerializeField] protected Tab currentTab;
-    public void OpenTab(Tab tab)
+    public virtual void OpenTab(Tab tab)
     {
         if (currentTab == tab || tab == null)
         {
@@ -16,7 +16,7 @@ public class TabOpener : MonoBehaviour
         currentTab = tab;
         currentTab.Open();
     }
-    public void CloseTab()
+    public virtual void CloseTab()
     {
         if (currentTab != null) currentTab.Close();
         currentTab = null;
