@@ -26,6 +26,7 @@ public abstract class Dart : Projectile, IReflectable
     {
         if (reflectorRef.TryGet(out Player reflector))
         {
+            Debug.Log("Reflect");
             counter = 0.0f;
             rb.linearVelocity = dir.normalized * rb.linearVelocity.magnitude;
             NetworkObject.ChangeOwnership(reflector.OwnerClientId);

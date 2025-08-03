@@ -36,7 +36,6 @@ public abstract class Aliment
     public virtual void OnAlimentAdd(HpComp affected) { }
     public virtual void OnAlimentUpdate(HpComp affected)
     {
-        Debug.Log(id);
         duration = Mathf.Max(0.0f, duration - Time.deltaTime);
         if (affected.IsOwner && duration <= 0)
         {

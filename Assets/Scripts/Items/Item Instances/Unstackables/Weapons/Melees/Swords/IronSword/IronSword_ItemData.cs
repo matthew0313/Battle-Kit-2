@@ -125,6 +125,15 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     }
     void OnSpiralSlashHit(GameObject hit)
     {
+        if(hit.TryGetComponent(out IReflectable reflectable))
+        {
+            if(wielder.GetRelation(reflectable.self.owner) == Relation.Enemy)
+            {
+                reflectable.Reflect(wielder, weapon.circularSlashHitbox.transform.up);
+                return;
+            }
+        }
+
         if (hit.TryGetComponent(out IDamagable damagable))
         {
             if(wielder.GetRelation(damagable.self) == Relation.Enemy)
