@@ -7,7 +7,7 @@ using Unity.Collections;
 
 public abstract class HpComp : NetworkBehaviour, IDamagable
 {
-    public abstract Entity self { get; }
+    public abstract Entity owner { get; }
 
     [SerializeField] float baseHp = 100.0f;
     public readonly NetworkVariable<float> maxHp = new NetworkVariable<float>(100.0f);
@@ -22,12 +22,22 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
     public readonly Dictionary<ulong, Aliment> aliments = new();
     public event Action onAlimentsUpdate;
 
+
+    [Rpc(SendTo.Owner)]
+    public void ResetHpRpc()
+    {
+        maxHp.Value = baseHp;
+        hp.Value = baseHp;
+    }
     protected virtual void Awake()
     {
         hp.OnValueChanged += (a, b) => onHpChange?.Invoke();
         maxHp.OnValueChanged += (a, b) => onHpChange?.Invoke();
         NetworkManager.OnConnectionEvent += OnConnectionEvent;
 
+    }
+    protected virtual void Start()
+    {
         if (IsOwner)
         {
             maxHp.Value = baseHp;
@@ -93,11 +103,10 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
     public void Revive()
     {
         if (!IsOwner) return;
-        hp.Value = maxHp.Value;
         dead.Value = false;
         OnRevive();
     }
-    protected virtual void OnRevive() { }
+    protected virtual void OnRevive() { hp.Value = maxHp.Value; }
 
     [Rpc(SendTo.Authority)]
     public void AddAlimentRpc(AlimentInstanceData info)

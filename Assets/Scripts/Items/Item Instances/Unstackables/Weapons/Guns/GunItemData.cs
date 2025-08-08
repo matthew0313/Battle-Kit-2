@@ -8,13 +8,16 @@ public abstract class GunItemData : WeaponItemData
     [Header("Gun")]
     [SerializeField] Sprite m_lmbIcon;
     [SerializeField] bool m_auto;
-    [SerializeField] float m_damage, m_fireRate, m_bulletSpeed, m_bulletRange, m_spread, m_reloadTime;
+    [SerializeField] float m_damage;
+    [SerializeField] CooldownSource m_fireCooldownSource;
+    [SerializeField] float m_fireCooldown, m_bulletSpeed, m_bulletRange, m_spread, m_reloadTime;
     [SerializeField] int m_magSize;
     [SerializeField] ItemData m_ammunition;
     public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
-    public float fireRate => m_fireRate;
+    public CooldownSource fireCooldownSource => m_fireCooldownSource;
+    public float fireCooldown => m_fireCooldown;
     public float bulletSpeed => m_bulletSpeed;
     public float bulletRange => m_bulletRange;
     public float spread => m_spread;
@@ -84,18 +87,9 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
         reloading = true;
         weapon.ReloadRpc();
     }
-
-    protected float counter = 0.0f;
-    public override void OnWield(Player wielder)
-    {
-        base.OnWield(wielder);
-        counter = 0.0f;
-    }
-    protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
-        counter += Time.deltaTime;
         if(reloading)
         {
             reloadCounter = Mathf.Max(0.0f, reloadCounter - Time.deltaTime);
@@ -108,22 +102,19 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
             }
         }
     }
+    protected float fireCounter => data.fireCooldownSource.cooldownLeft;
+    protected float fireCooldown => data.fireCooldownSource.cooldown;
+    protected virtual bool canFire => true;
     public Sprite lmbSprite => data.lmbIcon;
-    public bool canUseLmb => canFire && counter >= data.fireRate && mag > 0;
-    public float lmbCooldownBarFill => 1.0f - counter / data.fireRate;
+    public bool canUseLmb => canFire && !reloading && fireCounter <= 0.0f && mag > 0;
+    public float lmbCooldownBarFill => fireCounter / fireCooldown;
     public void LMBUse(Player wielder, bool down)
     {
-        if (!data.auto && !down) return;
-        if (!reloading)
-        {
-            if (canFire && counter >= data.fireRate && mag > 0)
-            {
-                counter = 0.0f;
-                mag--;
-                weapon.FireRpc();
-                Fire(wielder);
-            }
-        }
+        if (!data.auto && !down || !canUseLmb) return;
+        wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
+        mag--;
+        weapon.FireRpc();
+        Fire(wielder);
     }
     protected virtual void Fire(Player wielder)
     {

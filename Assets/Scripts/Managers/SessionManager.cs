@@ -66,24 +66,37 @@ public class SessionManager : MonoBehaviour
         };
         return options.WithDistributedAuthorityNetwork();
     }
+    public bool joining { get; private set; } = false;
     public async UniTaskVoid StartSession()
     {
+        if (joining) return;
+        joining = true;
         activeSession = await MultiplayerService.Instance.CreateSessionAsync(await GetSessionOptions());
+        joining = false;
     }
     public async UniTaskVoid JoinOrStartSession(string sessionId)
     {
+        if (joining) return;
+        joining = true;
         activeSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, await GetSessionOptions());
         Debug.Log($"Session {activeSession.Id} Joined");
+        joining = false;
     }
     public async UniTaskVoid JoinSessionById(string sessionId)
     {
+        if (joining) return;
+        joining = true;
         activeSession = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionId);
         Debug.Log($"Session {activeSession.Id} Joined");
+        joining = false;
     }
     public async UniTaskVoid JoinSessionByCode(string sessionCode)
     {
+        if (joining) return;
+        joining = true;
         activeSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
         Debug.Log($"Session {activeSession.Id} Joined");
+        joining = false;
     }
     public async UniTaskVoid KickPlayer(string playerId)
     {

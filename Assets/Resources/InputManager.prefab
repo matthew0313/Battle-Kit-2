@@ -44,3 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4afa203c5693ab4285a16e6979e745d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectHoldThreshold: 0.5
+  selectHoldRepeatTime: 0.1
+  dropHoldThreshold: 0.5
+  dropHoldRepeatTime: 0.05

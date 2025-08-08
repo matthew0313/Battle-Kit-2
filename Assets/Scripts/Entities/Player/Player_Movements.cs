@@ -11,7 +11,7 @@ using UnityEditor;
 [RequireComponent(typeof(NetworkTransform), typeof(Rigidbody2D))]
 public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAdjustable
 {
-    public Entity self => origin;
+    public Entity owner => origin;
     Player origin;
     public NetworkTransform networkTransform { get; private set; }
     public Rigidbody2D rb { get; private set; }

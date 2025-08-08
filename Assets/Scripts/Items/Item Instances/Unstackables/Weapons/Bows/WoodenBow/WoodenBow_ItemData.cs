@@ -14,20 +14,24 @@ public class WoodenBow_ItemData : BowItemData
 
     [Header("Empower")]
     [SerializeField] Sprite m_empowerIcon;
+    [SerializeField] CooldownSource m_empowerCooldownSource;
     [SerializeField] float m_empowerCooldown = 10.0f;
     [SerializeField] int m_empowerShotCount = 3;
     [SerializeField] float m_empowerShotInterval = 0.1f;
     public Sprite empowerIcon => m_empowerIcon;
+    public CooldownSource empowerCooldownSource => m_empowerCooldownSource;
     public float empowerCooldown => m_empowerCooldown;
     public int empowerShotCount => m_empowerShotCount;
     public float empowerShotInterval => m_empowerShotInterval;
 
     [Header("Roll")]
     [SerializeField] Sprite m_rollIcon;
+    [SerializeField] CooldownSource m_rollCooldownSource;
     [SerializeField] float m_rollCooldown = 3.0f;
     [SerializeField] float m_rollDistance = 5.0f;
     [SerializeField] float m_rollSpeed = 15.0f;
     public Sprite rollIcon => m_rollIcon;
+    public CooldownSource rollCooldownSource => m_rollCooldownSource;
     public float rollCooldown => m_rollCooldown;
     public float rollDistance => m_rollDistance;
     public float rollSpeed => m_rollSpeed;
@@ -41,33 +45,29 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
     {
         this.data = data;
     }
-    float empowerCounter = 0.0f;
+    float empowerCounter => data.empowerCooldownSource.cooldownLeft;
+    float empowerCooldown => data.empowerCooldownSource.cooldown;
     bool empowered = false;
     public Sprite skill1Sprite => data.empowerIcon;
     public bool canUseSkill1 => !empowered && empowerCounter <= 0.0f;
-    public float skill1CooldownBarFill => empowerCounter / data.empowerCooldown;
+    public float skill1CooldownBarFill => empowerCounter / empowerCooldown;
     public void Skill1Use(Player wielder)
     {
         if (!canUseSkill1) return;
-        empowerCounter = data.empowerCooldown;
+        wielder.cooldowns.AddCooldown(data.empowerCooldownSource, data.empowerCooldown);
         empowered = true;
         weapon.empowered.Value = true;
     }
-    float rollCounter = 0.0f;
+    float rollCounter => data.rollCooldownSource.cooldownLeft;
+    float rollCooldown => data.rollCooldownSource.cooldown;
     public Sprite skill2Sprite => data.rollIcon;
     public bool canUseSkill2 => Mathf.Abs(InputManager.Instance.MovementInput()) > 0.1f && rollCounter <= 0.0f;
-    public float skill2CooldownBarFill => rollCounter / data.rollCooldown;
+    public float skill2CooldownBarFill => rollCounter / rollCooldown;
     public void Skill2Use(Player wielder)
     {
         if(!canUseSkill2) return;
+        wielder.cooldowns.AddCooldown(data.rollCooldownSource, data.rollCooldown);
         rolling = Timing.RunCoroutine(Rolling(wielder));
-        rollCounter = data.rollCooldown;
-    }
-    public override void Update()
-    {
-        base.Update();
-        if (!empowered) empowerCounter = Mathf.Max(0.0f, empowerCounter - Time.deltaTime);
-        rollCounter = Mathf.Max(0.0f, rollCounter - Time.deltaTime);
     }
     CoroutineHandle empowerShot, rolling;
     protected override void Fire(Player wielder)
@@ -96,11 +96,11 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
             yield return Timing.WaitForSeconds(data.empowerShotInterval);
         }
     }
-    ControlElement<bool> rollMovementDisable = new(false, 0, true);
+    static ControlElement<bool> canMoveDisable = new(false, 0, true);
     readonly int rollID = Animator.StringToHash("Roll");
     IEnumerator<float> Rolling(Player wielder)
     {
-        wielder.movements.canMoveControl.AddControl(rollMovementDisable);
+        wielder.movements.canMoveControl.AddControl(canMoveDisable);
         wielder.anim.SetTrigger(rollID);
 
         float counter = 0.0f;
@@ -111,6 +111,6 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
             counter += Time.deltaTime;
             yield return Timing.WaitForOneFrame;
         }
-        wielder.movements.canMoveControl.RemoveControl(rollMovementDisable);
+        wielder.movements.canMoveControl.RemoveControl(canMoveDisable);
     }
 }

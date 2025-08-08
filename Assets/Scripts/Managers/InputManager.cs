@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,9 +14,10 @@ public class InputManager : MonoBehaviour
     }
 
     PlayerInputs playerInputs;
+
     [Header("Select Move")]
-    [SerializeField] float holdThreshold = 0.5f;
-    [SerializeField] float holdRepeatTime = 0.1f;
+    [SerializeField] float selectHoldThreshold = 0.5f;
+    [SerializeField] float selectHoldRepeatTime = 0.1f;
     private void Awake()
     {
         playerInputs = new PlayerInputs();
@@ -28,10 +30,14 @@ public class InputManager : MonoBehaviour
     {
         playerInputs.Disable();
     }
-    Vector2 selectMoveVal = Vector2.zero;
-    Vector2 lastMoveDir = Vector2.zero;
-    float holdCounter = 0.0f, holdRepeatCounter = 0.0f;
     private void Update()
+    {
+        UpdateSelectionMoveInput();
+    }
+    Vector2 selectMoveVal = Vector2.zero;
+    Vector2 selectLastMoveDir = Vector2.zero;
+    float selectHoldCounter = 0.0f, selectHoldRepeatCounter = 0.0f;
+    void UpdateSelectionMoveInput()
     {
         Vector2 tmp = playerInputs.Default.SelectMove.ReadValue<Vector2>();
         Vector2 moveDir = Vector2.zero;
@@ -42,26 +48,26 @@ public class InputManager : MonoBehaviour
         selectMoveVal = Vector2.zero;
         if (moveDir != Vector2.zero)
         {
-            if (moveDir != lastMoveDir)
+            if (moveDir != selectLastMoveDir)
             {
                 selectMoveVal = moveDir;
-                holdCounter = 0.0f; holdRepeatCounter = 0.0f;
+                selectHoldCounter = 0.0f; selectHoldRepeatCounter = 0.0f;
             }
             else
             {
-                holdCounter += Time.deltaTime;
-                if (holdCounter >= holdThreshold)
+                selectHoldCounter += Time.deltaTime;
+                if (selectHoldCounter >= selectHoldThreshold)
                 {
-                    holdRepeatCounter = Mathf.Max(holdRepeatCounter - Time.deltaTime, 0);
-                    if (holdRepeatCounter <= 0.0f)
+                    selectHoldRepeatCounter -= Time.deltaTime;
+                    if (selectHoldRepeatCounter <= 0.0f)
                     {
-                        holdRepeatCounter = holdRepeatTime;
+                        selectHoldRepeatCounter += selectHoldRepeatTime;
                         selectMoveVal = moveDir;
                     }
                 }
             }
         }
-        lastMoveDir = moveDir;
+        selectLastMoveDir = moveDir;
     }
     public float MovementInput() => playerInputs.Default.Movement.ReadValue<float>();
     public bool JumpInput()
@@ -89,6 +95,7 @@ public class InputManager : MonoBehaviour
     public bool SelectInput() => playerInputs.Default.Select.triggered;
     public bool CancelInput() => playerInputs.Default.Cancel.triggered;
     public bool InventoryOpenInput() => playerInputs.Default.InventoryOpen.triggered;
+    public bool DropInput() => playerInputs.Default.Drop.triggered;
 }
 public enum ButtonMode
 {

@@ -32,12 +32,14 @@ public class MyNetworkManager : MonoBehaviour
     {
         if (data.EventType == ConnectionEvent.ClientConnected && data.ClientId == manager.LocalClientId)
         {
-            Debug.Log($"{data.ClientId}, {manager.LocalClientId}");
             if (manager.LocalClient.IsSessionOwner)
             {
-                Debug.LogWarning("RRRRRR");
                 networkManager.SceneManager.LoadScene("Game", LoadSceneMode.Single);
             }
+        }
+        if(data.EventType == ConnectionEvent.ClientDisconnected && data.ClientId == manager.LocalClientId)
+        {
+            SceneManager.LoadScene("Lobby");
         }
     }
 }

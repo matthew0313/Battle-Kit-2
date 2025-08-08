@@ -11,6 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 3df40bb162cda9e44966cc556af8ada9
+  - enabled: 1
+    path: Assets/Scenes/TestFFAStage.unity
+    guid: f59e1a1ff0ae4ad46b37a70fee9c1e5d
+  - enabled: 1
+    path: Assets/Scenes/TestTeamStage.unity
+    guid: 864d774786d41ac4b827ccc48f74213b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 33d3d1a8b7136a649b22e0e2dd25bcc2, type: 3}
   m_UseUCBPForAssetBundles: 0

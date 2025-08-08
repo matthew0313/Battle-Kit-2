@@ -6,11 +6,14 @@ public abstract class BowItemData : WeaponItemData
 {
     [Header("Bow")]
     [SerializeField] Sprite m_lmbIcon;
-    [SerializeField] float m_damage, m_fireRate, m_arrowLifetime, m_arrowVelocity, m_spread;
+    [SerializeField] float m_damage;
+    [SerializeField] CooldownSource m_fireCooldownSource;
+    [SerializeField] float m_fireCooldown, m_arrowLifetime, m_arrowVelocity, m_spread;
     [SerializeField] ItemData m_ammunition;
     public Sprite lmbIcon => m_lmbIcon;
     public float damage => m_damage;
-    public float fireRate => m_fireRate;
+    public CooldownSource fireCooldownSource => m_fireCooldownSource;
+    public float fireCooldown => m_fireCooldown;
     public float arrowLifetime => m_arrowLifetime;
     public float arrowVelocity => m_arrowVelocity;
     public float spread => m_spread;
@@ -58,25 +61,24 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
         base.OnWield(wielder);
         counter = 0.0f;
     }
-    protected virtual bool canFire => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
     }
+    protected float fireCounter => data.fireCooldownSource.cooldownLeft;
+    protected float fireCooldown => data.fireCooldownSource.cooldown;
+    protected virtual bool canFire => true;
     public Sprite lmbSprite => data.lmbIcon;
-    public bool canUseLmb => canFire && counter >= data.fireRate && GetAmmoCount() > 0;
-    public float lmbCooldownBarFill => 1.0f - counter / data.fireRate;
+    public bool canUseLmb => canFire && fireCounter <= 0.0f && GetAmmoCount() > 0;
+    public float lmbCooldownBarFill => fireCounter / fireCooldown;
     public void LMBUse(Player wielder, bool down)
     {
-        if (!down) return;
-        if (canFire && counter >= data.fireRate && GetAmmoCount() > 0)
-        {
-            counter = 0.0f;
-            containedSlot.inventory.TakeOut(ammunition, 1);
-            weapon.FireRpc();
-            Fire(wielder);
-        }
+        if (!down || !canUseLmb) return;
+        wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
+        containedSlot.inventory.TakeOut(ammunition, 1);
+        weapon.FireRpc();
+        Fire(wielder);
     }
     protected virtual void Fire(Player wielder)
     {

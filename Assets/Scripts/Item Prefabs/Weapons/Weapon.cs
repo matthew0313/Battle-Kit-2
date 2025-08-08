@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class Weapon : NetworkBehaviour
 {
-    public NetworkVariable<bool> enabledState = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<bool> enabledState = new NetworkVariable<bool>(true);
 
     [Header("Weapon")]
     [SerializeField] protected Animator anim;

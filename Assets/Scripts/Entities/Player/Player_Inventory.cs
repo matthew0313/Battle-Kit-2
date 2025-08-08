@@ -45,11 +45,15 @@ public class Player_Inventory : Inventory
     public bool canSwitchSlot { get; private set; } = true;
     public ControlMachine<bool> canSwitchSlotControl;
 
+    public bool canPickup { get; private set; } = true;
+    public ControlMachine<bool> canPickupControl;
+
     private void Awake()
     {
         origin = GetComponent<Player>();
         canUseItemControl = new(value => canUseItem = value, true);
         canSwitchSlotControl = new(value => canSwitchSlot = value, true);
+        canPickupControl = new(value => canPickup = value, true);
     }
     public void Init()
     {
@@ -68,16 +72,27 @@ public class Player_Inventory : Inventory
 
             if (equipped != null) equipped.OnWieldUpdate(origin);
 
-            if (!canUseItem) return;
-            if (equipped is ILMBUser lmbUser && InputManager.Instance.ItemUseInput(out bool down)) lmbUser.LMBUse(origin, down);
-            if (equipped is ISkill1User skill1User && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
-            if (equipped is ISkill2User skill2User && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
-            if (equipped is IReloadable reloadable && InputManager.Instance.ReloadInput()) reloadable.Reload(origin);
-        }
+            if (canUseItem)
+            {
+                if (equipped is ILMBUser lmbUser && InputManager.Instance.ItemUseInput(out bool down)) lmbUser.LMBUse(origin, down);
+                if (equipped is ISkill1User skill1User && InputManager.Instance.Skill1UseInput()) skill1User.Skill1Use(origin);
+                if (equipped is ISkill2User skill2User && InputManager.Instance.Skill2UseInput()) skill2User.Skill2Use(origin);
+                if (equipped is IReloadable reloadable && InputManager.Instance.ReloadInput()) reloadable.Reload(origin);
+            }
 
-        foreach (var i in Physics2D.OverlapCircleAll(transform.position, pickupRange, LayerMask.GetMask("DroppedItem")))
-        {
-            if (i.TryGetComponent(out DroppedItem item) && item.OwnerClientId == NetworkManager.Singleton.LocalClientId) item.Pickup(this);
+            if(equippedSlot != null && equippedSlot.item != null && InputManager.Instance.DropInput())
+            {
+                DropItem(equippedSlot.item, 1);
+                equippedSlot.count--;
+            }
+
+            if (canPickup)
+            {
+                foreach (var i in Physics2D.OverlapCircleAll(transform.position, pickupRange, LayerMask.GetMask("DroppedItem")))
+                {
+                    if (i.TryGetComponent(out DroppedItem item)) item.PickupRpc(this);
+                }
+            }
         }
     }
     protected override IEnumerable<InventorySlot> GetSearchableSlots()
@@ -157,6 +172,22 @@ public class Player_Inventory : Inventory
         equipped = item;
         if (equipped != null) equipped.OnWield(origin);
         onEquippedItemChange?.Invoke(equipped);
+    }
+    public void DropAll()
+    {
+        foreach(var i in slots)
+        {
+            if(i.item != null)
+            {
+                DroppedItem tmp = DroppedItem.Create();
+                tmp.transform.position = transform.position;
+                float angle = UnityEngine.Random.Range(0, 360.0f);
+                tmp.rb.linearVelocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dropForce;
+                tmp.NetworkObject.Spawn();
+                tmp.Set(i.item, i.count, dropPickupDelay);
+            }
+            i.count = 0;
+        }
     }
     public void DropItem(Item item, int count)
     {

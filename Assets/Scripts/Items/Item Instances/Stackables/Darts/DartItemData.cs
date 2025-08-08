@@ -8,12 +8,15 @@ public abstract class DartItemData : StackableItemData
     [Header("Dart")]
     [SerializeField] Sprite m_lmbIcon;
     [SerializeField] bool m_auto;
-    [SerializeField] float m_damage, m_throwRate, m_dartLifetime, m_dartVelocity, m_spread;
+    [SerializeField] float m_damage;
+    [SerializeField] CooldownSource m_throwCooldownSource;
+    [SerializeField] float m_throwCooldown, m_dartLifetime, m_dartVelocity, m_spread;
     [SerializeField] float m_throwOffset = 1.0f;
     public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
-    public float throwRate => m_throwRate;
+    public CooldownSource throwCooldownSource => m_throwCooldownSource;
+    public float throwCooldown => m_throwCooldown;
     public float dartLifetime => m_dartLifetime;
     public float dartVelocity => m_dartVelocity;
     public float spread => m_spread;
@@ -33,24 +36,23 @@ public abstract class DartItem : StackableItem, ILMBUser
         base.OnWield(wielder);
         counter = 0.0f;
     }
-    protected virtual bool canThrow => true;
     public override void OnWieldUpdate(Player wielder)
     {
         base.OnWieldUpdate(wielder);
         counter += Time.deltaTime;
     }
+    protected float throwCounter => data.throwCooldownSource.cooldownLeft;
+    protected float throwCooldown => data.throwCooldownSource.cooldown;
+    protected virtual bool canThrow => true;
     public Sprite lmbSprite => data.lmbIcon;
-    public bool canUseLmb => canThrow;
-    public float lmbCooldownBarFill => 1.0f - counter / data.throwRate;
+    public bool canUseLmb => canThrow && throwCounter <= 0.0f;
+    public float lmbCooldownBarFill => throwCounter / throwCooldown;
     public void LMBUse(Player wielder, bool down)
     {
-        if (!data.auto && !down) return;
-        if (canThrow && counter >= data.throwRate)
-        {
-            counter = 0.0f;
-            Throw(wielder);
-            containedSlot.count--;
-        }
+        if (!data.auto && !down || !canUseLmb) return;
+        counter = 0.0f;
+        Throw(wielder);
+        containedSlot.count--;
     }
     protected virtual void Throw(Player wielder)
     {

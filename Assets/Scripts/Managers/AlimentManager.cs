@@ -8,8 +8,8 @@ public class AlimentManager : MonoBehaviour
     public AlimentManager() => Instance = this;
 
     [Header("Settings")]
-    [SerializeField] Burning_Settings m_burningSettings;
-    [SerializeField] Slowed_Settings m_slowedSettings;
-    public Burning_Settings burningSettings => m_burningSettings;
-    public Slowed_Settings slowedSettings => m_slowedSettings;
+    [SerializeField] BurningData m_burningSettings;
+    [SerializeField] SlowedData m_slowedSettings;
+    public BurningData burningSettings => m_burningSettings;
+    public SlowedData slowedSettings => m_slowedSettings;
 }

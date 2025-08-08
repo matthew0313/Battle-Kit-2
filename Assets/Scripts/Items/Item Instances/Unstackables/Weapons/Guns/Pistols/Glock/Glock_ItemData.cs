@@ -15,7 +15,9 @@ public class Glock_ItemData : PistolItemData
     [SerializeField] Sprite m_shotgunShotIcon;
     [SerializeField] Glock_Bullet m_shotgunShotBullet;
     [SerializeField] int m_shotgunShotCount;
-    [SerializeField] float m_shotgunShotDamage, m_shotgunShotSpeed, m_shotgunShotRange, m_shotgunShotSpread, m_shotgunShotCooldown;
+    [SerializeField] float m_shotgunShotDamage, m_shotgunShotSpeed, m_shotgunShotRange, m_shotgunShotSpread;
+    [SerializeField] CooldownSource m_shotgunShotCooldownSource;
+    [SerializeField] float m_shotgunShotCooldown;
     public Sprite shotgunShotIcon => m_shotgunShotIcon;
     public Glock_Bullet shotgunShotBullet => m_shotgunShotBullet;
     public int shotgunShotCount => m_shotgunShotCount;
@@ -23,6 +25,7 @@ public class Glock_ItemData : PistolItemData
     public float shotgunShotSpeed => m_shotgunShotSpeed;
     public float shotgunShotRange => m_shotgunShotRange;
     public float shotgunShotSpread => m_shotgunShotSpread;
+    public CooldownSource shotgunShotCooldownSource => m_shotgunShotCooldownSource;
     public float shotgunShotCooldown => m_shotgunShotCooldown;
     public override Item Create() => new Glock_Item(this);
 }
@@ -35,18 +38,15 @@ public class Glock_Item : PistolItem, ISkill1User
     {
         this.data = data;
     }
-    float shotgunShotCounter;
+    float shotgunShotCounter => data.shotgunShotCooldownSource.cooldown;
+    float shotgunShotCooldown => data.shotgunShotCooldownSource.cooldown;
     public Sprite skill1Sprite => data.shotgunShotIcon;
-    public bool canUseSkill1 => mag >= data.shotgunShotCount && shotgunShotCounter <= 0.0f;
-    public float skill1CooldownBarFill => shotgunShotCounter / data.shotgunShotCooldown;
-    public override void Update()
-    {
-        base.Update();
-        shotgunShotCounter = Mathf.Max(0.0f, shotgunShotCounter - Time.deltaTime);
-    }
+    public bool canUseSkill1 => mag >= data.shotgunShotCount && fireCounter <= 0.0f && shotgunShotCounter <= 0.0f;
+    public float skill1CooldownBarFill => shotgunShotCounter / shotgunShotCooldown;
     public void Skill1Use(Player wielder)
     {
-        shotgunShotCounter = data.shotgunShotCooldown;
+        if (!canUseSkill1) return;
+        wielder.cooldowns.AddCooldown(data.shotgunShotCooldownSource, data.shotgunShotCooldown);
         mag -= data.shotgunShotCount;
         weapon.FireRpc();
         for (int i = 0; i < data.shotgunShotCount; i++)

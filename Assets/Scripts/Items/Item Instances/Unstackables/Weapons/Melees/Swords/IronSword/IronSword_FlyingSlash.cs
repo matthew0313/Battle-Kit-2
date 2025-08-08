@@ -38,7 +38,7 @@ public class IronSword_FlyingSlash : Projectile
 
         if(hit.TryGetComponent(out IReflectable reflectable))
         {
-            if(owner.GetRelation(reflectable.self.owner) == Relation.Enemy)
+            if(owner.GetRelation(reflectable.owner) == Relation.Enemy)
             {
                 reflectable.Reflect(owner, transform.right);
                 return;
@@ -47,7 +47,7 @@ public class IronSword_FlyingSlash : Projectile
 
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if (owner.GetRelation(damagable.self) == Relation.Enemy)
+            if (owner.GetRelation(damagable.owner) == Relation.Enemy)
             {
                 if(damagable is HpComp hpComp) hpComp.AddAliment(new Slowed(slowDuration, slowPercentage));
                 damagable.GetDamage(new()
@@ -61,7 +61,7 @@ public class IronSword_FlyingSlash : Projectile
 
         if(hit.TryGetComponent(out IKnockable knockable))
         {
-            if (owner.GetRelation(knockable.self) == Relation.Enemy)
+            if (owner.GetRelation(knockable.owner) == Relation.Enemy)
             {
                 knockable.GetKnockback(new()
                 {

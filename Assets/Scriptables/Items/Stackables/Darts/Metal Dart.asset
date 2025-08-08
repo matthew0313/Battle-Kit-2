@@ -20,7 +20,8 @@ MonoBehaviour:
   m_lmbIcon: {fileID: 21300000, guid: a0657818ede2f9c41ac37865af7a25f1, type: 3}
   m_auto: 0
   m_damage: 20
-  m_throwRate: 0.2
+  m_throwCooldownSource: {fileID: 11400000, guid: efd9e1e930b91044fa70ba9c2991a980, type: 2}
+  m_throwCooldown: 0.25
   m_dartLifetime: 2
   m_dartVelocity: 10
   m_spread: 3

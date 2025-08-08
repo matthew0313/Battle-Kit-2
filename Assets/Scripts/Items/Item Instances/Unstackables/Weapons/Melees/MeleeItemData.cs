@@ -9,11 +9,13 @@ public abstract class MeleeItemData : WeaponItemData
     [SerializeField] Sprite m_lmbIcon;
     [SerializeField] bool m_auto;
     [SerializeField] float m_damage;
-    [SerializeField] float m_slashRate;
+    [SerializeField] CooldownSource m_slashCooldownSource;
+    [SerializeField] float m_slashCooldown;
     public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
-    public float slashRate => m_slashRate;
+    public CooldownSource slashCooldownSource => m_slashCooldownSource;
+    public float slashCooldown => m_slashCooldown;
 }
 public abstract class MeleeItem : WeaponItem, ILMBUser
 {
@@ -23,29 +25,22 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     {
         this.data = data;
     }
-    protected float counter = 0.0f;
     public override void OnWield(Player wielder)
     {
         base.OnWield(wielder);
         weapon.hitbox.onTriggerEnter2D += OnTriggerEnter2D;
     }
+    protected float slashCounter => data.slashCooldownSource.cooldownLeft;
+    protected float slashCooldown => data.slashCooldownSource.cooldown;
     protected virtual bool canSlash => true;
-    public override void OnWieldUpdate(Player wielder)
-    {
-        base.OnWieldUpdate(wielder);
-        counter += Time.deltaTime;
-    }
     public Sprite lmbSprite => data.lmbIcon;
-    public bool canUseLmb => canSlash && counter >= data.slashRate;
-    public float lmbCooldownBarFill => 1.0f - counter / data.slashRate;
+    public bool canUseLmb => canSlash && slashCounter <= 0.0f;
+    public float lmbCooldownBarFill => slashCounter / slashCooldown;
     public void LMBUse(Player wielder, bool down)
     {
-        if (!data.auto && !down) return;
-        if (canSlash && counter >= data.slashRate)
-        {
-            counter = 0.0f;
-            Slash(wielder);
-        }
+        if (!data.auto && !down || !canUseLmb) return;
+        wielder.cooldowns.AddCooldown(data.slashCooldownSource, data.slashCooldown);
+        Slash(wielder);
     }
     public override void OnUnwield(Player wielder)
     {
@@ -72,7 +67,7 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     {
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if (wielder.GetRelation(damagable.self) == Relation.Enemy)
+            if (wielder.GetRelation(damagable.owner) == Relation.Enemy)
             {
                 damagable.GetDamage(new()
                 {

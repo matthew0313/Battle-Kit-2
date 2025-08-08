@@ -4,10 +4,9 @@ using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Skins), typeof(Player_Inventory))]
-[RequireComponent(typeof(Player_HpComp))]
+[RequireComponent(typeof(Player_HpComp), typeof(Player_Cooldowns))]
 public class Player : Entity
 {
     public Animator anim;
@@ -16,23 +15,16 @@ public class Player : Entity
     public Player_Skins skins { get; private set; }
     public Player_Inventory inventory { get; private set; }
     public Player_HpComp hpComp { get; private set; }
+    public Player_Cooldowns cooldowns { get; private set; }
     public static Player localPlayer { get; private set; }
 
-    public NetworkVariable<Team> team = new NetworkVariable<Team>(Team.None);
-    public NetworkVariable<bool> PVPOn { get; } = new NetworkVariable<bool>(true);
+    public readonly NetworkVariable<Team> team = new NetworkVariable<Team>(Team.None);
+    public readonly NetworkVariable<bool> PVPOn = new NetworkVariable<bool>(false);
     
     [Rpc(SendTo.Authority)]
-    public void SetTeamRpc(Team team, RpcParams rpcParams)
-    {
-        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
-        this.team.Value = team;
-    }
+    public void SetTeamRpc(Team team) => this.team.Value = team;
     [Rpc(SendTo.Authority)]
-    public void SetPVPOnRpc(bool PVPOn, RpcParams rpcParams)
-    {
-        if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.CurrentSessionOwner) return;
-        this.PVPOn.Value = PVPOn;
-    }
+    public void SetPVPOnRpc(bool PVPOn) => this.PVPOn.Value = PVPOn;
     public Relation GetRelation(Entity other)
     {
         if (other == null) return Relation.None;
@@ -53,6 +45,7 @@ public class Player : Entity
         skins = GetComponent<Player_Skins>();
         inventory = GetComponent<Player_Inventory>();
         hpComp = GetComponent<Player_HpComp>();
+        cooldowns = GetComponent<Player_Cooldowns>();
     }
     private void Start()
     {

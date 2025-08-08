@@ -14,8 +14,9 @@ public class IronSword_ItemData : SwordItemData
     [Header("FlyingSlash")]
     [SerializeField] Sprite m_flyingSlashSprite;
     [SerializeField] IronSword_FlyingSlash m_flyingSlash;
-    [SerializeField] float m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration, m_flyingSlashCooldown, m_flyingSlashKnockback,
-        m_flyingSlashSlowPercentage, m_flyingSlashSlowDuration;
+    [SerializeField] float m_flyingSlashDamage, m_flyingSlashSpeed, m_flyingSlashRange, m_flyingSlashAcceleration;
+    [SerializeField] CooldownSource m_flyingSlashCooldownSource;
+    [SerializeField] float m_flyingSlashCooldown, m_flyingSlashKnockback, m_flyingSlashSlowPercentage, m_flyingSlashSlowDuration;
     [SerializeField] UnitTime m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f;
     public Sprite flyingSlashSprite => m_flyingSlashSprite;
     public IronSword_FlyingSlash flyingSlash => m_flyingSlash;
@@ -23,6 +24,7 @@ public class IronSword_ItemData : SwordItemData
     public float flyingSlashSpeed => m_flyingSlashSpeed;
     public float flyingSlashAcceleration => m_flyingSlashAcceleration;
     public float flyingSlashRange => m_flyingSlashRange;
+    public CooldownSource flyingSlashCooldownSource => m_flyingSlashCooldownSource;
     public float flyingSlashCooldown => m_flyingSlashCooldown;
     public float flyingSlashKnockback => m_flyingSlashKnockback;
     public float flyingSlashSlowPercentage => m_flyingSlashSlowPercentage;
@@ -32,9 +34,11 @@ public class IronSword_ItemData : SwordItemData
 
     [Header("SpiralSlash")]
     [SerializeField] Sprite m_spiralSlashSprite;
+    [SerializeField] CooldownSource m_spiralSlashCooldownSource;
     [SerializeField] float m_spiralSlashCooldown, m_spiralSlashKnockback;
     [SerializeField] UnitTime m_spiralSlashDuration;
     public Sprite spiralSlashSprite => m_spiralSlashSprite;
+    public CooldownSource spiralSlashCooldownSource => m_spiralSlashCooldownSource;
     public float spiralSlashCooldown => m_spiralSlashCooldown;
     public float spiralSlashKnockback => m_spiralSlashKnockback;
     public float spiralSlashDuration => m_spiralSlashDuration;
@@ -51,45 +55,39 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     }
 
     //flyingSlash
-    float flyingSlashCounter = 0.0f;
+    float flyingSlashCounter => data.flyingSlashCooldownSource.cooldownLeft;
+    float flyingSlashCooldown => data.flyingSlashCooldownSource.cooldown;
     bool usingFlyingSlash = false;
     public Sprite skill1Sprite => data.flyingSlashSprite;
-    public bool canUseSkill1 => flyingSlashCounter <= 0.0f && counter >= data.slashRate && !usingSpiralSlash;
-    public float skill1CooldownBarFill => flyingSlashCounter / data.flyingSlashCooldown;
-    CoroutineHandle flyingSlashCoroutine, flyingSlashEndCoroutine;
+    public bool canUseSkill1 => flyingSlashCounter <= 0.0f && slashCounter <= 0.0f && !usingSpiralSlash;
+    public float skill1CooldownBarFill => flyingSlashCounter / flyingSlashCooldown;
+    CoroutineHandle flyingSlashCoroutine;
 
     //spiralSlash
-    float spiralSlashCounter = 0.0f;
+    float spiralSlashCounter => data.spiralSlashCooldownSource.cooldownLeft;
+    float spiralSlashCooldown => data.spiralSlashCooldownSource.cooldown;
     bool usingSpiralSlash = false;
     public Sprite skill2Sprite => data.spiralSlashSprite;
-    public bool canUseSkill2 => spiralSlashCounter <= 0.0f && counter >= data.slashRate && !usingFlyingSlash;
-    public float skill2CooldownBarFill => spiralSlashCounter / data.spiralSlashCooldown;
+    public bool canUseSkill2 => spiralSlashCounter <= 0.0f && slashCounter <= 0.0f && !usingFlyingSlash;
+    public float skill2CooldownBarFill => spiralSlashCounter / spiralSlashCooldown;
     CoroutineHandle spiralSlashEndCoroutine;
     protected override bool canSlash => base.canSlash && !usingFlyingSlash && !usingSpiralSlash;
     public void Skill1Use(Player wielder)
     {
-        flyingSlashCounter = data.flyingSlashCooldown;
-        usingFlyingSlash = true;
-
-        weapon.FlyingSlashRpc();
+        if (!canUseSkill1) return;
+        wielder.cooldowns.AddCooldown(data.flyingSlashCooldownSource, data.flyingSlashCooldown);
         flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
-        flyingSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.flyingSlashDuration, () => usingFlyingSlash = false));
     }
     protected override bool canFlip => base.canFlip && !usingSpiralSlash;
     public void Skill2Use(Player wielder)
     {
-        spiralSlashCounter = data.spiralSlashCooldown;
+        if (!canUseSkill2) return;
+        wielder.cooldowns.AddCooldown(data.spiralSlashCooldownSource, data.spiralSlashCooldown);
         usingSpiralSlash = true;
         spiralSlashHitList.Clear();
 
         weapon.SpiralSlashRpc();
         spiralSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashDuration, () => { usingSpiralSlash = false; }));
-    }
-    public override void Update()
-    {
-        base.Update();
-        flyingSlashCounter = Mathf.Max(0.0f, flyingSlashCounter - Time.deltaTime);
-        spiralSlashCounter = Mathf.Max(0.0f, spiralSlashCounter - Time.deltaTime);
     }
     public override void OnWield(Player wielder)
     {
@@ -99,18 +97,24 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
+        usingFlyingSlash = false;
+        usingSpiralSlash = false;
         Timing.KillCoroutines(flyingSlashCoroutine);
-        Timing.KillCoroutines(flyingSlashEndCoroutine);
         Timing.KillCoroutines(spiralSlashEndCoroutine);
         weapon.circularSlashHitbox.onTriggerEnter2D -= OnSpiralSlashTriggerEnter2D;
     }
     IEnumerator<float> FlyingSlash()
     {
+        usingFlyingSlash = true;
+        weapon.FlyingSlashRpc();
         yield return Timing.WaitForSeconds(data.flyingSlashDelay);
 
         IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
         flyingSlash.Set(wielder, data.flyingSlashDamage, data.flyingSlashSpeed, data.flyingSlashAcceleration, data.flyingSlashRange, data.flyingSlashKnockback, data.flyingSlashSlowPercentage, data.flyingSlashSlowDuration);
         flyingSlash.NetworkObject.Spawn();
+
+        yield return Timing.WaitForSeconds(data.flyingSlashDuration - data.flyingSlashDelay);
+        usingFlyingSlash = false;
     }
     readonly List<GameObject> spiralSlashHitList = new();
     void OnSpiralSlashTriggerEnter2D(Collider2D other)
@@ -127,16 +131,16 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     {
         if(hit.TryGetComponent(out IReflectable reflectable))
         {
-            if(wielder.GetRelation(reflectable.self.owner) == Relation.Enemy)
+            if(wielder.GetRelation(reflectable.owner) == Relation.Enemy)
             {
-                reflectable.Reflect(wielder, weapon.circularSlashHitbox.transform.up);
+                reflectable.Reflect(wielder, (hit.transform.position - wielder.transform.position).normalized);
                 return;
             }
         }
 
         if (hit.TryGetComponent(out IDamagable damagable))
         {
-            if(wielder.GetRelation(damagable.self) == Relation.Enemy)
+            if(wielder.GetRelation(damagable.owner) == Relation.Enemy)
             {
                 damagable.GetDamage(new()
                 {
@@ -148,7 +152,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         }
         if (hit.TryGetComponent(out IKnockable knockable))
         {
-            if(wielder.GetRelation(knockable.self) == Relation.Enemy)
+            if(wielder.GetRelation(knockable.owner) == Relation.Enemy)
             {
                 knockable.GetKnockback(new()
                 {

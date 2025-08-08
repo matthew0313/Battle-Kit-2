@@ -35,6 +35,7 @@ public class DroppedItem : NetworkBehaviour
     }
     private void Update()
     {
+        if (!IsOwner) return;
         pickupDelay -= Time.deltaTime;
     }
     public Item item { get; private set; }
@@ -52,24 +53,22 @@ public class DroppedItem : NetworkBehaviour
     public void Set(Item item, int count, float pickupDelay = 0.0f)
     {
         if (!IsOwner) return;
-        itemInstanceData.Value = new ItemInstanceData()
-        {
-            itemIndex = ItemManager.Instance.itemDatabase.GetIndex(item.data),
-            properties = (NetworkDictionary)item.SaveProperties()
-        };
+        itemInstanceData.Value = item.ToInstanceData();
         this.count.Value = count;
         this.pickupDelay = pickupDelay;
     }
     CoroutineHandle pendingWaiting;
-    public void Pickup(Inventory inventory)
+    [Rpc(SendTo.Owner)]
+    public void PickupRpc(NetworkBehaviourReference inventoryRef)
     {
-        if (!IsOwner || pending || pickupDelay > 0.0f) return;
+        if (pending || pickupDelay > 0.0f) return;
+        if(inventoryRef.TryGet(out Inventory inventory))
+        {
+            pending = true;
+            pendingWaiting = Timing.RunCoroutine(PendingWait());
 
-        Timing.KillCoroutines(pendingWaiting);
-        pending = true;
-        pendingWaiting = Timing.RunCoroutine(PendingWait());
-        
-        inventory.InsertRpc(itemInstanceData.Value, count.Value, new(receiver));
+            inventory.InsertRpc(itemInstanceData.Value, count.Value, new(receiver));
+        }
     }
     void OnResponseReceive(int remaining)
     {

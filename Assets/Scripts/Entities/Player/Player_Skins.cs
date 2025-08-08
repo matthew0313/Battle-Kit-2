@@ -22,7 +22,7 @@ public class Player_Skins : NetworkBehaviour
     }
     public void ChangeSkin(int skinIndex)
     {
-        if (skinIndex < 0 || skinIndex >= skins.Length) return;
+        if (!IsOwner || skinIndex < 0 || skinIndex >= skins.Length) return;
         currentSkinIndex.Value = skinIndex;
     }
     void OnCurrentSkinIndexChange(int prev, int skinIndex)

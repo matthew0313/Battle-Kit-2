@@ -1015,6 +1015,7 @@ GameObject:
   - component: {fileID: 281736694314098834}
   - component: {fileID: 6196573273557533169}
   - component: {fileID: 5289569941692065921}
+  - component: {fileID: 3118927944209979667}
   - component: {fileID: 2987495730098332142}
   m_Layer: 6
   m_Name: Player
@@ -1085,7 +1086,7 @@ MonoBehaviour:
   RotationInterpolationType: 0
   ScaleInterpolationType: 0
   PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
+  PositionMaxInterpolationTime: 0.025
   RotationLerpSmoothing: 1
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
@@ -1110,7 +1111,7 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0
 --- !u!114 &852153633932099686
 MonoBehaviour:
@@ -1143,10 +1144,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   anim: {fileID: 3753774314823433316}
-  alliance:
-    m_InternalValue: 0
-  combat:
-    m_InternalValue: 0
 --- !u!114 &7677471556559107211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1221,6 +1218,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   baseHp: 100
   invincible: 0
+--- !u!114 &3118927944209979667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257084729005055591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4159b9d2329394a478ad6d0e374dc0fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!50 &2987495730098332142
 Rigidbody2D:
   serializedVersion: 5

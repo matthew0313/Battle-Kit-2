@@ -35,6 +35,8 @@ public abstract class Inventory : NetworkBehaviour
             receiver.ResponseRpc(left);
         }
     }
+    [Rpc(SendTo.Owner)]
+    public void ClearRpc() => Clear();
     protected virtual IEnumerable<InventorySlot> GetInsertableSlots() => slots;
     protected virtual IEnumerable<InventorySlot> GetSearchableSlots() => slots;
     public int Insert(Item item, int count)
@@ -99,6 +101,10 @@ public abstract class Inventory : NetworkBehaviour
         return true;
     }
     public bool TakeOut(ItemData data, int count) => TakeOut((item) => item.data == data, count);
+    protected virtual void Clear()
+    {
+        foreach (var i in slots) i.count = 0;
+    }
     public override void OnDestroy()
     {
         base.OnDestroy();
