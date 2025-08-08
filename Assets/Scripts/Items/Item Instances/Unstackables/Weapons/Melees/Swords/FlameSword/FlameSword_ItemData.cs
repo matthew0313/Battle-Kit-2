@@ -7,9 +7,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FlameSword", menuName = "Scriptables/Items/Unstackables/Weapons/Melees/Swords/FlameSword")]
 public class FlameSword_ItemData : SwordItemData
 {
+    [Header("FlameSword")]
+    [SerializeField] FlameSword m_weaponPrefab;
+    public override Weapon weaponPrefab => m_weaponPrefab;
     public override Item Create() => new FlameSword_Item(this);
 }
-public class FlameSword_Item : SwordItem, ISkill1User, ISkill2User
+public class FlameSword_Item : SwordItem
 {
     new public readonly FlameSword_ItemData data;
     new protected FlameSword weapon => base.weapon as FlameSword;
