@@ -16,7 +16,7 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
 
     public event Action onHpChange;
     public event Action<DamageInfoWrapper> modifyDamageTaken;
-    public event Action<DamageInfo> onDamage;
+    public event Action<DamageReceivedInfo> onDamage;
 
     public bool invincible = false;
     public readonly Dictionary<ulong, Aliment> aliments = new();
@@ -78,11 +78,18 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
             }
         }
     }
+    public void GetDamage(DamageInfo damage) => GetDamageRpc(damage);
 
     [Rpc(SendTo.Authority)]
-    public void GetDamageRpc(DamageInfo damage)
+    public void GetDamageRpc(DamageInfo damage) => OnDamageRpc(ProcessDamage(damage));
+    protected virtual DamageReceivedInfo ProcessDamage(DamageInfo damage)
     {
-        if (dead.Value == true || invincible) return;
+        DamageReceivedInfo receivedInfo = new() { damage = damage };
+        if (dead.Value == true || invincible)
+        {
+            receivedInfo.isNullified = true;
+            return receivedInfo;
+        }
 
         DamageInfoWrapper wrap = new() { damage = damage };
         modifyDamageTaken?.Invoke(wrap);
@@ -90,15 +97,16 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
 
         float amount = Mathf.Min(hp.Value, damage.amount);
         hp.Value -= amount;
-        onDamage?.Invoke(damage);
 
         if (hp.Value <= 0)
         {
             dead.Value = true;
             OnDeath();
         }
+        return receivedInfo;
     }
-    public void GetDamage(DamageInfo damage) => GetDamageRpc(damage);
+    [Rpc(SendTo.Everyone)]
+    public void OnDamageRpc(DamageReceivedInfo info) => onDamage?.Invoke(info);
     protected virtual void OnDeath() { }
     public void Revive()
     {
@@ -155,4 +163,16 @@ public abstract class HpComp : NetworkBehaviour, IDamagable
 public class DamageInfoWrapper
 {
     public DamageInfo damage;
+}
+public struct DamageReceivedInfo : INetworkSerializable
+{
+    public DamageInfo damage;
+
+    public bool isNullified;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeNetworkSerializable(ref damage);
+        serializer.SerializeValue(ref isNullified);
+    }
 }

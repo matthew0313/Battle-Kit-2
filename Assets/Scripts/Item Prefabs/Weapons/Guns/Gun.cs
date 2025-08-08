@@ -7,24 +7,10 @@ public abstract class Gun : Weapon
     [SerializeField] Transform m_firePoint;
     public Transform firePoint => m_firePoint;
 
-    [Rpc(SendTo.Everyone)]
-    public void FireRpc()
-    {
-        OnFire();
-    }
-    [Rpc(SendTo.Everyone)]
-    public void ReloadRpc()
-    {
-        OnReload();
-    }
     readonly int fireID = Animator.StringToHash("Fire");
-    protected virtual void OnFire()
-    {
-        anim.SetTrigger(fireID);
-    }
     readonly int reloadID = Animator.StringToHash("Reload");
-    protected virtual void OnReload()
-    {
-        anim.SetTrigger(reloadID);
-    }
+    [Rpc(SendTo.Everyone)]
+    public void FireRpc() => anim.SetTrigger(fireID);
+    [Rpc(SendTo.Everyone)]
+    public void ReloadRpc() => anim.SetTrigger(reloadID);
 }
