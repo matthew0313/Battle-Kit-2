@@ -33,3 +33,7 @@ MonoBehaviour:
     items:
     - itemData: {fileID: 11400000, guid: 70d727deaa409004e8d58f24aa41b7f5, type: 2}
       count: 1
+  - name: Flame Sword
+    items:
+    - itemData: {fileID: 11400000, guid: d7c924ffb565d134f971e055fc04f85f, type: 2}
+      count: 1

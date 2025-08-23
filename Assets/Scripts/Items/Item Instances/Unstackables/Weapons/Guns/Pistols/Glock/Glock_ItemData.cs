@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Glock", menuName = "Scriptables/Items/Unstackables/Weapons/Guns/Pistols/Glock")]
@@ -38,7 +39,7 @@ public class Glock_Item : PistolItem, ISkill1User
     {
         this.data = data;
     }
-    float shotgunShotCounter => data.shotgunShotCooldownSource.cooldown;
+    float shotgunShotCounter => data.shotgunShotCooldownSource.cooldownLeft;
     float shotgunShotCooldown => data.shotgunShotCooldownSource.cooldown;
     public Sprite skill1Sprite => data.shotgunShotIcon;
     public bool canUseSkill1 => mag >= data.shotgunShotCount && fireCounter <= 0.0f && shotgunShotCounter <= 0.0f;
@@ -48,7 +49,7 @@ public class Glock_Item : PistolItem, ISkill1User
         if (!canUseSkill1) return;
         wielder.cooldowns.AddCooldown(data.shotgunShotCooldownSource, data.shotgunShotCooldown);
         mag -= data.shotgunShotCount;
-        weapon.FireRpc();
+        weapon.Fire();
         for (int i = 0; i < data.shotgunShotCount; i++)
         {
             Bullet bullet = MonoBehaviour.Instantiate(data.shotgunShotBullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.shotgunShotSpread, data.shotgunShotSpread)));

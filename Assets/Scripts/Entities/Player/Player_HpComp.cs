@@ -16,6 +16,11 @@ public class Player_HpComp : HpComp
     readonly ControlElement<bool> canMoveDisable = new(false, 10, true);
     readonly ControlElement<bool> canSwitchSlotDisable = new(false, 9999, true);
     readonly ControlElement<bool> canPickupDisable = new(false, 9999, true);
+    protected override DamageReceivedInfo ProcessDamage(DamageInfo damage)
+    {
+        if(!damage.ignoreDefense) damage.amount /= Mathf.Max(origin.stats.defenseMultiplier, 0.1f);
+        return base.ProcessDamage(damage);
+    }
     protected override void OnDeath()
     {
         base.OnDeath();
@@ -24,7 +29,7 @@ public class Player_HpComp : HpComp
         origin.inventory.Disarm();
         origin.inventory.canSwitchSlotControl.AddControl(canSwitchSlotDisable);
         origin.inventory.canPickupControl.AddControl(canPickupDisable);
-        origin.inventory.DropAll();
+        origin.inventory.DropHalf();
         Timing.RunCoroutine(ReviveWait());
     }
     IEnumerator<float> ReviveWait()
@@ -40,7 +45,7 @@ public class Player_HpComp : HpComp
         origin.inventory.canSwitchSlotControl.RemoveControl(canSwitchSlotDisable);
         origin.inventory.canPickupControl.RemoveControl(canPickupDisable);
         origin.inventory.ChangeEquippedSlot(0);
-        if (GameManager.Instance.roundInProgress.Value)
+        if (GameManager.Instance.stageLoaded.Value)
         {
             if(GameManager.Instance.currentGameMode.Value == GameMode.FreeForAll)
             {

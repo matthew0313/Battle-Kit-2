@@ -514,6 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7241368433284577438}
   - component: {fileID: 4808858756730013700}
+  - component: {fileID: 4270214156407019060}
   m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
@@ -562,6 +563,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4270214156407019060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8111430573008035831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 4808858756730013700}
 --- !u!1 &8860198851617528564
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,7 +654,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   enabledState:
     m_InternalValue: 1
-  anim: {fileID: 4808858756730013700}
+  m_anim: {fileID: 4270214156407019060}
   m_hitbox: {fileID: 4820748424299704003}
   m_flyingSlashFirePoint: {fileID: 5935022086373393318}
   m_circularSlashHitbox: {fileID: 8922385626885058670}
@@ -661,10 +677,10 @@ MonoBehaviour:
   RotationInterpolationType: 0
   ScaleInterpolationType: 0
   PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
-  RotationLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.05
+  RotationLerpSmoothing: 0
   RotationMaxInterpolationTime: 0.1
-  ScaleLerpSmoothing: 1
+  ScaleLerpSmoothing: 0
   ScaleMaxInterpolationTime: 0.1
   AuthorityMode: 1
   TickSyncChildren: 0
@@ -686,5 +702,5 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0

@@ -12,7 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Game.unity
     guid: 3df40bb162cda9e44966cc556af8ada9
   - enabled: 1
-    path: Assets/Scenes/TestFFAStage.unity
+    path: Assets/Scenes/FFAStages/FFA_Forest.unity
+    guid: 36c870c14191d8a4fbaa291b66aa43f8
+  - enabled: 1
+    path: Assets/Scenes/FFAStages/TestFFAStage.unity
     guid: f59e1a1ff0ae4ad46b37a70fee9c1e5d
   - enabled: 1
     path: Assets/Scenes/TestTeamStage.unity

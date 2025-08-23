@@ -15,6 +15,7 @@ public class AlimentListUIElement : MonoBehaviour
         target.onAlimentDisplayChange += OnAlimentDisplayChange;
         alimentText.color = target.settings.alimentColor;
         alimentIcon.sprite = target.settings.alimentIcon;
+        alimentIcon.gameObject.SetActive(target.settings.alimentIcon != null);
         timeLeftScaler.localScale = new Vector3(target.duration / target.initialDuration, 1.0f, 1.0f);
         OnAlimentDisplayChange();
         return this;

@@ -50,7 +50,7 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     protected virtual void Slash(Player wielder)
     {
         hitList.Clear();
-        weapon.SlashRpc();
+        weapon.Slash();
     }
     protected List<GameObject> hitList = new();
     void OnTriggerEnter2D(Collider2D other)
@@ -71,7 +71,7 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
             {
                 damagable.GetDamage(new()
                 {
-                    amount = data.damage,
+                    amount = data.damage * wielder.stats.attackMultiplier,
                     source = DamageSource.Player,
                     clientID = wielder.OwnerClientId
                 });

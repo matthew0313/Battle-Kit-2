@@ -26,7 +26,24 @@ public class SessionManager : MonoBehaviour
         }
     }
     public Action<ISession> onSessionChange;
-    public Action onSignIn;
+    public event Action onSignIn;
+    public event Action<string> onPlayerNameChange;
+    public bool signedIn { get; private set; } = false;
+    public string playerName
+    {
+        get
+        {
+            string tmp = AuthenticationService.Instance.PlayerName;
+            tmp = tmp.Substring(0, tmp.IndexOf('#'));
+            return tmp;
+        }
+    }
+    public async void SetPlayerName(string playerName)
+    {
+        Debug.Log(playerName);
+        await AuthenticationService.Instance.UpdatePlayerNameAsync(playerName);
+        onPlayerNameChange?.Invoke(playerName);
+    }
     async void Start()
     {
         try
@@ -35,8 +52,9 @@ public class SessionManager : MonoBehaviour
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Debug.Log($"Player: {AuthenticationService.Instance.PlayerName}");
             onSignIn?.Invoke();
+            signedIn = true;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.LogException(e);
         }

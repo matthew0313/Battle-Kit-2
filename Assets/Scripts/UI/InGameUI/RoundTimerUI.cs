@@ -6,18 +6,25 @@ using UnityEngine;
 
 public class RoundTimerUI : MonoBehaviour
 {
-    [SerializeField] TMP_Text timeLeftText, roundInProgressText;
-    [SerializeField] LangText roundInProgress, roundNotInProgress;
+    [SerializeField] TMP_Text timeLeftText, gameStateText;
+    [SerializeField] LangText intermission, roundInProgress, roundFinished;
     private void Start()
     {
         GameManager.Instance.timeLeft.OnValueChanged += OnTimeLeftChange;
-        GameManager.Instance.roundInProgress.OnValueChanged += OnRoundInProgressChange;
+        GameManager.Instance.gameState.OnValueChanged += OnGameStateChange;
         OnTimeLeftChange(0, GameManager.Instance.timeLeft.Value);
-        OnRoundInProgressChange(false, GameManager.Instance.roundInProgress.Value);
+        OnGameStateChange(GameState.Intermission, GameManager.Instance.gameState.Value);
     }
-    void OnRoundInProgressChange(bool prev, bool isRoundInProgress)
+    void OnGameStateChange(GameState prev, GameState val)
     {
-        roundInProgressText.text = isRoundInProgress ? roundInProgress.text : roundNotInProgress.text;
+        string text = string.Empty;
+        switch (val)
+        {
+            case GameState.Intermission: text = intermission.text; break;
+            case GameState.RoundInProgress: text = roundInProgress.text; break;
+            case GameState.RoundFinished: text = roundFinished.text; break;
+        }
+        gameStateText.text = text;
     }
     void OnTimeLeftChange(int prev, int timeLeft)
     {

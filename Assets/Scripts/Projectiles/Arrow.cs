@@ -57,7 +57,7 @@ public abstract class Arrow : Projectile, IReflectable
             {
                 damagable.GetDamage(new()
                 {
-                    amount = damage.Value,
+                    amount = damage.Value * owner.stats.attackMultiplier,
                     source = DamageSource.Player,
                     clientID = OwnerClientId
                 });

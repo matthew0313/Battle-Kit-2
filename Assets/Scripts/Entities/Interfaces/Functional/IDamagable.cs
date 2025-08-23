@@ -17,6 +17,8 @@ public struct DamageInfo : INetworkSerializable
     public bool hasColor;
     public Color color;
 
+    public bool ignoreDefense;
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref amount);
@@ -26,6 +28,8 @@ public struct DamageInfo : INetworkSerializable
 
         serializer.SerializeValue(ref hasColor);
         if(hasColor) serializer.SerializeValue(ref color);
+
+        serializer.SerializeValue(ref ignoreDefense);
     }
 }
 /*public struct DamageReceivedInfo

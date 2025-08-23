@@ -10,9 +10,8 @@ public class IronSword : Sword
     public TriggerCallbacks circularSlashHitbox => m_circularSlashHitbox;
 
     readonly int flyingSlashID = Animator.StringToHash("FlyingSlash");
-    [Rpc(SendTo.Everyone)]
-    public void FlyingSlashRpc() => anim.SetTrigger(flyingSlashID);
+    public void FlyingSlash() => anim.SetTrigger(flyingSlashID);
+
     readonly int spiralSlashID = Animator.StringToHash("SpiralSlash");
-    [Rpc(SendTo.Everyone)]
-    public void SpiralSlashRpc() => anim.SetTrigger(spiralSlashID);
+    public void SpiralSlash() => anim.SetTrigger(spiralSlashID);
 }

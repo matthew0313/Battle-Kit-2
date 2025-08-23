@@ -54,7 +54,14 @@ public class Player_Inventory : Inventory
         canUseItemControl = new(value => canUseItem = value, true);
         canSwitchSlotControl = new(value => canSwitchSlot = value, true);
         canPickupControl = new(value => canPickup = value, true);
+        GameManager.Instance.onRoundEnd += OnRoundEnd;
     }
+
+    private void OnRoundEnd()
+    {
+        Clear();
+    }
+
     public void Init()
     {
         if (IsOwner)
@@ -173,20 +180,33 @@ public class Player_Inventory : Inventory
         if (equipped != null) equipped.OnWield(origin);
         onEquippedItemChange?.Invoke(equipped);
     }
-    public void DropAll()
+    public void DropHalf()
     {
         foreach(var i in slots)
         {
             if(i.item != null)
             {
-                DroppedItem tmp = DroppedItem.Create();
-                tmp.transform.position = transform.position;
-                float angle = UnityEngine.Random.Range(0, 360.0f);
-                tmp.rb.linearVelocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dropForce;
-                tmp.NetworkObject.Spawn();
-                tmp.Set(i.item, i.count, dropPickupDelay);
+                if (i.count > 1)
+                {
+                    DroppedItem tmp = DroppedItem.Create();
+                    tmp.transform.position = transform.position;
+                    float angle = UnityEngine.Random.Range(0, 360.0f);
+                    tmp.rb.linearVelocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dropForce;
+                    tmp.NetworkObject.Spawn();
+                    tmp.Set(i.item, i.count / 2, dropPickupDelay);
+                    i.count -= i.count / 2;
+                }
+                else if(UnityEngine.Random.Range(0.0f, 100.0f) <= 50.0f)
+                {
+                    DroppedItem tmp = DroppedItem.Create();
+                    tmp.transform.position = transform.position;
+                    float angle = UnityEngine.Random.Range(0, 360.0f);
+                    tmp.rb.linearVelocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dropForce;
+                    tmp.NetworkObject.Spawn();
+                    tmp.Set(i.item, 1, dropPickupDelay);
+                    i.count = 0;
+                }
             }
-            i.count = 0;
         }
     }
     public void DropItem(Item item, int count)

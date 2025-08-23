@@ -24,5 +24,6 @@ public struct KnockbackInfo : INetworkSerializable
 [System.Serializable]
 public enum KnockbackSource
 {
-    Player = 0
+    Player = 0,
+    Other = 1
 }

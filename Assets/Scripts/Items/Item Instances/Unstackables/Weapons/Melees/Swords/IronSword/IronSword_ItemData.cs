@@ -76,6 +76,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     {
         if (!canUseSkill1) return;
         wielder.cooldowns.AddCooldown(data.flyingSlashCooldownSource, data.flyingSlashCooldown);
+        weapon.FlyingSlash();
         flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
     }
     protected override bool canFlip => base.canFlip && !usingSpiralSlash;
@@ -86,7 +87,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         usingSpiralSlash = true;
         spiralSlashHitList.Clear();
 
-        weapon.SpiralSlashRpc();
+        weapon.SpiralSlash();
         spiralSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashDuration, () => { usingSpiralSlash = false; }));
     }
     public override void OnWield(Player wielder)
@@ -106,7 +107,6 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     IEnumerator<float> FlyingSlash()
     {
         usingFlyingSlash = true;
-        weapon.FlyingSlashRpc();
         yield return Timing.WaitForSeconds(data.flyingSlashDelay);
 
         IronSword_FlyingSlash flyingSlash = MonoBehaviour.Instantiate(data.flyingSlash, weapon.flyingSlashFirePoint.position, weapon.flyingSlashFirePoint.rotation);
@@ -144,7 +144,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
             {
                 damagable.GetDamage(new()
                 {
-                    amount = data.damage,
+                    amount = data.damage * wielder.stats.attackMultiplier,
                     source = DamageSource.Player,
                     clientID = wielder.OwnerClientId
                 });

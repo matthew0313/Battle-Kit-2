@@ -56,7 +56,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         if (!canUseSkill1) return;
         wielder.cooldowns.AddCooldown(data.empowerCooldownSource, data.empowerCooldown);
         empowered = true;
-        weapon.empowered.Value = true;
+        weapon.SetEmpowered(true);
     }
     float rollCounter => data.rollCooldownSource.cooldownLeft;
     float rollCooldown => data.rollCooldownSource.cooldown;
@@ -76,7 +76,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         else
         {
             empowered = false;
-            weapon.empowered.Value = false;
+            weapon.SetEmpowered(false);
             empowerShot = Timing.RunCoroutine(EmpowerShot(wielder));
         }
     }
@@ -85,13 +85,13 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         base.OnUnwield(wielder);
         Timing.KillCoroutines(empowerShot);
         empowered = false;
-        weapon.empowered.Value = false;
+        weapon.SetEmpowered(false);
     }
     IEnumerator<float> EmpowerShot(Player wielder)
     {
         for(int i = 0; i < data.empowerShotCount; i++)
         {
-            weapon.FireRpc();
+            weapon.Fire();
             base.Fire(wielder);
             yield return Timing.WaitForSeconds(data.empowerShotInterval);
         }

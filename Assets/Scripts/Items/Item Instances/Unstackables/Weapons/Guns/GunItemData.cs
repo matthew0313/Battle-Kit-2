@@ -85,7 +85,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
         if (!canReload) return;
         reloadCounter = data.reloadTime;
         reloading = true;
-        weapon.ReloadRpc();
+        weapon.Reload();
     }
     public override void OnWieldUpdate(Player wielder)
     {
@@ -113,7 +113,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
         if (!data.auto && !down || !canUseLmb) return;
         wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
         mag--;
-        weapon.FireRpc();
+        weapon.Fire();
         Fire(wielder);
     }
     protected virtual void Fire(Player wielder)

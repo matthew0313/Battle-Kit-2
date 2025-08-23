@@ -33,6 +33,15 @@ public class DroppedItem : NetworkBehaviour
         itemInstanceData.OnValueChanged += OnItemSet;
         count.OnValueChanged += OnCountChange;
     }
+    private void OnEnable()
+    {
+        GameManager.Instance.onRoundEnd += OnRoundEnd;
+    }
+    private void OnDisable()
+    {
+        GameManager.Instance.onRoundEnd -= OnRoundEnd;
+    }
+    void OnRoundEnd() { if (IsOwner) NetworkObject.Despawn(); }
     private void Update()
     {
         if (!IsOwner) return;

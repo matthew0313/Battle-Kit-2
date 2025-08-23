@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 using System.Collections.Generic;
 using Unity.Collections;
 
-public abstract class HpComp : NetworkBehaviour, IDamagable
+public abstract class HpComp : NetworkBehaviour, IDamagable, IAlimentable
 {
     public abstract Entity owner { get; }
 

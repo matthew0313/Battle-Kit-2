@@ -77,7 +77,7 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
         if (!down || !canUseLmb) return;
         wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
         containedSlot.inventory.TakeOut(ammunition, 1);
-        weapon.FireRpc();
+        weapon.Fire();
         Fire(wielder);
     }
     protected virtual void Fire(Player wielder)

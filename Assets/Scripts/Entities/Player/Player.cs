@@ -6,25 +6,31 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Player_Movements), typeof(Player_Skins), typeof(Player_Inventory))]
-[RequireComponent(typeof(Player_HpComp), typeof(Player_Cooldowns))]
+[RequireComponent(typeof(Player_HpComp), typeof(Player_Cooldowns), typeof(Player_Stats))]
 public class Player : Entity
 {
     public Animator anim;
+    [SerializeField] Animator m_localAnim;
+    public Animator localAnim => m_localAnim;
 
     public Player_Movements movements { get; private set; }
     public Player_Skins skins { get; private set; }
     public Player_Inventory inventory { get; private set; }
     public Player_HpComp hpComp { get; private set; }
     public Player_Cooldowns cooldowns { get; private set; }
+    public Player_Stats stats { get; private set; }
     public static Player localPlayer { get; private set; }
 
-    public readonly NetworkVariable<Team> team = new NetworkVariable<Team>(Team.None);
-    public readonly NetworkVariable<bool> PVPOn = new NetworkVariable<bool>(false);
+    public readonly NetworkVariable<Team> team = new(Team.None);
+    public readonly NetworkVariable<bool> PVPOn = new(false);
+    public readonly NetworkVariable<bool> inRound = new(false);
     
     [Rpc(SendTo.Authority)]
     public void SetTeamRpc(Team team) => this.team.Value = team;
     [Rpc(SendTo.Authority)]
     public void SetPVPOnRpc(bool PVPOn) => this.PVPOn.Value = PVPOn;
+    [Rpc(SendTo.Authority)]
+    public void SetInRoundRpc(bool inRound) => this.inRound.Value = inRound;
     public Relation GetRelation(Entity other)
     {
         if (other == null) return Relation.None;
@@ -46,6 +52,7 @@ public class Player : Entity
         inventory = GetComponent<Player_Inventory>();
         hpComp = GetComponent<Player_HpComp>();
         cooldowns = GetComponent<Player_Cooldowns>();
+        stats = GetComponent<Player_Stats>();
     }
     private void Start()
     {

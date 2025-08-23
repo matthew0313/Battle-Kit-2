@@ -76,7 +76,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   enabledState:
     m_InternalValue: 1
-  anim: {fileID: 8151631392580815333}
+  m_anim: {fileID: 8535491442828576371}
   m_firePoint: {fileID: 2471936309628182798}
 --- !u!114 &1587866412704729185
 MonoBehaviour:
@@ -97,10 +97,10 @@ MonoBehaviour:
   RotationInterpolationType: 0
   ScaleInterpolationType: 0
   PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
-  RotationLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.05
+  RotationLerpSmoothing: 0
   RotationMaxInterpolationTime: 0.1
-  ScaleLerpSmoothing: 1
+  ScaleLerpSmoothing: 0
   ScaleMaxInterpolationTime: 0.1
   AuthorityMode: 1
   TickSyncChildren: 0
@@ -122,7 +122,7 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0
 --- !u!1 &807471736440342462
 GameObject:
@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 4772357793294238378}
   - component: {fileID: 7817900625938380084}
   - component: {fileID: 8151631392580815333}
+  - component: {fileID: 8535491442828576371}
   m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
@@ -236,6 +237,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8535491442828576371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 807471736440342462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 8151631392580815333}
 --- !u!1 &2900584848391961071
 GameObject:
   m_ObjectHideFlags: 0

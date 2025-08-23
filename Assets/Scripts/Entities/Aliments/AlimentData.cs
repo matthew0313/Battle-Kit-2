@@ -64,8 +64,9 @@ public abstract class Aliment
     {
         switch (type)
         {
-            case AlimentType.Slowed: return new Slowed();
-            case AlimentType.Burning: return new Burning();
+            case AlimentType.Slowed: return new Slowed_Aliment();
+            case AlimentType.Burning: return new Burning_Aliment();
+            case AlimentType.FlameBlessing: return new FlameBlessing_Aliment();
             default: return null;
         }
     }
@@ -82,5 +83,6 @@ public abstract class Aliment
 public enum AlimentType
 {
     Slowed = 0,
-    Burning = 1
+    Burning = 1,
+    FlameBlessing = 2
 }

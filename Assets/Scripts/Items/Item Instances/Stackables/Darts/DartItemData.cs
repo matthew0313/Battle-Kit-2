@@ -47,10 +47,12 @@ public abstract class DartItem : StackableItem, ILMBUser
     public Sprite lmbSprite => data.lmbIcon;
     public bool canUseLmb => canThrow && throwCounter <= 0.0f;
     public float lmbCooldownBarFill => throwCounter / throwCooldown;
+    readonly int throwID = Animator.StringToHash("Throw");
     public void LMBUse(Player wielder, bool down)
     {
         if (!data.auto && !down || !canUseLmb) return;
         counter = 0.0f;
+        wielder.anim.SetTrigger(throwID);
         Throw(wielder);
         containedSlot.count--;
     }

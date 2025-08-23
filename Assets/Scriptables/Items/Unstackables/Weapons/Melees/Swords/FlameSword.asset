@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b2d58329279ee1409904ee3a55f6c19, type: 3}
+  m_Name: FlameSword
+  m_EditorClassIdentifier: 
+  m_itemName:
+    en: Flame Sword
+    kr: "\uD654\uC5FC \uAC80"
+  m_itemIcon: {fileID: 21300000, guid: 3f8d7b25d3de9a948ad4a71ff4ef12b6, type: 3}
+  m_lmbIcon: {fileID: 21300000, guid: 3f8d7b25d3de9a948ad4a71ff4ef12b6, type: 3}
+  m_auto: 0
+  m_damage: 10
+  m_slashCooldownSource: {fileID: 11400000, guid: 0e187df16cf504c4eb125719de5b49e3, type: 2}
+  m_slashCooldown: 1
+  m_weaponPrefab: {fileID: 3644323846711389149, guid: 92d525db84f97404d8692a1074307096, type: 3}
+  m_burnDuration: 4
+  m_burnDamage: 3
+  m_flameBlessingSprite: {fileID: 21300000, guid: 3f8d7b25d3de9a948ad4a71ff4ef12b6, type: 3}
+  m_flameBlessingDuration: 8
+  m_flameBlessingDamage: 3
+  m_flameBlessingAttackMultiplier: 1.2
+  m_flameBlessingDefenseMultiplier: 1.2
+  m_flameBlessingCooldownSource: {fileID: 11400000, guid: dacea2e66482ce94ebf1b8238a812b06, type: 2}
+  m_flameBlessingCooldown: 30
+  m_flameBlessingStartup:
+    timeMode: 1
+    seconds: 0.33333334
+    frames: 20
+  m_flameBlessingCastDuration:
+    timeMode: 1
+    seconds: 1
+    frames: 60

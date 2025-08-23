@@ -49,13 +49,20 @@ public class IronSword_FlyingSlash : Projectile
         {
             if (owner.GetRelation(damagable.owner) == Relation.Enemy)
             {
-                if(damagable is HpComp hpComp) hpComp.AddAliment(new Slowed(slowDuration, slowPercentage));
                 damagable.GetDamage(new()
                 {
-                    amount = damage,
+                    amount = damage * owner.stats.attackMultiplier,
                     source = DamageSource.Player,
                     clientID = OwnerClientId
                 });
+            }
+        }
+        
+        if(hit.TryGetComponent(out IAlimentable alimentable))
+        {
+            if(owner.GetRelation(damagable.owner) == Relation.Enemy)
+            {
+                alimentable.AddAliment(new Slowed_Aliment(slowDuration, slowPercentage));
             }
         }
 

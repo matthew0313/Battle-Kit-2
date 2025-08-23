@@ -9,7 +9,7 @@ using UnityEditor;
 #endif
 
 [RequireComponent(typeof(NetworkTransform), typeof(Rigidbody2D))]
-public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAdjustable
+public class Player_Movements : NetworkBehaviour, IKnockable
 {
     public Entity owner => origin;
     Player origin;
@@ -33,8 +33,6 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
 
     public bool canRotate { get; private set; } = true;
     public ControlMachine<bool> canRotateControl;
-
-    public float speedMultiplier { get; set; } = 1.0f;
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
@@ -56,7 +54,8 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
         if (IsOwner)
         {
             if (isGrounded) doubleJumped = false;
-            if(canMove) Move();
+            if (canMove) Move();
+            else rb.linearVelocityX = 0.0f;
             UpdateKnockback();
         }
     }
@@ -85,7 +84,7 @@ public class Player_Movements : NetworkBehaviour, IKnockable, ISpeedMultiplierAd
     readonly int jumpID = Animator.StringToHash("Jump");
     void Move()
     {
-        rb.linearVelocityX = InputManager.Instance.MovementInput() * moveSpeed * speedMultiplier + knockbackX;
+        rb.linearVelocityX = InputManager.Instance.MovementInput() * moveSpeed * Mathf.Max(origin.stats.speedMultiplier, 0.2f) + knockbackX;
         origin.anim.SetBool(isMovingID, InputManager.Instance.MovementInput() != 0);
         if (isGrounded)
         {
