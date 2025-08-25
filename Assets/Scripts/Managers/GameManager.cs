@@ -155,6 +155,7 @@ public class GameManager : NetworkBehaviour
         List<Scene> loadedScenes = NetworkManager.Singleton.SceneManager.GetSynchronizedScenes();
         NetworkManager.Singleton.SceneManager.UnloadScene(loadedScenes[1]);
         stageLoaded.Value = false;
+        OnRoundEndRpc();
     }
     [Rpc(SendTo.Everyone)] public void OnRoundEndRpc() => onRoundEnd?.Invoke();
     public event Action onPlayerListChange;
