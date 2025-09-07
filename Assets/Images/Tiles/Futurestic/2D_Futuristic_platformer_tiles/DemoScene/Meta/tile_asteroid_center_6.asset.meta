@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b93effa1f7bb0495399998053354a37e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_asteroid_center_6.asset
+  uploadId: 481966

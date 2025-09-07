@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/FFAStages/FFA_Forest.unity
     guid: 36c870c14191d8a4fbaa291b66aa43f8
   - enabled: 1
+    path: Assets/Scenes/FFAStages/FFA_Cave.unity
+    guid: 9d139270d488f3647a93d7a07d6b62bf
+  - enabled: 1
     path: Assets/Scenes/FFAStages/TestFFAStage.unity
     guid: f59e1a1ff0ae4ad46b37a70fee9c1e5d
   - enabled: 1

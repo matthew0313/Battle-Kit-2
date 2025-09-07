@@ -10,9 +10,17 @@ public class Burning_AlimentData : AlimentData
 }
 public class Burning_Aliment : Aliment
 {
-    public Burning_Aliment() : base() { }
-    public Burning_Aliment(float duration, float burnDamage) : base(duration) { this.burnDamage = burnDamage; }
-    public override AlimentData settings => AlimentManager.Instance.burningSettings;
+    new public readonly Burning_AlimentData settings;
+    static Burning_AlimentData defaultSettings => AlimentManager.Instance.burningSettings;
+    public Burning_Aliment() : base(defaultSettings)
+    {
+        this.settings = defaultSettings;
+    }
+    public Burning_Aliment(float duration, float burnDamage) : base(duration, defaultSettings)
+    {
+        this.settings = defaultSettings;
+        this.burnDamage = burnDamage;
+    }
     public override AlimentType type => AlimentType.Burning;
     public override LangText alimentDisplay => new()
     {
@@ -36,7 +44,7 @@ public class Burning_Aliment : Aliment
             if(i is Burning_Aliment other)
             {
                 other.burnDamage += burnDamage;
-                other.duration = Mathf.Max(other.duration, duration);
+                if (duration > other.duration) other.SetDuration(duration);
                 return;
             }
         }

@@ -11,7 +11,11 @@ public class AlimentManager : MonoBehaviour
     [SerializeField] Burning_AlimentData m_burningSettings;
     [SerializeField] Slowed_AlimentData m_slowedSettings;
     [SerializeField] FlameBlessing_AlimentData m_flameBlessingSettings;
+    [SerializeField] AttackBuff_AlimentData m_attackBuffSettings;
+    [SerializeField] DefenseBuff_AlimentData m_defenseBuffSettings;
     public Burning_AlimentData burningSettings => m_burningSettings;
     public Slowed_AlimentData slowedSettings => m_slowedSettings;
     public FlameBlessing_AlimentData flameBlessingSettings => m_flameBlessingSettings;
+    public AttackBuff_AlimentData attackBuffSettings => m_attackBuffSettings;
+    public DefenseBuff_AlimentData defenseBuffSettings => m_defenseBuffSettings;
 }

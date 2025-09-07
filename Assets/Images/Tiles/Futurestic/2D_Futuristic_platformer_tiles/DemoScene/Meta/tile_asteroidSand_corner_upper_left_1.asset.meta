@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4813e9c0c5d6a4a3786f4d6c4ed1a42c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_asteroidSand_corner_upper_left_1.asset
+  uploadId: 481966

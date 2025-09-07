@@ -76,7 +76,9 @@ public class FlameSword_Item : SwordItem, ISkill1User
     {
         usingFlameBlessing = true;
         yield return Timing.WaitForSeconds(data.flameBlessingStartup);
-        wielder.hpComp.AddAliment(new FlameBlessing_Aliment(data.flameBlessingDuration, data.flameBlessingDamage, data.flameBlessingAttackMultiplier, data.flameBlessingDefenseMultiplier));
+        wielder.hpComp.AddAliment(new Burning_Aliment(data.flameBlessingDuration, data.flameBlessingDamage));
+        wielder.hpComp.AddAliment(new AttackBuff_Aliment(data.flameBlessingDuration, data.flameBlessingAttackMultiplier));
+        wielder.hpComp.AddAliment(new DefenseBuff_Aliment(data.flameBlessingDuration, data.flameBlessingDefenseMultiplier));
         yield return Timing.WaitForSeconds(data.flameBlessingCastDuration - data.flameBlessingStartup);
         usingFlameBlessing = false;
     }

@@ -12,9 +12,16 @@ public abstract class AlimentData : ScriptableObject
 }
 public abstract class Aliment
 {
-    protected Aliment() { }
-    protected Aliment(float duration) { this.duration = duration; }
-    public abstract AlimentData settings { get; }
+    public readonly AlimentData settings;
+    protected Aliment(AlimentData settings)
+    {
+        this.settings = settings;
+    }
+    protected Aliment(float duration, AlimentData settings)
+    {
+        this.settings = settings;
+        SetDuration(duration);
+    }
     public abstract AlimentType type { get; }
     public abstract LangText alimentDisplay { get; }
     public Action onAlimentDisplayChange;
@@ -22,15 +29,11 @@ public abstract class Aliment
     public ulong id;
 
     public float initialDuration = 3.0f;
-    float m_duration = 3.0f;
-    public float duration
+    public float duration { get; private set; } = 1.0f;
+    public void SetDuration(float duration)
     {
-        get => m_duration;
-        set
-        {
-            m_duration = value;
-            if (m_duration > initialDuration) initialDuration = m_duration;
-        }
+        this.duration = duration;
+        initialDuration = duration;
     }
     public virtual void AddTo(HpComp target)
     {
@@ -67,6 +70,8 @@ public abstract class Aliment
             case AlimentType.Slowed: return new Slowed_Aliment();
             case AlimentType.Burning: return new Burning_Aliment();
             case AlimentType.FlameBlessing: return new FlameBlessing_Aliment();
+            case AlimentType.AttackBuff: return new AttackBuff_Aliment();
+            case AlimentType.DefenseBuff: return new DefenseBuff_Aliment();
             default: return null;
         }
     }
@@ -84,5 +89,7 @@ public enum AlimentType
 {
     Slowed = 0,
     Burning = 1,
-    FlameBlessing = 2
+    FlameBlessing = 2,
+    AttackBuff = 3,
+    DefenseBuff = 4
 }

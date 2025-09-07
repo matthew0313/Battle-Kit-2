@@ -1,0 +1,20 @@
+{
+    "asset": "bb8a01c1926d6334c8211502aace3d85",
+    "fileName": "01990127-d245-72cf-9280-c03d6dce5c61.jpg",
+    "prompt": "Cave stage tilemap textures, sliced so that it can be used in tilemap right away.",
+    "negativePrompt": "",
+    "model": "94c4260f-b988-40e7-b3d3-435b9f449bd0",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "cb7ccff45e729ad035cfe7cd77b07a53",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -10,9 +10,17 @@ public class Slowed_AlimentData : AlimentData
 }
 public class Slowed_Aliment : Aliment
 {
-    public Slowed_Aliment() { }
-    public Slowed_Aliment(float duration, float slowPercentage) : base(duration) { this.slowPercentage = slowPercentage; }
-    public override AlimentData settings => AlimentManager.Instance.slowedSettings;
+    new public readonly Slowed_AlimentData settings;
+    static Slowed_AlimentData defaultSettings => AlimentManager.Instance.slowedSettings;
+    public Slowed_Aliment() : base(defaultSettings)
+    {
+        this.settings = defaultSettings;
+    }
+    public Slowed_Aliment(float duration, float slowPercentage) : base(duration, defaultSettings)
+    {
+        this.settings = defaultSettings;
+        this.slowPercentage = slowPercentage;
+    }
     public override AlimentType type => AlimentType.Slowed;
     public override LangText alimentDisplay => new()
     {
@@ -25,6 +33,11 @@ public class Slowed_Aliment : Aliment
         get => m_slowPercentage;
         set
         {
+            if(adjusted != null)
+            {
+                adjusted.speedMultiplier /= m_slowPercentage;
+                adjusted.speedMultiplier *= value;
+            }
             m_slowPercentage = value;
             onAlimentDisplayChange?.Invoke();
         }
@@ -51,6 +64,7 @@ public class Slowed_Aliment : Aliment
             if(adjusted != null)
             {
                 adjusted.speedMultiplier /= (1.0f - slowPercentage / 100.0f);
+                adjusted = null;
             }
         }
     }

@@ -10,14 +10,19 @@ public class FlameBlessing_AlimentData : AlimentData
 }
 public class FlameBlessing_Aliment : Aliment
 {
-    public FlameBlessing_Aliment() : base() { }
-    public FlameBlessing_Aliment(float duration, float burnDamage, float attackMultiplier, float defenseMultiplier) : base(duration) 
-    { 
+    new public readonly FlameBlessing_AlimentData settings;
+    static FlameBlessing_AlimentData defaultSettings => AlimentManager.Instance.flameBlessingSettings;
+    public FlameBlessing_Aliment() : base(defaultSettings)
+    {
+        this.settings = defaultSettings;
+    }
+    public FlameBlessing_Aliment(float duration, float burnDamage, float attackMultiplier, float defenseMultiplier) : base(duration, defaultSettings) 
+    {
+        this.settings = defaultSettings;
         this.burnDamage = burnDamage;
         this.attackMultiplier = attackMultiplier;
         this.defenseMultiplier = defenseMultiplier;
     }
-    public override AlimentData settings => AlimentManager.Instance.flameBlessingSettings;
     public override AlimentType type => AlimentType.FlameBlessing;
     public override LangText alimentDisplay => new()
     {
