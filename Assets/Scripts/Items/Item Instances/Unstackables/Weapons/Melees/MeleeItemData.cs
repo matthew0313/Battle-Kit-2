@@ -11,11 +11,13 @@ public abstract class MeleeItemData : WeaponItemData
     [SerializeField] float m_damage;
     [SerializeField] CooldownSource m_slashCooldownSource;
     [SerializeField] float m_slashCooldown;
+    [SerializeField] Sound m_slashSound;
     public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
     public CooldownSource slashCooldownSource => m_slashCooldownSource;
     public float slashCooldown => m_slashCooldown;
+    public Sound slashSound => m_slashSound;
 }
 public abstract class MeleeItem : WeaponItem, ILMBUser
 {
@@ -51,6 +53,7 @@ public abstract class MeleeItem : WeaponItem, ILMBUser
     {
         hitList.Clear();
         weapon.Slash();
+        NetworkAudioManager.Instance.PlaySound(data.slashSound);
     }
     protected List<GameObject> hitList = new();
     void OnTriggerEnter2D(Collider2D other)

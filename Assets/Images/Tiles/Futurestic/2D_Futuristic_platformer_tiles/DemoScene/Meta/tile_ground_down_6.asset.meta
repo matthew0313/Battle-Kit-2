@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b5ad1896c896a4113ae5c85827462c21
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_ground_down_6.asset
+  uploadId: 481966

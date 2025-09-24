@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1103dd198639e4c85b9e26f3e9c495c8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_groundSandGrassSpecial_up_1.asset
+  uploadId: 481966

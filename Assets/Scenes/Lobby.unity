@@ -1808,7 +1808,6 @@ GameObject:
   m_Component:
   - component: {fileID: 987017251}
   - component: {fileID: 987017254}
-  - component: {fileID: 987017252}
   - component: {fileID: 987017253}
   m_Layer: 5
   m_Name: SessionID
@@ -1836,34 +1835,6 @@ RectTransform:
   m_AnchoredPosition: {x: -105, y: 35}
   m_SizeDelta: {x: -230, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &987017252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 987017250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df5a7aa4d54d7a046b338d091556d3d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  elements:
-  - type: 4
-    text: 
-    langText:
-      en: 
-      kr: 
-    integerHookProvider:
-      target: {fileID: 0}
-    integerMultiplier: 0
-    floatHookProvider:
-      target: {fileID: 0}
-    floatMultiplier: 0
-    floatRounding: 0
-    stringHookProvider:
-      target: {fileID: 0}
-  text: {fileID: 987017253}
 --- !u!114 &987017253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2946,7 +2917,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1297015421}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1294867545}
+        m_TargetAssemblyTypeName: SessionListUI, Assembly-CSharp
+        m_MethodName: Refresh
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1297015421
 MonoBehaviour:
   m_ObjectHideFlags: 0

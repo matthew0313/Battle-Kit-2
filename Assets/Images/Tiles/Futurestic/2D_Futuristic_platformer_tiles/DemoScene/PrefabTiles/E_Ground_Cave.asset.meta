@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6f6a869e40a654eabb5af706a0bf96bf
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/PrefabTiles/E_Ground_Cave.asset
+  uploadId: 481966

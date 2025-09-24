@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a76b3657c913d4c75ab051f0f6e30e18
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_marsSand_upper_4.asset
+  uploadId: 481966

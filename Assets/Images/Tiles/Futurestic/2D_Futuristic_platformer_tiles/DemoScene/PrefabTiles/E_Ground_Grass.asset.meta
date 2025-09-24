@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b260b61ea01d14aa7a72ab242ab92d52
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/PrefabTiles/E_Ground_Grass.asset
+  uploadId: 481966

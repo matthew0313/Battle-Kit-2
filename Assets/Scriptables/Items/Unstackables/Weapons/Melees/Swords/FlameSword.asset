@@ -21,6 +21,11 @@ MonoBehaviour:
   m_damage: 10
   m_slashCooldownSource: {fileID: 11400000, guid: 0e187df16cf504c4eb125719de5b49e3, type: 2}
   m_slashCooldown: 1
+  m_slashSound:
+    clip: {fileID: 8300000, guid: e15aba9fa14ab564e806260f83dff4a7, type: 3}
+    volume: 1
+    pitch: 2
+    foldout: 1
   m_weaponPrefab: {fileID: 3644323846711389149, guid: 92d525db84f97404d8692a1074307096, type: 3}
   m_burnDuration: 4
   m_burnDamage: 3
@@ -39,3 +44,12 @@ MonoBehaviour:
     timeMode: 1
     seconds: 1
     frames: 60
+  m_flameBlessingSound:
+    clip: {fileID: 8300000, guid: a24e266d8b0ddc64181c79f6145cb4f6, type: 3}
+    volume: 1
+    pitch: 1
+    foldout: 1
+  m_flameBlessingSoundDelay:
+    timeMode: 1
+    seconds: 0.33333334
+    frames: 20

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fe911e01ad95f4b93a3e034b49514e03
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/PrefabTiles/E_Ground_Sand.asset
+  uploadId: 481966

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: afe72a928ff7c435f9e1dd98f3c72f8a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_asteroid_up_2.asset
+  uploadId: 481966

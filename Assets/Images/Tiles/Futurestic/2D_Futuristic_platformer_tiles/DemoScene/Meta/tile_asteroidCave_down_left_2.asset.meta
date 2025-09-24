@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1b8da04461106455dba254f9a9b4a78c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_asteroidCave_down_left_2.asset
+  uploadId: 481966

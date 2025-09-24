@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c31dbd05fbb7d44a3b57ddce55bd146b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_ground_corner_upper_left_3.asset
+  uploadId: 481966

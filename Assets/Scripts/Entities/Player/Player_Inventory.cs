@@ -61,7 +61,6 @@ public class Player_Inventory : Inventory
     {
         Clear();
     }
-
     public void Init()
     {
         if (IsOwner)
@@ -102,10 +101,82 @@ public class Player_Inventory : Inventory
             }
         }
     }
-    protected override IEnumerable<InventorySlot> GetSearchableSlots()
+    public override int Insert(Item item, int count)
     {
-        foreach (var i in base.GetSearchableSlots()) yield return i;
-        yield return InventorySlotUIHandler.Instance.grabbingSlot;
+        foreach (var i in slots)
+        {
+            if (i.item != null && i.item.IsStackable(item) && item.IsStackable(i.item))
+            {
+                count = i.Insert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        if(item is IUsable)
+        {
+            foreach (var i in slots)
+            {
+                count = i.Insert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        else
+        {
+            for(int i = beltLength; i < slotCount; i++)
+            {
+                count = slots[i].Insert(item, count);
+                if (count <= 0) return 0;
+            }
+            for(int i = 0; i < beltLength; i++)
+            {
+                count = slots[i].Insert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        return count;
+    }
+    public override int TryInsert(Item item, int count)
+    {
+        foreach (var i in slots)
+        {
+            if (i.item != null && i.item.IsStackable(item) && item.IsStackable(i.item))
+            {
+                count = i.TryInsert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        if (item is IUsable)
+        {
+            foreach (var i in slots)
+            {
+                count = i.TryInsert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        else
+        {
+            for (int i = beltLength; i < slotCount; i++)
+            {
+                count = slots[i].TryInsert(item, count);
+                if (count <= 0) return 0;
+            }
+            for (int i = 0; i < beltLength; i++)
+            {
+                count = slots[i].TryInsert(item, count);
+                if (count <= 0) return 0;
+            }
+        }
+        return count;
+    }
+    public override int Search(Func<Item, bool> predicate)
+    {
+        var slot = InventorySlotUIHandler.Instance.grabbingSlot;
+        return base.Search(predicate) + (predicate.Invoke(slot.item) ? slot.count : 0);
+    }
+    public override IEnumerable<InventorySlot> SearchAll(Func<Item, bool> predicate)
+    {
+        var slot = InventorySlotUIHandler.Instance.grabbingSlot;
+        foreach (var i in base.SearchAll(predicate)) yield return i;
+        if (slot.item != null && predicate.Invoke(slot.item)) yield return slot;
     }
     int lastMoveDir = 0;
     float holdTimer = 0.0f, slotSwitchCounter = 0.0f;

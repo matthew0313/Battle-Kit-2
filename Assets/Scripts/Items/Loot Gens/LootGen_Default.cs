@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using JetBrains.Annotations;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,12 +9,36 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "Default LootGen", menuName = "Scriptables/Loot Gens/Default")]
 public class LootGen_Default : LootGen
 {
+    [SerializeField] List<LootGen_Default> gens;
     [SerializeField] List<LGDefault_Element> elements;
 
     public override IEnumerable<ItemIntPair> GetLoot()
     {
-        int selected = UnityEngine.Random.Range(0, elements.Count);
-        foreach(var i in elements[selected].items)
+        int tot = 0;
+        foreach (var i in gens) tot += i.elements.Count;
+        tot += elements.Count;
+
+        int counter = UnityEngine.Random.Range(0, tot);
+        foreach(var i in gens)
+        {
+            for(int k = 0; k < i.elements.Count; k++)
+            {
+                if(counter <= 0)
+                {
+                    foreach(var l in i.elements[k].items)
+                    {
+                        yield return new()
+                        {
+                            item = l.itemData.Create(),
+                            count = l.count
+                        };
+                    }
+                    yield break;
+                }
+                counter--;
+            }
+        }
+        foreach(var i in elements[counter].items)
         {
             yield return new()
             {

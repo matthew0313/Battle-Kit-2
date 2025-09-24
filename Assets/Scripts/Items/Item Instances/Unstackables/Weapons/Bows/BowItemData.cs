@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public abstract class BowItemData : WeaponItemData
@@ -10,6 +11,7 @@ public abstract class BowItemData : WeaponItemData
     [SerializeField] CooldownSource m_fireCooldownSource;
     [SerializeField] float m_fireCooldown, m_arrowLifetime, m_arrowVelocity, m_spread;
     [SerializeField] ItemData m_ammunition;
+    [SerializeField] Sound m_fireSound;
     public Sprite lmbIcon => m_lmbIcon;
     public float damage => m_damage;
     public CooldownSource fireCooldownSource => m_fireCooldownSource;
@@ -18,6 +20,7 @@ public abstract class BowItemData : WeaponItemData
     public float arrowVelocity => m_arrowVelocity;
     public float spread => m_spread;
     public ItemData ammunition => m_ammunition;
+    public Sound fireSound => m_fireSound;
     public abstract Arrow arrow { get; }
 }
 public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
@@ -78,6 +81,7 @@ public abstract class BowItem : WeaponItem, IAmmoCountDisplayed, ILMBUser
         wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
         containedSlot.inventory.TakeOut(ammunition, 1);
         weapon.Fire();
+        NetworkAudioManager.Instance.PlaySound(data.fireSound);
         Fire(wielder);
     }
     protected virtual void Fire(Player wielder)

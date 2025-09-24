@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e58e7c21b8ab244a9b6d309db7908a28
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_groundGrass_upper_right_3.asset
+  uploadId: 481966

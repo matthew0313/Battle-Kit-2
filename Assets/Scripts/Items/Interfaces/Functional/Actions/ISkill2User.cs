@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public interface ISkill2User
+public interface ISkill2User : IUsable
 {
     public Sprite skill2Sprite { get; }
     public bool canUseSkill2 { get; }

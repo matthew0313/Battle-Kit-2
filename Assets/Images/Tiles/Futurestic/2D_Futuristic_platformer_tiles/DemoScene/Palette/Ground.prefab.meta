@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: caf53b18c5f6a40a59d01b5021567ab0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Palette/Ground.prefab
+  uploadId: 481966

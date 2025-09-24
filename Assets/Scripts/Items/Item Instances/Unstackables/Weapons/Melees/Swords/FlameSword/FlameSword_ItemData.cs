@@ -20,6 +20,8 @@ public class FlameSword_ItemData : SwordItemData
     [SerializeField] CooldownSource m_flameBlessingCooldownSource;
     [SerializeField] float m_flameBlessingCooldown;
     [SerializeField] UnitTime m_flameBlessingStartup, m_flameBlessingCastDuration;
+    [SerializeField] Sound m_flameBlessingSound;
+    [SerializeField] UnitTime m_flameBlessingSoundDelay;
     public Sprite flameBlessingSprite => m_flameBlessingSprite;
     public float flameBlessingDuration => m_flameBlessingDuration;
     public float flameBlessingDamage => m_flameBlessingDamage;
@@ -29,6 +31,8 @@ public class FlameSword_ItemData : SwordItemData
     public float flameBlessingCooldown => m_flameBlessingCooldown;
     public UnitTime flameBlessingStartup => m_flameBlessingStartup;
     public UnitTime flameBlessingCastDuration => m_flameBlessingCastDuration;
+    public Sound flameBlessingSound => m_flameBlessingSound;
+    public UnitTime flameBlessingSoundDelay => m_flameBlessingSoundDelay;
     public override Item Create() => new FlameSword_Item(this);
 }
 public class FlameSword_Item : SwordItem, ISkill1User
@@ -57,7 +61,7 @@ public class FlameSword_Item : SwordItem, ISkill1User
     public Sprite skill1Sprite => data.flameBlessingSprite;
     public bool canUseSkill1 => flameBlessingCounter <= 0.0f;
     public float skill1CooldownBarFill => flameBlessingCounter / flameBlessingCooldown;
-    CoroutineHandle flameBlessingCoroutine;
+    CoroutineHandle flameBlessingCoroutine, flameBlessingSoundCoroutine;
     protected override bool canSlash => base.canSlash && !usingFlameBlessing;
     public void Skill1Use(Player wielder)
     {
@@ -65,6 +69,7 @@ public class FlameSword_Item : SwordItem, ISkill1User
         wielder.cooldowns.AddCooldown(data.flameBlessingCooldownSource, data.flameBlessingCooldown);
         weapon.FlameBlessing();
         flameBlessingCoroutine = Timing.RunCoroutine(FlameBlessing(wielder));
+        flameBlessingSoundCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.flameBlessingSoundDelay, () => { NetworkAudioManager.Instance.PlaySound(data.flameBlessingSound); }));
     }
     public override void OnUnwield(Player wielder)
     {

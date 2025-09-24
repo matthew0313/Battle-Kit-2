@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a6698e4200e2c4629ab3beb3deb6f880
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_groundCaveSpecial_upper_left_4.asset
+  uploadId: 481966

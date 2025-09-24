@@ -32,6 +32,7 @@ public abstract class Aliment
     public float duration { get; private set; } = 1.0f;
     public void SetDuration(float duration)
     {
+        if (affected != null && affected.IsOwner) affected.SetAlimentDurationRpc(id, duration);
         this.duration = duration;
         initialDuration = duration;
     }
@@ -43,7 +44,8 @@ public abstract class Aliment
             properties = (NetworkDictionary)SaveProperties()
         }, new());
     }
-    public virtual void OnAlimentAdd(HpComp affected) { }
+    HpComp affected = null;
+    public virtual void OnAlimentAdd(HpComp affected) { this.affected = affected; }
     public virtual void OnAlimentUpdate(HpComp affected)
     {
         duration = Mathf.Max(0.0f, duration - Time.deltaTime);
@@ -52,15 +54,17 @@ public abstract class Aliment
             affected.DeleteAlimentInstanceRpc(id);
         }
     }
-    public virtual void OnAlimentRemove(HpComp affected) { }
+    public virtual void OnAlimentRemove(HpComp affected) { this.affected = null; }
     public virtual Dictionary<string, string> SaveProperties()
     {
         Dictionary<string, string> tmp = new();
+        tmp["initialDuration"] = initialDuration.ToString();
         tmp["duration"] = duration.ToString();
         return tmp;
     }
     public virtual void LoadProperties(Dictionary<string, string> data)
     {
+        if (data.TryGetValue("initialDuration", out string initialDuration)) this.initialDuration = float.Parse(initialDuration);
         if (data.TryGetValue("duration", out string duration)) this.duration = float.Parse(duration);
     }
     public static Aliment GetAliment(AlimentType type)

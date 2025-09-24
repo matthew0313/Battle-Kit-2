@@ -154,6 +154,12 @@ public abstract class HpComp : NetworkBehaviour, IDamagable, IAlimentable
         if (!aliments.ContainsKey(id) || alimentRemoveQueue.Contains(id)) return;
         alimentRemoveQueue.Add(id);
     }
+    [Rpc(SendTo.NotMe)]
+    public void SetAlimentDurationRpc(ulong id, float duration)
+    {
+        if (!aliments.ContainsKey(id) || alimentRemoveQueue.Contains(id)) return;
+        aliments[id].SetDuration(duration);
+    }
 
     public IEnumerable<Aliment> GetAliments()
     {

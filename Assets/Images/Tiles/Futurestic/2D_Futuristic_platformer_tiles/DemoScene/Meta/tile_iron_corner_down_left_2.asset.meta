@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a5727d6b9a6004711ae23c5f7e33bb87
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_iron_corner_down_left_2.asset
+  uploadId: 481966

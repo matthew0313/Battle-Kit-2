@@ -11,8 +11,9 @@ public abstract class GunItemData : WeaponItemData
     [SerializeField] float m_damage;
     [SerializeField] CooldownSource m_fireCooldownSource;
     [SerializeField] float m_fireCooldown, m_bulletSpeed, m_bulletRange, m_spread, m_reloadTime;
-    [SerializeField] int m_magSize;
+    [SerializeField] int m_shotCount = 1, m_magSize;
     [SerializeField] ItemData m_ammunition;
+    [SerializeField] Sound m_fireSound, m_reloadSound;
     public Sprite lmbIcon => m_lmbIcon;
     public bool auto => m_auto;
     public float damage => m_damage;
@@ -22,8 +23,11 @@ public abstract class GunItemData : WeaponItemData
     public float bulletRange => m_bulletRange;
     public float spread => m_spread;
     public float reloadTime => m_reloadTime;
+    public int shotCount => m_shotCount;
     public int magSize => m_magSize;
     public ItemData ammunition => m_ammunition;
+    public Sound fireSound => m_fireSound;
+    public Sound reloadSound => m_reloadSound;
     public abstract Bullet bullet { get; }
 
 }
@@ -80,12 +84,14 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     protected float reloadCounter = 0.0f;
     public bool canReload => !reloading && mag < data.magSize && GetAmmoCount() > 0;
     public float reloadBarFill => reloadCounter / data.reloadTime;
+    PlayingSound reloadingSound;
     public void Reload(Player wielder)
     {
         if (!canReload) return;
         reloadCounter = data.reloadTime;
         reloading = true;
         weapon.Reload();
+        reloadingSound = NetworkAudioManager.Instance.PlaySound(data.fireSound);
     }
     public override void OnWieldUpdate(Player wielder)
     {
@@ -102,6 +108,11 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
             }
         }
     }
+    public override void OnUnwield(Player wielder)
+    {
+        base.OnUnwield(wielder);
+        NetworkAudioManager.Instance.StopSound(reloadingSound);
+    }
     protected float fireCounter => data.fireCooldownSource.cooldownLeft;
     protected float fireCooldown => data.fireCooldownSource.cooldown;
     protected virtual bool canFire => true;
@@ -114,13 +125,17 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
         wielder.cooldowns.AddCooldown(data.fireCooldownSource, data.fireCooldown);
         mag--;
         weapon.Fire();
+        NetworkAudioManager.Instance.PlaySound(data.fireSound);
         Fire(wielder);
     }
     protected virtual void Fire(Player wielder)
     {
-        Bullet bullet = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
-        bullet.Set(data.damage, data.bulletSpeed, data.bulletRange);
-        bullet.NetworkObject.Spawn();
+        for(int i = 0; i < data.shotCount; i++)
+        {
+            Bullet bullet = MonoBehaviour.Instantiate(data.bullet, weapon.firePoint.position, weapon.firePoint.rotation * Quaternion.Euler(0, 0, UnityEngine.Random.Range(-data.spread, data.spread)));
+            bullet.Set(data.damage, data.bulletSpeed, data.bulletRange);
+            bullet.NetworkObject.Spawn();
+        }
     }
     public override Dictionary<string, string> SaveProperties()
     {

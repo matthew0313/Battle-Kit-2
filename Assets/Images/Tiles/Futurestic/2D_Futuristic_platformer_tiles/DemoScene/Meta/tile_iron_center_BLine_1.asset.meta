@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fedaf4ea8a353414c928bea35b8f93e0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_iron_center_BLine_1.asset
+  uploadId: 481966

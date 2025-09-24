@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8b72ea0b8074b43f18f6b59cd56b8bcb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_iron_right_3.asset
+  uploadId: 481966

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1099552817
+  GlobalObjectIdHash: 3422472874
   InScenePlacedSourceGlobalObjectIdHash: 3422472874
   DeferredDespawnTick: 0
   Ownership: 8
@@ -72,6 +72,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   lootGen: {fileID: 11400000, guid: 8e60d0989670ca249be369399b9b20bc, type: 2}
-  itemSpawnPoint: {fileID: 8483943903382045050}
-  spawnTimeMin: 30
-  spawnTimeMax: 60
+  spawnTimeMin: 60
+  spawnTimeMax: 90

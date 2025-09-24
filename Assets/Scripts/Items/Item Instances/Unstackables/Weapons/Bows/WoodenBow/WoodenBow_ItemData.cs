@@ -18,11 +18,13 @@ public class WoodenBow_ItemData : BowItemData
     [SerializeField] float m_empowerCooldown = 10.0f;
     [SerializeField] int m_empowerShotCount = 3;
     [SerializeField] float m_empowerShotInterval = 0.1f;
+    [SerializeField] Sound m_empowerSound;
     public Sprite empowerIcon => m_empowerIcon;
     public CooldownSource empowerCooldownSource => m_empowerCooldownSource;
     public float empowerCooldown => m_empowerCooldown;
     public int empowerShotCount => m_empowerShotCount;
     public float empowerShotInterval => m_empowerShotInterval;
+    public Sound empowerSound => m_empowerSound;
 
     [Header("Roll")]
     [SerializeField] Sprite m_rollIcon;
@@ -30,11 +32,13 @@ public class WoodenBow_ItemData : BowItemData
     [SerializeField] float m_rollCooldown = 3.0f;
     [SerializeField] float m_rollDistance = 5.0f;
     [SerializeField] float m_rollSpeed = 15.0f;
+    [SerializeField] Sound m_rollSound;
     public Sprite rollIcon => m_rollIcon;
     public CooldownSource rollCooldownSource => m_rollCooldownSource;
     public float rollCooldown => m_rollCooldown;
     public float rollDistance => m_rollDistance;
     public float rollSpeed => m_rollSpeed;
+    public Sound rollSound => m_rollSound;
     public override Item Create() => new WoodenBow_Item(this);
 }
 public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
@@ -57,6 +61,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         wielder.cooldowns.AddCooldown(data.empowerCooldownSource, data.empowerCooldown);
         empowered = true;
         weapon.SetEmpowered(true);
+        NetworkAudioManager.Instance.PlaySound(data.empowerSound);
     }
     float rollCounter => data.rollCooldownSource.cooldownLeft;
     float rollCooldown => data.rollCooldownSource.cooldown;
@@ -92,6 +97,7 @@ public class WoodenBow_Item : BowItem, ISkill1User, ISkill2User
         for(int i = 0; i < data.empowerShotCount; i++)
         {
             weapon.Fire();
+            NetworkAudioManager.Instance.PlaySound(data.fireSound);
             base.Fire(wielder);
             yield return Timing.WaitForSeconds(data.empowerShotInterval);
         }

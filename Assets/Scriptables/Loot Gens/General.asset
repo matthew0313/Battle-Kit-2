@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03a5eaf508f98ec4f9798dfe1c7b8df7, type: 3}
+  m_Name: General
+  m_EditorClassIdentifier: 
+  gens: []
+  elements:
+  - name: Metal Shuriken
+    items:
+    - itemData: {fileID: 11400000, guid: c11706bbd95bb034e9d3465647db858b, type: 2}
+      count: 32
+  - name: Wooden Bow & Arrows
+    items:
+    - itemData: {fileID: 11400000, guid: e65ef9764e24a794a911233d3b3be13d, type: 2}
+      count: 1
+    - itemData: {fileID: 11400000, guid: adcb664144b651f4bac9122740459332, type: 2}
+      count: 32
+  - name: Glock & Bullets
+    items:
+    - itemData: {fileID: 11400000, guid: 9529682bf2baf4a4d8ac4a5844d7c9cc, type: 2}
+      count: 1
+    - itemData: {fileID: 11400000, guid: 5ac9c05e9a6b9b14c81af80fc200e27b, type: 2}
+      count: 32
+  - name: Iron Sword
+    items:
+    - itemData: {fileID: 11400000, guid: 70d727deaa409004e8d58f24aa41b7f5, type: 2}
+      count: 1
+  - name: Flame Sword
+    items:
+    - itemData: {fileID: 11400000, guid: d7c924ffb565d134f971e055fc04f85f, type: 2}
+      count: 1

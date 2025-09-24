@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public interface ILMBUser
+public interface ILMBUser : IUsable
 {
     public Sprite lmbSprite { get; }
     public bool canUseLmb { get; }

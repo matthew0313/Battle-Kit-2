@@ -6,10 +6,14 @@ using System;
 public class StageItemSpawner : NetworkBehaviour
 {
     [SerializeField] LootGen lootGen;
-    [SerializeField] Transform itemSpawnPoint;
     [SerializeField] int spawnTimeMin = 10, spawnTimeMax = 30;
     public readonly NetworkVariable<int> spawnTimeLeft = new(2);
     float counter = 0.0f;
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(transform.position, Vector3.one * 0.5f);
+    }
     private void Update()
     {
         if (!IsOwner) return;
@@ -29,7 +33,7 @@ public class StageItemSpawner : NetworkBehaviour
         foreach(var i in lootGen.GetLoot())
         {
             DroppedItem tmp = DroppedItem.Create();
-            tmp.transform.position = itemSpawnPoint.position;
+            tmp.transform.position = transform.position;
             tmp.NetworkObject.Spawn();
             tmp.Set(i.item, i.count, 1.0f);
         }

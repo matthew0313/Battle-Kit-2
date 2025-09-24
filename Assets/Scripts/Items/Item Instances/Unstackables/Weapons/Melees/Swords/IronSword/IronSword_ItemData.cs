@@ -18,6 +18,8 @@ public class IronSword_ItemData : SwordItemData
     [SerializeField] CooldownSource m_flyingSlashCooldownSource;
     [SerializeField] float m_flyingSlashCooldown, m_flyingSlashKnockback, m_flyingSlashSlowPercentage, m_flyingSlashSlowDuration;
     [SerializeField] UnitTime m_flyingSlashDelay = 0.5f, m_flyingSlashDuration = 1.0f;
+    [SerializeField] Sound m_flyingSlashSound;
+    [SerializeField] UnitTime m_flyingSlashSoundDelay = 0.5f;
     public Sprite flyingSlashSprite => m_flyingSlashSprite;
     public IronSword_FlyingSlash flyingSlash => m_flyingSlash;
     public float flyingSlashDamage => m_flyingSlashDamage;
@@ -29,19 +31,25 @@ public class IronSword_ItemData : SwordItemData
     public float flyingSlashKnockback => m_flyingSlashKnockback;
     public float flyingSlashSlowPercentage => m_flyingSlashSlowPercentage;
     public float flyingSlashSlowDuration => m_flyingSlashSlowDuration;
-    public float flyingSlashDelay => m_flyingSlashDelay;
-    public float flyingSlashDuration => m_flyingSlashDuration;
+    public UnitTime flyingSlashDelay => m_flyingSlashDelay;
+    public UnitTime flyingSlashDuration => m_flyingSlashDuration;
+    public Sound flyingSlashSound => m_flyingSlashSound;
+    public UnitTime flyingSlashSoundDelay => m_flyingSlashSoundDelay;
 
     [Header("SpiralSlash")]
     [SerializeField] Sprite m_spiralSlashSprite;
     [SerializeField] CooldownSource m_spiralSlashCooldownSource;
     [SerializeField] float m_spiralSlashCooldown, m_spiralSlashKnockback;
     [SerializeField] UnitTime m_spiralSlashDuration;
+    [SerializeField] Sound m_spiralSlashSound;
+    [SerializeField] UnitTime m_spiralSlashSoundDelay;
     public Sprite spiralSlashSprite => m_spiralSlashSprite;
     public CooldownSource spiralSlashCooldownSource => m_spiralSlashCooldownSource;
     public float spiralSlashCooldown => m_spiralSlashCooldown;
     public float spiralSlashKnockback => m_spiralSlashKnockback;
-    public float spiralSlashDuration => m_spiralSlashDuration;
+    public UnitTime spiralSlashDuration => m_spiralSlashDuration;
+    public Sound spiralSlashSound => m_spiralSlashSound;
+    public UnitTime spiralSlashSoundDelay => m_spiralSlashSoundDelay;
     public override Item Create() => new IronSword_Item(this);
 }
 public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
@@ -61,7 +69,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     public Sprite skill1Sprite => data.flyingSlashSprite;
     public bool canUseSkill1 => flyingSlashCounter <= 0.0f && slashCounter <= 0.0f && !usingSpiralSlash;
     public float skill1CooldownBarFill => flyingSlashCounter / flyingSlashCooldown;
-    CoroutineHandle flyingSlashCoroutine;
+    CoroutineHandle flyingSlashCoroutine, flyingSlashSoundCoroutine;
 
     //spiralSlash
     float spiralSlashCounter => data.spiralSlashCooldownSource.cooldownLeft;
@@ -70,7 +78,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
     public Sprite skill2Sprite => data.spiralSlashSprite;
     public bool canUseSkill2 => spiralSlashCounter <= 0.0f && slashCounter <= 0.0f && !usingFlyingSlash;
     public float skill2CooldownBarFill => spiralSlashCounter / spiralSlashCooldown;
-    CoroutineHandle spiralSlashEndCoroutine;
+    CoroutineHandle spiralSlashEndCoroutine, spiralSlashSoundCoroutine;
     protected override bool canSlash => base.canSlash && !usingFlyingSlash && !usingSpiralSlash;
     public void Skill1Use(Player wielder)
     {
@@ -78,6 +86,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         wielder.cooldowns.AddCooldown(data.flyingSlashCooldownSource, data.flyingSlashCooldown);
         weapon.FlyingSlash();
         flyingSlashCoroutine = Timing.RunCoroutine(FlyingSlash());
+        flyingSlashSoundCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashSoundDelay, () => NetworkAudioManager.Instance.PlaySound(data.spiralSlashSound)));
     }
     protected override bool canFlip => base.canFlip && !usingSpiralSlash;
     public void Skill2Use(Player wielder)
@@ -89,6 +98,7 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
 
         weapon.SpiralSlash();
         spiralSlashEndCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashDuration, () => { usingSpiralSlash = false; }));
+        spiralSlashSoundCoroutine = Timing.RunCoroutine(MyCoroutines.WaitThen(data.spiralSlashSoundDelay, () => { NetworkAudioManager.Instance.PlaySound(data.spiralSlashSound); }));
     }
     public override void OnWield(Player wielder)
     {
@@ -102,6 +112,8 @@ public class IronSword_Item : SwordItem, ISkill1User, ISkill2User
         usingSpiralSlash = false;
         Timing.KillCoroutines(flyingSlashCoroutine);
         Timing.KillCoroutines(spiralSlashEndCoroutine);
+        Timing.KillCoroutines(flyingSlashSoundCoroutine);
+        Timing.KillCoroutines(spiralSlashSoundCoroutine);
         weapon.circularSlashHitbox.onTriggerEnter2D -= OnSpiralSlashTriggerEnter2D;
     }
     IEnumerator<float> FlyingSlash()

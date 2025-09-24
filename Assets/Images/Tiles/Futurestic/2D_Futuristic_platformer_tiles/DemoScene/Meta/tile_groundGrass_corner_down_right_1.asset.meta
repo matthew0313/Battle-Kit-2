@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5f799460e89194cd89aa2f7b29384f62
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 197862
+  packageName: 2D Futuristic platformer tiles
+  packageVersion: 1.0
+  assetPath: Assets/Izograf/2D_Futuristic_platformer_tiles/DemoScene/Meta/tile_groundGrass_corner_down_right_1.asset
+  uploadId: 481966
