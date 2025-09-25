@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.InferenceEngine;
 using Unity.Netcode;
 using UnityEngine;
+using NetworkAudio;
 
 [CreateAssetMenu(fileName = "Metal Dart", menuName = "Scriptables/Items/Stackables/Darts/Metal Dart")]
 public class MetalShuriken_ItemData : ShurikenItemData

@@ -3,45 +3,47 @@ using JetBrains.Annotations;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Audio;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[System.Serializable]
 public struct Sound
 {
     public AudioClip clip;
-    public float volume;
-    public float pitch;
+    public float volume, pitch;
 
     [HideInInspector] public bool foldout;
-    public SoundData ToSoundData()
+
+    public SoundData ToSoundData(ClipDatabase db)
     {
         return new()
         {
-            clipIndex = NetworkAudioManager.Instance.clipDatabase.GetIndex(clip),
+            clipIndex = db.GetIndex(clip),
             volume = volume,
             pitch = pitch
         };
     }
 }
-[System.Serializable]
 public struct SoundData : INetworkSerializable
 {
     public int clipIndex;
     public float volume, pitch;
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref clipIndex);
         serializer.SerializeValue(ref volume);
         serializer.SerializeValue(ref pitch);
     }
-    public Sound ToSound()
+
+    public Sound ToSound(ClipDatabase db)
     {
         return new()
         {
-            clip = NetworkAudioManager.Instance.clipDatabase.GetClip(clipIndex),
+            clip = db.GetClip(clipIndex),
             volume = volume,
             pitch = pitch
         };
@@ -57,6 +59,7 @@ public class Sound_Drawer : PropertyDrawer
     const float contentHeight = 60.0f;
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
+        AudioSource tmp;
         SerializedProperty foldout = property.FindPropertyRelative("foldout");
         foldout.boolValue = EditorGUI.Foldout(new Rect(position) { height = foldoutHeight }, foldout.boolValue, label);
         if (foldout.boolValue)

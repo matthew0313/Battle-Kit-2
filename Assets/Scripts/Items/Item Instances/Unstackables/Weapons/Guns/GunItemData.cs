@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using NetworkAudio;
 
 public abstract class GunItemData : WeaponItemData
 {
@@ -111,7 +112,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
-        NetworkAudioManager.Instance.StopSound(reloadingSound);
+        reloadingSound?.Stop();
     }
     protected float fireCounter => data.fireCooldownSource.cooldownLeft;
     protected float fireCooldown => data.fireCooldownSource.cooldown;

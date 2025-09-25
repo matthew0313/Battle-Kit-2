@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MEC;
 using Unity.Netcode;
 using UnityEngine;
+using NetworkAudio;
 
 [CreateAssetMenu(fileName = "FlameSword", menuName = "Scriptables/Items/Unstackables/Weapons/Melees/Swords/FlameSword")]
 public class FlameSword_ItemData : SwordItemData

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MEC;
 using UnityEngine;
+using NetworkAudio;
 
 [CreateAssetMenu(fileName = "Wooden Bow", menuName = "Scriptables/Items/Unstackables/Weapons/Bows/Wooden Bow")]
 public class WoodenBow_ItemData : BowItemData
