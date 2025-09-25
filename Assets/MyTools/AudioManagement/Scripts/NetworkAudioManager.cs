@@ -54,7 +54,7 @@ namespace NetworkAudio
                 {
                     if (i.Value.IsOwner)
                     {
-                        PlaySoundRpc(i.Key, i.Value.sound.ToSoundData(clipDatabase), i.Value.source.time, RpcTarget.Single(data.ClientId, RpcTargetUse.Temp));
+                        //PlaySoundRpc(i.Key, i.Value.sound.ToSoundData(clipDatabase), i.Value.source.time, RpcTarget.Single(data.ClientId, RpcTargetUse.Temp));
                         i.Value.OnPeerJoin(data.ClientId);
                     }
                 }
@@ -85,12 +85,12 @@ namespace NetworkAudio
         }
         public PlayingSound PlaySound(Sound sound, RpcParams rpcParams = new(), bool includeLocal = true)
         {
-            if (sound.clip == null) return null;
+            //if (sound.clip == null) return null;
             ulong id; do
             {
                 id = MathUtilities.GenerateRandomID();
             } while (playingSounds.ContainsKey(id));
-            PlaySoundRpc(id, sound.ToSoundData(clipDatabase), 0.0f, rpcParams);
+            //PlaySoundRpc(id, sound.ToSoundData(clipDatabase), 0.0f, rpcParams);
             if (includeLocal)
             {
                 PlayingSound tmp = new(id, audioSourcePool.GetObject(), sound);
@@ -100,7 +100,7 @@ namespace NetworkAudio
             }
             return null;
         }
-        [Rpc(SendTo.NotMe, AllowTargetOverride = true)]
+        /*[Rpc(SendTo.NotMe, AllowTargetOverride = true)]
         void PlaySoundRpc(ulong id, SoundData soundData, float start, RpcParams rpcParams = new())
         {
             Sound sound = soundData.ToSound(clipDatabase);
@@ -108,7 +108,7 @@ namespace NetworkAudio
             playingSounds.Add(id, tmp);
             tmp.source.Play();
             tmp.source.time = start;
-        }
+        }*/
         [Rpc(SendTo.Everyone)]
         public void StopSoundRpc(ulong id) => StopSound(id);
         void StopSound(ulong id)
@@ -159,14 +159,14 @@ namespace NetworkAudio
             this.id = id;
             this.source = source;
             this.sound = sound;
-            source.clip = sound.clip;
+            //source.clip = sound.clip;
         }
         public PlayingSound(ulong id, AudioSource source, Sound sound, ulong OwnerID)
         {
             this.id = id;
             this.source = source;
             this.sound = sound;
-            source.clip = sound.clip;
+            //source.clip = sound.clip;
             source.loop = false;
             source.spatialBlend = 0.0f;
 
