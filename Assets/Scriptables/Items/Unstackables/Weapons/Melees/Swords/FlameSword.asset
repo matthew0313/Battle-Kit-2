@@ -17,15 +17,11 @@ MonoBehaviour:
     kr: "\uD654\uC5FC \uAC80"
   m_itemIcon: {fileID: 21300000, guid: 3f8d7b25d3de9a948ad4a71ff4ef12b6, type: 3}
   m_lmbIcon: {fileID: 21300000, guid: 3f8d7b25d3de9a948ad4a71ff4ef12b6, type: 3}
-  m_auto: 0
+  m_auto: 1
   m_damage: 10
   m_slashCooldownSource: {fileID: 11400000, guid: 0e187df16cf504c4eb125719de5b49e3, type: 2}
   m_slashCooldown: 1
-  m_slashSound:
-    clip: {fileID: 8300000, guid: e15aba9fa14ab564e806260f83dff4a7, type: 3}
-    volume: 1
-    pitch: 2
-    foldout: 1
+  m_slashSound: {fileID: 11400000, guid: 9f265d984e859904697ed966b3135d91, type: 2}
   m_weaponPrefab: {fileID: 3644323846711389149, guid: 92d525db84f97404d8692a1074307096, type: 3}
   m_burnDuration: 4
   m_burnDamage: 3
@@ -44,11 +40,7 @@ MonoBehaviour:
     timeMode: 1
     seconds: 1
     frames: 60
-  m_flameBlessingSound:
-    clip: {fileID: 8300000, guid: a24e266d8b0ddc64181c79f6145cb4f6, type: 3}
-    volume: 1
-    pitch: 1
-    foldout: 1
+  m_flameBlessingSound: {fileID: 11400000, guid: 7c4151c8db77b7040bc2c0ba2eaface3, type: 2}
   m_flameBlessingSoundDelay:
     timeMode: 1
     seconds: 0.33333334

@@ -24,11 +24,11 @@ public class SoundDatabase : ScriptableObject
         {
             if (i.type == SoundDatabaseElementType.Sound)
             {
-                yield return i.Sound;
+                yield return i.sound;
             }
             else if(i.type == SoundDatabaseElementType.SoundDatabase)
             {
-                foreach (var k in i.SoundDatabase.GetSounds()) yield return k;
+                foreach (var k in i.soundDatabase.GetSounds()) yield return k;
             }
         }
     }
@@ -55,8 +55,8 @@ public class SoundDatabase : ScriptableObject
 public struct SoundDatabaseElement
 {
     public SoundDatabaseElementType type;
-    public Sound Sound;
-    public SoundDatabase SoundDatabase;
+    public Sound sound;
+    public SoundDatabase soundDatabase;
 }
 [System.Serializable]
 public enum SoundDatabaseElementType

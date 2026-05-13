@@ -112,7 +112,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
-        reloadingSound.Stop();
+        if(reloadingSound != null) reloadingSound.Stop();
     }
     protected float fireCounter => data.fireCooldownSource.cooldownLeft;
     protected float fireCooldown => data.fireCooldownSource.cooldown;

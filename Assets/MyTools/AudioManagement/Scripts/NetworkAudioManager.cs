@@ -38,6 +38,7 @@ namespace NetworkAudio
         }
         public PlayingSound PlaySound(Sound sound, Vector3 position = new())
         {
+            if (sound == null) return null;
             PlayingSound tmp = new(audioSourcePool.GetObject(position, Quaternion.identity), sound, MathUtilities.GenerateRandomID());
             playingSounds.Add(tmp);
             PlaySoundRpc(soundDatabase.GetIndex(sound), position, tmp.id);

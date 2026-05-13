@@ -110,6 +110,19 @@ public class Player_Movements : NetworkBehaviour, IKnockable
                 doubleJumped = true;
                 Jump();
             }
+            if (canRotate)
+            {
+                if (InputManager.Instance.MovementInput() > 0)
+                {
+                    flipped.rotation = Quaternion.Euler(0, 0, 0);
+                    flipped.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                }
+                if (InputManager.Instance.MovementInput() < 0)
+                {
+                    flipped.rotation = Quaternion.Euler(0, 0, 180);
+                    flipped.localScale = new Vector3(1.0f, -1.0f, 1.0f);
+                }
+            }
         }
     }
     void Jump()

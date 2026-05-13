@@ -35,7 +35,7 @@ public class Sound : ScriptableObject
         source.dopplerLevel = dopplerLevel;
         source.spread = spread;
         source.rolloffMode = volumeRolloff;
-        source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, customRolloffCurve);
+        if(source.rolloffMode == AudioRolloffMode.Custom) source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, customRolloffCurve);
         source.minDistance = minDistance;
         source.maxDistance = maxDistance;
     }

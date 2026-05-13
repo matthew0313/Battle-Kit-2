@@ -21,11 +21,7 @@ MonoBehaviour:
   m_damage: 25
   m_slashCooldownSource: {fileID: 11400000, guid: 0e187df16cf504c4eb125719de5b49e3, type: 2}
   m_slashCooldown: 0.5
-  m_slashSound:
-    clip: {fileID: 8300000, guid: 65b1607079094e340ba8d3c768ceb776, type: 3}
-    volume: 1
-    pitch: 1
-    foldout: 1
+  m_slashSound: {fileID: 11400000, guid: bb29a9a59a591f84497d5e748a355c93, type: 2}
   m_weaponPrefab: {fileID: 5344650502320582198, guid: 6c5999fa938437c4fadae9fba1f1ec6a, type: 3}
   m_flyingSlashSprite: {fileID: 21300000, guid: 27f21d39285613c4fbcf004dab157eca, type: 3}
   m_flyingSlash: {fileID: 4472886428249030566, guid: f5b8dc925138a274b8a431f3d62c6b67, type: 3}
@@ -46,11 +42,7 @@ MonoBehaviour:
     timeMode: 0
     seconds: 1
     frames: 60
-  m_flyingSlashSound:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    foldout: 1
+  m_flyingSlashSound: {fileID: 11400000, guid: bb29a9a59a591f84497d5e748a355c93, type: 2}
   m_flyingSlashSoundDelay:
     timeMode: 0
     seconds: 0.5
@@ -63,11 +55,7 @@ MonoBehaviour:
     timeMode: 0
     seconds: 1.5
     frames: 90
-  m_spiralSlashSound:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    foldout: 1
+  m_spiralSlashSound: {fileID: 11400000, guid: bb29a9a59a591f84497d5e748a355c93, type: 2}
   m_spiralSlashSoundDelay:
     timeMode: 0
     seconds: 0
