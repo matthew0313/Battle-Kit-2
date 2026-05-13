@@ -11,6 +11,7 @@ public class AnimEvent : StateMachineBehaviour
 {
     [SerializeField] int eventIndex;
     [SerializeField] UnitTime time;
+    [SerializeField] bool invokeOnExit = true;
     AnimEventChannel channel;
     bool invoked = false;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
@@ -34,7 +35,7 @@ public class AnimEvent : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (!invoked)
+        if (!invoked && invokeOnExit)
         {
             channel.CallEvent(eventIndex);
             invoked = true;

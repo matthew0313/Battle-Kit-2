@@ -92,7 +92,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
         reloadCounter = data.reloadTime;
         reloading = true;
         weapon.Reload();
-        reloadingSound = NetworkAudioManager.Instance.PlaySound(data.fireSound);
+        reloadingSound = NetworkAudioManager.Instance.PlaySound(data.reloadSound);
     }
     public override void OnWieldUpdate(Player wielder)
     {
@@ -112,7 +112,7 @@ public abstract class GunItem : WeaponItem, IAmmoCountDisplayed, IReloadable, IL
     public override void OnUnwield(Player wielder)
     {
         base.OnUnwield(wielder);
-        reloadingSound?.Stop();
+        reloadingSound.Stop();
     }
     protected float fireCounter => data.fireCooldownSource.cooldownLeft;
     protected float fireCooldown => data.fireCooldownSource.cooldown;

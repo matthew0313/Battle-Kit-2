@@ -23,5 +23,9 @@ public class Pit : MonoBehaviour
                 source = KnockbackSource.Other
             });
         }
+        if(hit.TryGetComponent(out DroppedItem droppedItem) && droppedItem.HasAuthority)
+        {
+            droppedItem.NetworkObject.Despawn();
+        }
     }
 }

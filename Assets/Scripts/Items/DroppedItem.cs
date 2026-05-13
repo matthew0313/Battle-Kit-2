@@ -10,7 +10,6 @@ using Unity.VisualScripting;
 public class DroppedItem : NetworkBehaviour
 {
     IntegerReceiver receiver;
-    OwnerOnlyRigidbody2D ownerOnlyRb;
 
     NetworkVariable<ItemInstanceData> itemInstanceData = new NetworkVariable<ItemInstanceData>(new ItemInstanceData());
     NetworkVariable<int> count = new NetworkVariable<int>(0);
@@ -19,7 +18,7 @@ public class DroppedItem : NetworkBehaviour
     [SerializeField] SpriteRenderer rend1, rend2;
     [SerializeField] float pendingTimeout = 3.0f;
     static DroppedItem prefab;
-    public Rigidbody2D rb => ownerOnlyRb.rb;
+    public Rigidbody2D rb { get; private set; }
     public static DroppedItem Create()
     {
         if (prefab == null) prefab = Resources.Load<DroppedItem>("DroppedItem");
@@ -28,7 +27,7 @@ public class DroppedItem : NetworkBehaviour
     private void Awake()
     {
         receiver = GetComponent<IntegerReceiver>();
-        ownerOnlyRb = GetComponent<OwnerOnlyRigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         receiver.onResponseReceive += OnResponseReceive;
         itemInstanceData.OnValueChanged += OnItemSet;
         count.OnValueChanged += OnCountChange;
@@ -67,7 +66,7 @@ public class DroppedItem : NetworkBehaviour
         this.pickupDelay = pickupDelay;
     }
     CoroutineHandle pendingWaiting;
-    [Rpc(SendTo.Owner)]
+    [Rpc(SendTo.Authority)]
     public void PickupRpc(NetworkBehaviourReference inventoryRef)
     {
         if (pending || pickupDelay > 0.0f) return;

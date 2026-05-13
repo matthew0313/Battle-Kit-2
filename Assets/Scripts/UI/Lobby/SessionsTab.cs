@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class SessionsTab : Tab
 {
@@ -23,6 +24,7 @@ public class SessionsTab : Tab
     public override void Open()
     {
         base.Open();
+        EventSystem.current.SetSelectedGameObject(null);
         if (tween == null) tween = DOTween.To(() => tweenCounter, value => tweenCounter = value, 1.0f, tweenTime)
                 .SetAutoKill(false)
                 .SetEase(Ease.OutCirc)

@@ -6,45 +6,45 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(fileName = "Clip Database", menuName = "Scriptables/Clip Database")]
-public class ClipDatabase : ScriptableObject
+[CreateAssetMenu(fileName = "Sound Database", menuName = "Scriptables/Sound Database")]
+public class SoundDatabase : ScriptableObject
 {
-    [SerializeField] List<ClipDatabaseElement> items;
+    [SerializeField] List<SoundDatabaseElement> items;
     private void OnEnable()
     {
 #if UNITY_EDITOR
-        Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Editor/ClipDatabaseIcon");
+        Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Editor/SoundDatabaseIcon");
         EditorGUIUtility.SetIconForObject(this, icon);
 #endif
     }
     public int size => items.Count;
-    public IEnumerable<AudioClip> GetClips()
+    public IEnumerable<Sound> GetSounds()
     {
         foreach(var i in items)
         {
-            if (i.type == ClipDatabaseElementType.Clip)
+            if (i.type == SoundDatabaseElementType.Sound)
             {
-                yield return i.clip;
+                yield return i.Sound;
             }
-            else if(i.type == ClipDatabaseElementType.ClipDatabase)
+            else if(i.type == SoundDatabaseElementType.SoundDatabase)
             {
-                foreach (var k in i.clipDatabase.GetClips()) yield return k;
+                foreach (var k in i.SoundDatabase.GetSounds()) yield return k;
             }
         }
     }
-    public int GetIndex(AudioClip clip)
+    public int GetIndex(Sound sound)
     {
         int index = 0;
-        foreach(var i in GetClips())
+        foreach(var i in GetSounds())
         {
-            if (i == clip) return index;
+            if (i == sound) return index;
             index++;
         }
         throw new Exception("Unregistered ItemData");
     }
-    public AudioClip GetClip(int index)
+    public Sound GetSound(int index)
     {
-        foreach(var i in GetClips())
+        foreach(var i in GetSounds())
         {
             if (index-- == 0) return i;
         }
@@ -52,21 +52,21 @@ public class ClipDatabase : ScriptableObject
     }
 }
 [System.Serializable]
-public struct ClipDatabaseElement
+public struct SoundDatabaseElement
 {
-    public ClipDatabaseElementType type;
-    public AudioClip clip;
-    public ClipDatabase clipDatabase;
+    public SoundDatabaseElementType type;
+    public Sound Sound;
+    public SoundDatabase SoundDatabase;
 }
 [System.Serializable]
-public enum ClipDatabaseElementType
+public enum SoundDatabaseElementType
 {
-    Clip = 0,
-    ClipDatabase = 1
+    Sound = 0,
+    SoundDatabase = 1
 }
 #if UNITY_EDITOR
-[CustomPropertyDrawer(typeof(ClipDatabaseElement))]
-public class ClipDatabaseElement_Drawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(SoundDatabaseElement))]
+public class SoundDatabaseElement_Drawer : PropertyDrawer
 {
     const int typeWidth = 110;
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -75,11 +75,11 @@ public class ClipDatabaseElement_Drawer : PropertyDrawer
 
         if (property.FindPropertyRelative("type").enumValueIndex == 0)
         {
-            EditorGUI.PropertyField(new Rect(position) { x = position.x + typeWidth + 3, width = position.width - typeWidth - 3}, property.FindPropertyRelative("clip"), GUIContent.none);
+            EditorGUI.PropertyField(new Rect(position) { x = position.x + typeWidth + 3, width = position.width - typeWidth - 3}, property.FindPropertyRelative("sound"), GUIContent.none);
         }
         else if (property.FindPropertyRelative("type").enumValueIndex == 1)
         {
-            EditorGUI.PropertyField(new Rect(position) { x = position.x + typeWidth + 3, width = position.width - typeWidth - 3 }, property.FindPropertyRelative("clipDatabase"), GUIContent.none);
+            EditorGUI.PropertyField(new Rect(position) { x = position.x + typeWidth + 3, width = position.width - typeWidth - 3 }, property.FindPropertyRelative("soundDatabase"), GUIContent.none);
         }
     }
 }

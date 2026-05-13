@@ -68,7 +68,7 @@ public enum ItemDatabaseElementType
 [CustomPropertyDrawer(typeof(ItemDatabaseElement))]
 public class ItemDatabaseElement_Drawer : PropertyDrawer
 {
-    const int typeWidth = 110;
+    const int typeWidth = 80;
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         EditorGUI.PropertyField(new Rect(position) { width = typeWidth }, property.FindPropertyRelative("type"), GUIContent.none);
